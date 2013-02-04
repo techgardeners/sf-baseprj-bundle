@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the Base Project Bundle
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
@@ -8,10 +8,10 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle;
+namespace TechG\SfBaseprjBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class TechGAppFwBaseBundle extends Bundle
+class TechGSfBaseprjBundle extends Bundle
 {
 }

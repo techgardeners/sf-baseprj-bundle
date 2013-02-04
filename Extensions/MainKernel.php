@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the Base Project Bundle
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle\Extensions;
+namespace TechG\SfBaseprjBundle\Extensions;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -24,16 +24,16 @@ class MainKernel
     private $container = null;
     private $em = null;
     private $router = null;
-    public $geocoder = null;
-    public $mobileDetector = null;
+    public  $geocoder = null;
+    public  $mobileDetector = null;
 
-    private $isInit = false;               // Indica se la classe è stata inizializzata
-    public $collectUserGeoInfo = false;    // Indica se il geodecoding è abilitato o no
+    private $isInit = false;                // Indica se la classe è stata inizializzata
+    public  $collectUserGeoInfo = false;    // Indica se il geodecoding è abilitato o no
     
-    public $baseUri = null;                // Contiene il baseUri dell' applicazione
-    public $uri = null;                    // Contiene l'uri della pagina richiamata
-    public $userGeoInfo = null;            // Hold user geoInfo
-    public $userBrowserInfo = null;        // Hold user geoInfo
+    public  $baseUri = null;                // Contiene il baseUri dell' applicazione
+    public  $uri = null;                    // Contiene l'uri della pagina richiamata
+    public  $userGeoInfo = null;            // Hold user geoInfo
+    public  $userBrowserInfo = null;        // Hold user geoInfo
 
     /**
     * Costruttore del metodo a cui viene passato l'intero contenitore dei servizi da cui recuperare request e routing
@@ -47,8 +47,8 @@ class MainKernel
         $this->em = $this->container->get('doctrine')->getEntityManager();
         
         // inizialize geocoder ( https://github.com/willdurand/Geocoder )
-        $this->geocoder = new \TechG\AppFw\BaseBundle\Extensions\Geocode\GeocoderEx();
-        $this->geocoder ->registerProviders(array(new \TechG\AppFw\BaseBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));        
+        $this->geocoder = new \TechG\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
+        $this->geocoder ->registerProviders(array(new \TechG\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));        
         
         $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
         
@@ -239,7 +239,7 @@ class MainKernel
         foreach ($request->getLanguages() as $lang) {
             if (preg_match('%^[a-z]{2}_[A-Z]{2}$%', $lang) && is_null($langObj)) {
                 
-                if ($_obj = $this->em->getRepository("TechGAppFwBaseBundle:Language")->findOneBy(array('locale' => $lang, 'enabled' => true))){
+                if ($_obj = $this->em->getRepository("TechGSfBaseprjBundle:Language")->findOneBy(array('locale' => $lang, 'enabled' => true))){
                     $langObj = $_obj;
                 }
                     
@@ -251,7 +251,7 @@ class MainKernel
             foreach ($request->getLanguages() as $lang) {
                 if (preg_match('%^[a-z]{2}$%', $lang) && is_null($langObj)) {
                     
-                    if (is_null($langObj) && $_obj = $this->em->getRepository("TechGAppFwBaseBundle:Language")->findOneBy(array('iso639' => $lang, 'enabled' => true))){
+                    if (is_null($langObj) && $_obj = $this->em->getRepository("TechGSfBaseprjBundle:Language")->findOneBy(array('iso639' => $lang, 'enabled' => true))){
                         $langObj = $_obj;
                     }
                         

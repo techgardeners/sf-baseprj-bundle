@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the Base Project Bundle
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle\Tests\Controller;
+namespace TechG\SfBaseprjBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the Base Project Bundle
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle\Controller;
+namespace TechG\SfBaseprjBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -16,6 +16,6 @@ class MainController extends Controller
 {
     public function indexAction()
     {
-        return $this->render('TechGAppFwBaseBundle:Main:index.html.twig', array());
+        return $this->render('TechGSfBaseprjBundle:Main:index.html.twig', array());
     }
 }

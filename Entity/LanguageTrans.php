@@ -8,11 +8,11 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle\Entity;
+namespace TechG\SfBaseprjBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use TechG\AppFw\BaseBundle\Extensions\BaseEntity as BaseEntity;
+use TechG\SfBaseprjBundle\Extensions\BaseEntity as BaseEntity;
 
 /**
  * LanguageTrans

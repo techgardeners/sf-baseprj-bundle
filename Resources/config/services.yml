@@ -1,23 +1,23 @@
 parameters:
-#    tech_g_app_fw_base.example.class: TechG\AppFw\BaseBundle\Example
+#    tech_g_sf_baseprj.example.class: TechG\SfBaseprjBundle\Example
 
 services:
-#    tech_g_app_fw_base.example:
-#        class: %tech_g_app_fw_base.example.class%
+#    tech_g_sf_baseprj.example:
+#        class: %tech_g_sf_baseprj.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
 
-    tech_g_app_fw_base.kernel:
-        class:     TechG\AppFw\BaseBundle\Extensions\MainKernel
+    tech_g_sf_baseprj.kernel:
+        class:     TechG\SfBaseprjBundle\Extensions\MainKernel
         arguments: [@service_container]
         
     twig.extension.appfwKernel:
-        class: TechG\AppFw\BaseBundle\Twig\Extensions\MainKernelExtension
-        arguments: [@tech_g_app_fw_base.kernel]
+        class: TechG\SfBaseprjBundle\Twig\Extensions\MainKernelExtension
+        arguments: [@tech_g_sf_baseprj.kernel]
         tags:
             - { name: twig.extension }
             
-    tech_g_app_fw_base.onRequest_listener:
-        class: TechG\AppFw\BaseBundle\Listener\AppOnRequestListener
-        arguments: [ @tech_g_app_fw_base.kernel ]
+    tech_g_sf_baseprj.onRequest_listener:
+        class: TechG\SfBaseprjBundle\Listener\AppOnRequestListener
+        arguments: [ @tech_g_sf_baseprj.kernel ]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }              

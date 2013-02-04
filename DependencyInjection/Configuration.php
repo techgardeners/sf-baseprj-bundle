@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the Base Project Bundle
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\AppFw\BaseBundle\DependencyInjection;
+namespace TechG\SfBaseprjBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -26,7 +26,7 @@ class Configuration implements ConfigurationInterface
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder();
-        $rootNode = $treeBuilder->root('tech_g_app_fw_base');
+        $rootNode = $treeBuilder->root('tech_g_sf_baseprj');
 
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
