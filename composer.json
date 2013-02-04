@@ -1,9 +1,9 @@
 {
-    "name": "techgardeners/sfBaseprjBundle",
+    "name": "techgardeners/sf-baseprj-bundle",
     "type": "symfony-bundle",
     "description": "Base bundle for use with Symfony2",
     "keywords": ["techg", "baseprj", "bundle"],
-    "homepage": "https://github.com/techgardeners/sfBaseprjBundle",
+    "homepage": "https://github.com/techgardeners/sf-baseprj-bundle",
     "license": "MIT",
     "authors": [
         {

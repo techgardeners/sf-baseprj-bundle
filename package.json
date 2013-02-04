@@ -1,14 +1,14 @@
 {
     "packages": {
-        "name": "techgardeners/sfBaseprjBundle",
+        "name": "techgardeners/sf-baseprj-bundle",
         "version": "0.0.1",
         "dist": {
-          "url": "git://github.com/techgardeners/sfBaseprjBundle.git",
+          "url": "git://github.com/techgardeners/sf-baseprj-bundle.git",
           "type": "zip"
 },
 
 "source": {
-            "url": "git://github.com/techgardeners/sfBaseprjBundle.git",
+            "url": "git://github.com/techgardeners/sf-baseprj-bundle.git",
             "type": "git",
             "reference": ""
 
