@@ -1,0 +1,23 @@
+parameters:
+#    tech_g_app_fw_base.example.class: TechG\AppFw\BaseBundle\Example
+
+services:
+#    tech_g_app_fw_base.example:
+#        class: %tech_g_app_fw_base.example.class%
+#        arguments: [@service_id, "plain_value", %parameter%]
+
+    tech_g_app_fw_base.kernel:
+        class:     TechG\AppFw\BaseBundle\Extensions\MainKernel
+        arguments: [@service_container]
+        
+    twig.extension.appfwKernel:
+        class: TechG\AppFw\BaseBundle\Twig\Extensions\MainKernelExtension
+        arguments: [@tech_g_app_fw_base.kernel]
+        tags:
+            - { name: twig.extension }
+            
+    tech_g_app_fw_base.onRequest_listener:
+        class: TechG\AppFw\BaseBundle\Listener\AppOnRequestListener
+        arguments: [ @tech_g_app_fw_base.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }              

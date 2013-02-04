@@ -1,0 +1,17 @@
+{
+    "packages": {
+        "name": "techgardeners/sfBaseprjBundle",
+        "version": "0.0.1",
+        "dist": {
+          "url": "git://github.com/techgardeners/sfBaseprjBundle.git",
+          "type": "zip"
+},
+
+"source": {
+            "url": "git://github.com/techgardeners/sfBaseprjBundle.git",
+            "type": "git",
+            "reference": ""
+
+        }
+    }
+}

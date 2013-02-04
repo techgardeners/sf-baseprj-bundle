@@ -1,0 +1,25 @@
+{
+    "name": "techgardeners/sfBaseprjBundle",
+    "type": "symfony-bundle",
+    "description": "Base bundle for use with Symfony2",
+    "keywords": ["techg", "baseprj", "bundle"],
+    "homepage": "https://github.com/techgardeners/sfBaseprjBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "TechGardeners",
+            "email": "roberto@beccaceci.it"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": ">=2.1,<2.2-dev"
+    },
+    "autoload": {
+        "psr-0": { "TechG\\Bundle\\SfBaseprjBundle": "" }
+    },
+    "minimum-stability": "dev",
+    "target-dir": "TechG/Bundle/SfBaseprjBundle"
+}
