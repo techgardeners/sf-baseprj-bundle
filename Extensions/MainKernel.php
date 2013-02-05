@@ -46,6 +46,9 @@ class MainKernel
     {
         $this->container = $container;
         $this->em = $this->container->get('doctrine')->getEntityManager();
+
+        $this->collectUserGeoInfo = $this->container->getParameter('tech_g_sf_baseprj.collectUserGeoInfo');
+        $this->guessLocale = $this->container->getParameter('tech_g_sf_baseprj.guessLocale');
         
         // inizialize geocoder ( https://github.com/willdurand/Geocoder )
         $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
@@ -86,7 +89,7 @@ class MainKernel
         }
         
         // If Locale is not set on Uri guessed right Locale
-        if (!$this->isSetLocaleOnUrl($this->uri) && $this->guessLocale) {
+        if ($this->guessLocale && !$this->isSetLocaleOnUrl($this->uri)) {
             
             if (null !== $guessedLocale = $this->guessLocale($request)) {
                 $request->setLocale($guessedLocale->getLocale());    

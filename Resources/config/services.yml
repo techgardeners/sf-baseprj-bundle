@@ -1,5 +1,7 @@
 parameters:
 #    tech_g_sf_baseprj.example.class: TechG\Bundle\SfBaseprjBundle\Example
+     tech_g_sf_baseprj.collectUserGeoInfo: %enable_geo_info%
+     tech_g_sf_baseprj.guessLocale: %enable_guess_locale%
 
 services:
 #    tech_g_sf_baseprj.example:

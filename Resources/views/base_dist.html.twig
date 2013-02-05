@@ -16,11 +16,16 @@
         <title>Standard project</title>      
     {% endblock %}
              
-    {% block stylesheets %}
+    {% block dist_stylesheets %}
         
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/docq.css') }}" />
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap-responsive.min.css') }}" />
+  
+    {% endblock %}    
+    
+    {% block stylesheets %}
+    
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/main.css') }}" />
   
     {% endblock %}
@@ -66,7 +71,7 @@
     {% block footer %}                         
     {% endblock %}
 
-    {% block javascripts %}
+    {% block techGfw_javascripts %}
         {% if app.environment == 'prod' %}
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
             <script>window.jQuery || document.write('<script src="{{ asset('/bundles/techgsfbaseprj/js/vendor/jquery-1.8.3.min.js') }}"><\/script>')</script>
@@ -77,18 +82,6 @@
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/plugins.js') }}"></script>
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/bootstrap.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/main.js') }}"></script>
-        
-        {% block ready_javascripts %}
-
-            <!-- script type="text/javascript">
-                
-                jQuery(document).ready(function() {
-
-                });            
-
-            </script -->        
-            
-        {% endblock %}  
         
         {% if app.environment == 'prod' %}
             <script>
@@ -101,5 +94,19 @@
 
 
     {% endblock %}    
+    {% block javascripts %}    
+    {% endblock %}    
+    {% block ready_javascripts %}
+
+        <!-- script type="text/javascript">
+            
+            jQuery(document).ready(function() {
+
+            });            
+
+        </script -->        
+
+    {% endblock %}    
+    
 </body>
 </html>
