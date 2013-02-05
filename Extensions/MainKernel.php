@@ -27,14 +27,15 @@ class MainKernel
     public  $geocoder = null;
     public  $mobileDetector = null;
 
-    private $isInit = false;                // Indica se la classe è stata inizializzata
-    public  $collectUserGeoInfo = false;    // Indica se il geodecoding è abilitato o no
-    public  $guessLocale = false;           // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
+    private $isInit = false;                    // Indica se la classe è stata inizializzata
+    public  $collectUserGeoInfo = false;        // Indica se il geodecoding è abilitato o no
+    public  $guessLocale = false;               // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
+    public  $enableMobileDetection = false;     // Indica se deve essere abilitato il mobile detection
     
-    public  $baseUri = null;                // Contiene il baseUri dell' applicazione
-    public  $uri = null;                    // Contiene l'uri della pagina richiamata
-    public  $userGeoInfo = null;            // Hold user geoInfo
-    public  $userBrowserInfo = null;        // Hold user geoInfo
+    public  $baseUri = null;                    // Contiene il baseUri dell' applicazione
+    public  $uri = null;                        // Contiene l'uri della pagina richiamata
+    public  $userGeoInfo = null;                // Hold user geoInfo
+    public  $userBrowserInfo = null;            // Hold user geoInfo
 
     /**
     * Costruttore del metodo a cui viene passato l'intero contenitore dei servizi da cui recuperare request e routing
@@ -49,12 +50,17 @@ class MainKernel
 
         $this->collectUserGeoInfo = $this->container->getParameter('tech_g_sf_baseprj.collectUserGeoInfo');
         $this->guessLocale = $this->container->getParameter('tech_g_sf_baseprj.guessLocale');
+        $this->enableMobileDetection = $this->container->getParameter('tech_g_sf_baseprj.enableMobileDetection');
         
-        // inizialize geocoder ( https://github.com/willdurand/Geocoder )
-        $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
-        $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));        
+        if ($this->collectUserGeoInfo) {
+            // inizialize geocoder ( https://github.com/willdurand/Geocoder )
+            $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
+            $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));              
+        }
         
-        $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
+        if ($this->enableMobileDetection) {
+            $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
+        }
         
     }
 
@@ -469,51 +475,6 @@ class MainKernel
     {
         return $this->router;
     }        
-    
-    /**
-    * DIRECTORY  PATH
-    * 
-    */
-    public static function getUploadBaseRootDir()
-    {
-        // the absolute directory path where uploaded documents should be saved
-        return __DIR__.'/../../../../web';
-    }
-
-    public static function getUploadRootDir()
-    {
-        // the absolute directory path where uploaded documents should be saved
-        return self::getUploadBaseRootDir().self::getUploadDir();
-    }
-
-    public static function getUploadTmpRootDir()
-    {
-        // the absolute directory path where uploaded documents should be saved
-        return self::getUploadBaseRootDir().self::getUploadTmpDir();
-    }
-
-    public static function getUploadDir()
-    {
-        // get rid of the __DIR__ so it doesn't screw when displaying uploaded doc/image in the view.
-        return '/uploads';
-    }    
-    
-    public static function getUploadTmpDir()
-    {
-        // get rid of the __DIR__ so it doesn't screw when displaying uploaded doc/image in the view.
-        return self::getUploadDir().'/tmp';
-    }    
-    
-    
-    /**
-    * Return a configurations value (for twig use)
-    * 
-    * @param mixed $confConst
-    */
-    public static function getConfConst($confConst)
-    {
-        eval('$value = \Invictus\CmsBundle\Extensions\CMSConfigurations::'.$confConst.';');
-        return $value;
-    }    
+     
         
 }
