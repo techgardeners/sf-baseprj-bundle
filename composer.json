@@ -15,7 +15,7 @@
         "php": ">=5.3.2",
         "willdurand/geocoder": "*",
         "kriswallsmith/buzz": "*",
-        "mobiledetect/mobiledetectlib": "dev-master"  
+        "mobiledetect/mobiledetectlib": "*@dev"  
     },                                                  
     "require-dev": {
         "symfony/framework-bundle": ">=2.7,<2.2-dev"    
