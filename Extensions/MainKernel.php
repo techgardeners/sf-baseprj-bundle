@@ -29,6 +29,7 @@ class MainKernel
 
     private $isInit = false;                // Indica se la classe è stata inizializzata
     public  $collectUserGeoInfo = false;    // Indica se il geodecoding è abilitato o no
+    public  $guessLocale = false;           // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
     
     public  $baseUri = null;                // Contiene il baseUri dell' applicazione
     public  $uri = null;                    // Contiene l'uri della pagina richiamata
@@ -85,7 +86,7 @@ class MainKernel
         }
         
         // If Locale is not set on Uri guessed right Locale
-        if (!$this->isSetLocaleOnUrl($this->uri)) {
+        if (!$this->isSetLocaleOnUrl($this->uri) && $this->guessLocale) {
             
             if (null !== $guessedLocale = $this->guessLocale($request)) {
                 $request->setLocale($guessedLocale->getLocale());    
