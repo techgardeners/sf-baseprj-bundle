@@ -16,7 +16,7 @@
         "willdurand/geocoder": "*",
         "kriswallsmith/buzz": "*",
         "mobiledetect/mobiledetectlib": "2.5.4",
-        "suncat/mobile-detect-bundle": "dev-master"        
+        "suncat/mobile-detect-bundle": "*@dev"        
     },
     "require-dev": {
         "symfony/framework-bundle": ">=2.7,<2.2-dev"    
