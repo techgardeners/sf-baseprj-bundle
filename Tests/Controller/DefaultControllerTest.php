@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle\Tests\Controller;
+namespace TechG\Bundle\SfBaseprjBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 

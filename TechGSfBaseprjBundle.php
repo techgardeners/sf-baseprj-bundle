@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle;
+namespace TechG\Bundle\SfBaseprjBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 

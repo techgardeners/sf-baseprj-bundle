@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle\Extensions;
+namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -47,8 +47,8 @@ class MainKernel
         $this->em = $this->container->get('doctrine')->getEntityManager();
         
         // inizialize geocoder ( https://github.com/willdurand/Geocoder )
-        $this->geocoder = new \TechG\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
-        $this->geocoder ->registerProviders(array(new \TechG\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));        
+        $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
+        $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));        
         
         $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
         

@@ -1,5 +1,5 @@
 parameters:
-#    tech_g_sf_baseprj.example.class: TechG\SfBaseprjBundle\Example
+#    tech_g_sf_baseprj.example.class: TechG\Bundle\SfBaseprjBundle\Example
 
 services:
 #    tech_g_sf_baseprj.example:
@@ -7,17 +7,17 @@ services:
 #        arguments: [@service_id, "plain_value", %parameter%]
 
     tech_g_sf_baseprj.kernel:
-        class:     TechG\SfBaseprjBundle\Extensions\MainKernel
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel
         arguments: [@service_container]
         
     twig.extension.appfwKernel:
-        class: TechG\SfBaseprjBundle\Twig\Extensions\MainKernelExtension
+        class: TechG\Bundle\SfBaseprjBundle\Twig\Extensions\MainKernelExtension
         arguments: [@tech_g_sf_baseprj.kernel]
         tags:
             - { name: twig.extension }
             
     tech_g_sf_baseprj.onRequest_listener:
-        class: TechG\SfBaseprjBundle\Listener\AppOnRequestListener
+        class: TechG\Bundle\SfBaseprjBundle\Listener\AppOnRequestListener
         arguments: [ @tech_g_sf_baseprj.kernel ]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }              

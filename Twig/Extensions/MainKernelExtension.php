@@ -8,9 +8,9 @@
  * file that was distributed with this source code.
  */
  
-namespace TechG\SfBaseprjBundle\Twig\Extensions;
+namespace TechG\Bundle\SfBaseprjBundle\Twig\Extensions;
 
-use TechG\SfBaseprjBundle\Extensions\MainKernel;
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 
 class MainKernelExtension extends \Twig_Extension
 {

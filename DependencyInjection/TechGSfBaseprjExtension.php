@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle\DependencyInjection;
+namespace TechG\Bundle\SfBaseprjBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;

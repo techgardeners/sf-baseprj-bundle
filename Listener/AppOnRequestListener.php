@@ -8,13 +8,13 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle\Listener;
+namespace TechG\Bundle\SfBaseprjBundle\Listener;
 
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\HttpFoundation\Session;
 
-use TechG\SfBaseprjBundle\Extensions\MainKernel;
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 
 class AppOnRequestListener
 {

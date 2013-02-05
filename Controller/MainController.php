@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\SfBaseprjBundle\Controller;
+namespace TechG\Bundle\SfBaseprjBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
