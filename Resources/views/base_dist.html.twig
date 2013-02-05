@@ -48,10 +48,7 @@
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
 
-    {% block navbar %}
-        
-        
-    {% endblock %}
+    {% block navbar %}{% endblock %}
     
     {% block header %}
         
@@ -68,8 +65,7 @@
         {% block main_content %}{% endblock %}
     </div>
     
-    {% block footer %}                         
-    {% endblock %}
+    {% block footer %}{% endblock %}
 
     {% block techGfw_javascripts %}
         {% if app.environment == 'prod' %}
@@ -92,21 +88,22 @@
             </script>
         {% endif %}
 
-
     {% endblock %}    
-    {% block javascripts %}    
+
+    {% block analitycs %}
+        {% if app.environment == 'prod' %}
+            <script>
+                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g,s)}(document,'script'));
+            </script>
+        {% endif %}
     {% endblock %}    
-    {% block ready_javascripts %}
-
-        <!-- script type="text/javascript">
-            
-            jQuery(document).ready(function() {
-
-            });            
-
-        </script -->        
-
-    {% endblock %}    
+    
+    {% block javascripts %}{% endblock %}    
+    
+    {% block ready_javascripts %}{% endblock %}    
     
 </body>
 </html>
