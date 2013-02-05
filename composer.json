@@ -23,6 +23,6 @@
     },
     "autoload": {
         "psr-0": { "TechG\\Bundle\\SfBaseprjBundle": "" }
-    },
+    },   
     "target-dir": "TechG/Bundle/SfBaseprjBundle"
 }
