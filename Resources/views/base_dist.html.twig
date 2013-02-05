@@ -16,20 +16,21 @@
         <title>Standard project</title>      
     {% endblock %}
              
-    {% block dist_stylesheets %}
-        
+    {% block dist_stylesheets %}        
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap.min.css') }}" />
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/docq.css') }}" />
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap-responsive.min.css') }}" />
-  
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/pre_main.css') }}" />  
     {% endblock %}    
     
-    {% block stylesheets %}
-    
+    {% block stylesheets %}    
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/main.css') }}" />
-  
     {% endblock %}
 
+    {% block post_dist_stylesheets %}
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/post_main.css') }}" />  
+    {% endblock %}     
+    
     {% block main_javascripts %}
       
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/modernizr-2.6.2.min.js') }}"></script>        
@@ -48,7 +49,10 @@
         <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
     <![endif]-->
 
-    {% block navbar %}{% endblock %}
+    {% block navbar %}
+        
+        
+    {% endblock %}
     
     {% block header %}
         
@@ -65,7 +69,8 @@
         {% block main_content %}{% endblock %}
     </div>
     
-    {% block footer %}{% endblock %}
+    {% block footer %}                         
+    {% endblock %}
 
     {% block techGfw_javascripts %}
         {% if app.environment == 'prod' %}
@@ -88,22 +93,22 @@
             </script>
         {% endif %}
 
-    {% endblock %}    
 
-    {% block analitycs %}
-        {% if app.environment == 'prod' %}
-            <script>
-                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-                s.parentNode.insertBefore(g,s)}(document,'script'));
-            </script>
-        {% endif %}
     {% endblock %}    
     
     {% block javascripts %}{% endblock %}    
     
-    {% block ready_javascripts %}{% endblock %}    
+    {% block ready_javascripts %}
+
+        <!-- script type="text/javascript">
+            
+            jQuery(document).ready(function() {
+
+            });            
+
+        </script -->        
+
+    {% endblock %}    
     
 </body>
 </html>
