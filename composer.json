@@ -13,17 +13,16 @@
     ],
     "require": {
         "php": ">=5.3.2",
-        "willdurand/geocoder": "*",
-        "kriswallsmith/buzz": "*",
         "mobiledetect/mobiledetectlib": "dev-master",
-        "suncat/mobile-detect-bundle": "dev-master"  
+        "suncat/mobile-detect-bundle": "dev-master", 
+        "willdurand/geocoder": "*",
+        "kriswallsmith/buzz": "*"
     },
     "require-dev": {
         "symfony/framework-bundle": ">=2.7,<2.2-dev"    
     },
     "autoload": {
         "psr-0": { "TechG\\Bundle\\SfBaseprjBundle": "" }
-    },
-    "minimum-stability": "dev-master",    
+    },   
     "target-dir": "TechG/Bundle/SfBaseprjBundle"
 }
