@@ -31,7 +31,7 @@
         <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/post_main.css') }}" />  
     {% endblock %}     
     
-    {% block main_javascripts %}
+    {% block modernizr_javascripts %}
       
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/modernizr-2.6.2.min.js') }}"></script>        
         
@@ -60,16 +60,16 @@
                
     {% endblock %}
 
-
+    {% block main_content %}
+        <div class="container main">
+            {% block main_container_content %}{% endblock %}
+        </div>    
+    {% endblock %}  
     
-    <div class="container main">
-        {% block main_content %}{% endblock %}
-    </div>
-    
-    {% block footer %}                         
-    {% endblock %}
+    {% block footer %}{% endblock %}
 
-    {% block techGfw_javascripts %}
+    {% block dist_javascripts %}
+
         {% if app.environment == 'prod' %}
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
             <script>window.jQuery || document.write('<script src="{{ asset('/bundles/techgsfbaseprj/js/vendor/jquery-1.8.3.min.js') }}"><\/script>')</script>
@@ -80,16 +80,6 @@
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/plugins.js') }}"></script>
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/bootstrap.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/main.js') }}"></script>
-        
-        {% if app.environment == 'prod' %}
-            <script>
-                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
-                s.parentNode.insertBefore(g,s)}(document,'script'));
-            </script>
-        {% endif %}
-
 
     {% endblock %}    
     
@@ -105,7 +95,18 @@
 
         </script -->        
 
-    {% endblock %}    
+    {% endblock %}  
     
+      
+    {% block analitycs %}
+        {% if app.environment == 'prod' %}
+            <script>
+                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g,s)}(document,'script'));
+            </script>
+        {% endif %}
+    {% endblock %}     
 </body>
 </html>
