@@ -35,7 +35,7 @@ class BaseGeoPosition extends BaseEntity
     */
     public static function isValidEntity($item)
     {
-        return (\TechG\AppFw\BaseBundle\Extensions\BaseEntity::isValidEntity($item) && $item instanceof \TechG\AppFw\BaseBundle\Entity\GeoPosition);
+        return (\TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity::isValidEntity($item) && $item instanceof \TechG\Bundle\SfBaseprjBundle\Entity\GeoPosition);
     } 
  
 }

@@ -1,6 +1,6 @@
 <?php
 /*
- * This file is part of the App Framework project
+ * This file is part of the SfBaseprjBundle project
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
