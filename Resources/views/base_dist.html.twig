@@ -13,7 +13,7 @@
     {% block seo_metadata %}
         <meta name="description" content="">
         <meta name="keywords" content="">    
-        <title>E-menu</title>      
+        <title>Standard project</title>      
     {% endblock %}
              
     {% block stylesheets %}
@@ -68,15 +68,13 @@
 
     {% block navbar %}
         
-        {% render 'TechGEmenuPublicBundle:Component:navbar' %}  
         
     {% endblock %}
     
     {% block header %}
         
         <div id="header-container">
-            <header>        
-                {% render 'TechGEmenuPublicBundle:Component:header' %}          
+            <header>                 
             </header> 
         </div> <!-- end #header-container -->   
                
@@ -88,8 +86,7 @@
         {% block main_content %}{% endblock %}
     </div>
     
-    {% block footer %}
-               {% render 'TechGEmenuPublicBundle:Component:footer' %}                              
+    {% block footer %}                         
     {% endblock %}
 
     {% block javascripts %}
