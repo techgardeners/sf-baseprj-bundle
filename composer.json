@@ -24,6 +24,6 @@
     "autoload": {
         "psr-0": { "TechG\\Bundle\\SfBaseprjBundle": "" }
     },
-    "minimum-stability": "dev",    
+    "minimum-stability": "dev-master",    
     "target-dir": "TechG/Bundle/SfBaseprjBundle"
 }
