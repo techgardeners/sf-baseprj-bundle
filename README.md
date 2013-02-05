@@ -9,6 +9,8 @@ Install
 Add to your composer.json
 
     "require": {
+        "doctrine/migrations": "dev-master",
+        "doctrine/doctrine-migrations-bundle": "dev-master",
         "mobiledetect/mobiledetectlib": "dev-master", 
         "suncat/mobile-detect-bundle": "dev-master",
         "techgardeners/sf-baseprj-bundle": "dev-master"      
@@ -18,8 +20,9 @@ Add to your composer.json
 add in appKernel:
 
             // Base bundle for project based on techgardeners/sfbaseprj
-            new TechG\Bundle\SfBaseprjBundle\TechGSfBaseprjBundle(),
-            new SunCat\MobileDetectBundle\MobileDetectBundle(),  // https://github.com/suncat2000/MobileDetectBundle      
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new SunCat\MobileDetectBundle\MobileDetectBundle(),  // https://github.com/suncat2000/MobileDetectBundle            
+            new TechG\Bundle\SfBaseprjBundle\TechGSfBaseprjBundle(),   
     
 add in config.yml 
 
