@@ -15,7 +15,7 @@
         "php": ">=5.3.2",
         "willdurand/geocoder": "*",
         "kriswallsmith/buzz": "*",
-        "mobiledetect/mobiledetectlib": "dev-master",        
+        "mobiledetect/mobiledetectlib": "*",        
         "suncat/mobile-detect-bundle": "dev-master"   
     },
     "require-dev": {
