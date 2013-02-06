@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity;
 
-class BaseGeoPosition extends BaseEntity
+class BaseSetting extends BaseEntity
 {
     
     public function __construct()
@@ -35,7 +35,7 @@ class BaseGeoPosition extends BaseEntity
     */
     public static function isValidEntity($item)
     {
-        return (\TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity::isValidEntity($item) && $item instanceof \TechG\Bundle\SfBaseprjBundle\Entity\GeoPosition);
+        return (\TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity::isValidEntity($item) && $item instanceof \TechG\Bundle\SfBaseprjBundle\Entity\Setting);
     } 
  
 }
