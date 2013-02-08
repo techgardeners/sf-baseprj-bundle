@@ -14,8 +14,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class MainController extends Controller
 {
-    public function indexAction()
+    public function infoAction()
     {
-        return $this->render('TechGSfBaseprjBundle:Main:index.html.twig', array());
+        
+        // instanzio il kernel principale
+        $tgKernel = $this->get("tech_g_sf_baseprj.kernel");
+        
+        $userInfo = $tgKernel;
+        
+        return $this->render('TechGSfBaseprjBundle:Main:info.html.twig', array());
     }
 }

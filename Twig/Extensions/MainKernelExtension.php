@@ -22,13 +22,13 @@ class MainKernelExtension extends \Twig_Extension
 
     public function getGlobals() {
         return array(
-            'mainKernel' => $this->mainKernel,
+            'tgKernel' => $this->mainKernel,
         );
     }
 
     public function getName()
     {
-        return 'mainKernel';
+        return 'tgKernel';
     }
 
 }

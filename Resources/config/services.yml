@@ -10,6 +10,8 @@ services:
     tech_g_sf_baseprj.kernel:
         class:     TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel
         arguments: [@service_container]
+        tags:
+            - { name: tech_g_sf_baseprj.extension alias: techg_kernel }        
         
     twig.extension.appfwKernel:
         class: TechG\Bundle\SfBaseprjBundle\Twig\Extensions\MainKernelExtension

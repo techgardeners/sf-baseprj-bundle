@@ -1,0 +1,114 @@
+{% extends 'TechGSfBaseprjBundle::layout.html.twig' %}
+
+{% block main_container_content %}
+
+
+    <h1>Test page</h1>
+
+    <h3>Bundle info</h3>
+    <p>
+        <ul>
+            <li><span class="key">{{ "info.system.bundlename" | trans }}</span>: {{ "info.bundlename" | trans }}</li>
+            <li><span class="key">{{ "info.system.bundleversion" | trans }}</span>: {{ tgKernel.getBundleVersion | default("info.noguess"|trans) }}</li>
+        </ul>
+
+    </p>
+    <h3>Kernel info</h3>
+    <p>
+        <ul>
+            <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.noguess"|trans) }}</li>
+            <li><span class="key">{{ "info.system.guesslocale" | trans }}</span>:
+                {% if tgKernel.enableGuessLocale %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>
+            <li><span class="key">{{ "info.system.collectUserGeoInfo" | trans }}</span>:
+                {% if tgKernel.enableCollectUserGeoInfo %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>
+            <li><span class="key">{{ "info.system.mobileDetection" | trans }}</span>:
+                {% if tgKernel.enableMobileDetection %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>
+        </ul>
+    </p>
+    <h3>Request info</h3>
+    <p>
+        <ul>
+            <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
+            <li><span class="key">{{ "info.request.baseUri" | trans }}</span>: {{ tgKernel.baseUri }}</li>
+            <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ "info.value.true" |trans }} {% else %} {{ "info.value.false" |trans }} {% endif %}</li>
+            <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
+
+            <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
+                {% if tgKernel.enableGuessLocale %}
+                    {{ tgKernel.guessedLocale.getLocale | default("info.noguess"|trans) }}
+                {% else %}
+                    {{ 'system.guesslocale.noactive' | trans }}
+                {% endif %}
+            </li>
+        </ul>
+    </p>
+
+    <h3>User info</h3>
+    <p>
+        <ul>
+            <li><span class="key">{{ "info.user.clientIp" | trans }}</span>: {{ tgKernel.clientIp }}</li>
+        </ul>
+    </p>
+    
+    <h3>Geolocation info</h3>
+    {% if tgKernel.enableCollectUserGeoInfo %}
+        <p>
+            <ul>
+                {% for k,value in tgKernel.userGeoPosition.toArray(true)  %}
+                    <li><span class="key">{{ "info.geo." ~ k | trans }}</span>: {{ value | default("info.noguess"|trans) | raw }}</li>
+                {% endfor %}
+            </ul>
+        </p>
+    {% else %}
+        <p>{{ 'system.geo.noactive' | trans }}</p>
+    {% endif %}
+    
+    <h3>Mobile detection info</h3>
+    <p>https://github.com/suncat2000/MobileDetectBundle</p>
+    {% if tgKernel.enableMobileDetection %}
+        <p>
+        <ul>
+            <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_tablet" | trans }}</span>: {% if is_tablet() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_iphone" | trans }}</span>: {% if is_device('iphone') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_ipad" | trans }}</span>: {% if is_device('ipad') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_htc" | trans }}</span>: {% if is_device('htc') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_full_view" | trans }}</span>: {% if is_full_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_mobile_view" | trans }}</span>: {% if is_mobile_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_tablet_view" | trans }}</span>: {% if is_tablet_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_not_mobile_view" | trans }}</span>: {% if is_not_mobile_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+        </ul>
+        </p>
+    {% else %}
+        <p>{{ 'system.mobileDetection.noactive' | trans }}</p>
+    {% endif %}
+    
+    <h3>Browser info</h3>
+    {% if tgKernel.userBrowserInfo is not empty %}
+        <p>
+            <ul>
+                {% for k,value in tgKernel.userBrowserInfo  %}
+                    <li><span class="key">{{ "info.browser." ~ k | trans }}</span>: {{ value | default("info.noguess"|trans) | raw }}</li>
+                {% endfor %}
+            </ul>
+        </p>
+    {% else %}
+        <p>{{ 'system.geo.noactive' | trans }}</p>
+    {% endif %}
+
+{% endblock %}

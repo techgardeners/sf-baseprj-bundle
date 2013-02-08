@@ -21,6 +21,9 @@ use Symfony\Component\Locale\Locale;
 class MainKernel
 {
 
+    const BUNDLE_VERSION = '0.0.1-beta';
+    const KERNEL_VERSION = '0.0.1-beta';
+    
     private $container = null;
     private $em = null;
     private $router = null;
@@ -28,14 +31,16 @@ class MainKernel
     public  $mobileDetector = null;
 
     private $isInit = false;                    // Indica se la classe è stata inizializzata
-    public  $collectUserGeoInfo = false;        // Indica se il geodecoding è abilitato o no
-    public  $guessLocale = false;               // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
+    public  $enableCollectUserGeoInfo = false;        // Indica se il geodecoding è abilitato o no
+    public  $enableGuessLocale = false;               // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
     public  $enableMobileDetection = false;     // Indica se deve essere abilitato il mobile detection
     
     public  $baseUri = null;                    // Contiene il baseUri dell' applicazione
     public  $uri = null;                        // Contiene l'uri della pagina richiamata
-    public  $userGeoInfo = null;                // Hold user geoInfo
-    public  $userBrowserInfo = null;            // Hold user geoInfo
+    public  $clientIp = null;                   // Hold user ip
+    public  $userGeoPosition = null;            // Hold user geoInfo
+    public  $userBrowserInfo = null;            // Hold user browser info
+    public  $guessedLocale = null;              // Hold locale guessed
 
     /**
     * Costruttore del metodo a cui viene passato l'intero contenitore dei servizi da cui recuperare request e routing
@@ -48,11 +53,17 @@ class MainKernel
         $this->container = $container;
         $this->em = $this->container->get('doctrine')->getEntityManager();
 
-        $this->collectUserGeoInfo = $this->container->getParameter('tech_g_sf_baseprj.collectUserGeoInfo');
-        $this->guessLocale = $this->container->getParameter('tech_g_sf_baseprj.guessLocale');
-        $this->enableMobileDetection = $this->container->getParameter('tech_g_sf_baseprj.enableMobileDetection');
+        if ($this->container->hasParameter('tech_g_sf_baseprj.enableCollectUserGeoInfo')) {
+            $this->enableCollectUserGeoInfo = $this->container->getParameter('tech_g_sf_baseprj.enableCollectUserGeoInfo');            
+        }
+        if ($this->container->hasParameter('tech_g_sf_baseprj.enableGuessLocale')) {
+            $this->enableGuessLocale = $this->container->getParameter('tech_g_sf_baseprj.enableGuessLocale');            
+        }
+        if ($this->container->hasParameter('tech_g_sf_baseprj.enableMobileDetection')) {
+            $this->enableMobileDetection = $this->container->getParameter('tech_g_sf_baseprj.enableMobileDetection');            
+        }
         
-        if ($this->collectUserGeoInfo) {
+        if ($this->enableCollectUserGeoInfo) {
             // inizialize geocoder ( https://github.com/willdurand/Geocoder )
             $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
             $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));              
@@ -81,24 +92,20 @@ class MainKernel
 
         // get information for User Browser
         $this->userBrowserInfo = $this->getBrowser();
-       
-        if ($this->collectUserGeoInfo) {
+        $this->clientIp = $request->getClientIp();
+        
+        if ($this->enableCollectUserGeoInfo) {
             
-            $clientIp = $request->getClientIp();
-            
-            if (in_array($clientIp, array('127.0.0.1', 'fe80::1', '::1'))) {
-                $clientIp = '201.218.96.138';    
-            }
-            
-            $this->userGeoInfo = $this->geocoder->using('geo_plugin')->geocode($clientIp);           
-                
+            $this->userGeoPosition = $this->geocoder->using('geo_plugin')->geocode($this->clientIp, true);           
+            $this->userGeoPosition->setProvider('geo_plugin');
+            $this->userGeoPosition->setDataOrigin('ip');
         }
         
         // If Locale is not set on Uri guessed right Locale
-        if ($this->guessLocale && !$this->isSetLocaleOnUrl($this->uri)) {
+        if ($this->enableGuessLocale && !$this->isSetLocaleOnUrl($this->uri)) {
             
-            if (null !== $guessedLocale = $this->guessLocale($request)) {
-                $request->setLocale($guessedLocale->getLocale());    
+            if (null !== $this->guessedLocale = $this->guessLocale($request)) {
+                $request->setLocale($this->guessedLocale->getLocale());    
             }            
         }
 
@@ -111,6 +118,22 @@ class MainKernel
 /* ---------------------------------------------- */
 /*              METODI PUBBLICI                   */
 /* ---------------------------------------------- */
+    
+    // metodi di utilità generale
+    
+    public static function print_rh($arg, $print_pre = true)
+    {
+        
+        if ($print_pre) { echo "<pre>"; }
+
+        print_r($arg);
+
+        if ($print_pre) { echo "</pre>"; }
+
+        return 0;
+    }
+    
+    
     
 
     // Metodo per la generazione di uno slug
@@ -270,7 +293,7 @@ class MainKernel
         }
         
         // if no result and GeoInfo is enabled try to guess by contry code
-        if (is_null($langObj) && $this->collectUserGeoInfo) {
+        if (is_null($langObj) && $this->enableCollectUserGeoInfo) {
 
            // todo: implement method
            
@@ -474,6 +497,21 @@ class MainKernel
     public function getRouter()
     {
         return $this->router;
+    }        
+     
+    public function isLocaleinUrl()
+    {
+        return $this->isSetLocaleOnUrl($this->uri);
+    }        
+     
+    public function getKernelVersion()
+    {
+        return $this::KERNEL_VERSION;
+    }        
+     
+    public function getBundleVersion()
+    {
+        return $this::BUNDLE_VERSION;
     }        
      
         

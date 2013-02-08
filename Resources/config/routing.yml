@@ -1,0 +1,3 @@
+tech_g_baseprj_bundle_info:
+    pattern:  /info
+    defaults: { _controller: TechGSfBaseprjBundle:Main:info }

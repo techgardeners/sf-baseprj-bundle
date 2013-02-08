@@ -11,35 +11,40 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Geocode;
 
 use Geocoder\Geocoder as BaseClass;
+use TechG\Bundle\SfBaseprjBundle\Entity\GeoPosition;
 
 class GeocoderEx extends BaseClass
 {
-
-    private $rawData = null;
                
     /**
-     * {@inheritDoc}
+     * Returns object of type GeoPosition with data treated by the provider.
+     *
+     * @param string $address An address (IP or street).
+     *
+     * @throws NoResultException           If the address could not be resolved
+     * @throws InvalidCredentialsException If the credentials are invalid
+     * @throws UnsupportedException        If IPv4, IPv6 or street is not supported
+     *
+     * @return array
      */
-    public function geocode($value)
+    public function geocode($address)
     {
-        if (empty($value)) {
-            // let's save a request
-            return $this->returnResult(array());
+        
+        // Geoposition Object
+        $geoInfoObj = new GeoPosition();         
+        $geoInfoObj->setIpAddr($address);
+        
+        if (in_array($address, array('127.0.0.1', 'fe80::1', '::1'))) {
+            $address = '190.218.72.14';    
         }
-
-        $data   = $this->getProvider()->getGeocodedData(trim($value));
-        $result = $this->returnResult($data);
         
-        $this->rawData = isset($data['rawdata']) ? $data['rawdata'] : null;
+        // se è vuoto l'ip non faccio la richiesta
+        if (!empty($address)) {
+            $geoInfoObj->fromArray($this->getProvider()->getGeocodedData(trim($address)));
+        }
         
-        return $result;
+        return $geoInfoObj;
     }
     
-    /**
-     * {@inheritDoc}
-     */    
-    public function getRawData() {
-        
-        return $this->rawData;    
-    }
+    
 }
