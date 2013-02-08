@@ -24,23 +24,35 @@ class MainKernel
     const BUNDLE_VERSION = '0.0.1-beta';
     const KERNEL_VERSION = '0.0.1-beta';
     
+    
+    const MODULE_NAME_GEO = 'geodecode';
+    const MODULE_NAME_GUESS_LOCALE = 'guessLocale';
+    const MODULE_NAME_MOBILE_DECT = 'mobileDetection';
+    const MODULE_NAME_BLACK_LIST = 'blackList';
+    const MODULE_NAME_WHITE_LIST = 'whitekList';
+    
     private $container = null;
     private $em = null;
     private $router = null;
     public  $geocoder = null;
     public  $mobileDetector = null;
 
-    private $isInit = false;                    // Indica se la classe è stata inizializzata
-    public  $enableCollectUserGeoInfo = false;        // Indica se il geodecoding è abilitato o no
-    public  $enableGuessLocale = false;               // Indica se il locale deve essere individuato automaticamente o no (necessita tabella in db)
-    public  $enableMobileDetection = false;     // Indica se deve essere abilitato il mobile detection
+    private $isInit = false;                            // Indica se la classe è stata inizializzata
+
+    public $modules = array(
+       self::MODULE_NAME_GEO => array('enabled' => false), 
+       self::MODULE_NAME_GUESS_LOCALE=> array('enabled' => false), 
+       self::MODULE_NAME_MOBILE_DECT => array('enabled' => false), 
+       self::MODULE_NAME_BLACK_LIST => array('enabled' => false), 
+       self::MODULE_NAME_WHITE_LIST => array('enabled' => false)    
+    );
     
-    public  $baseUri = null;                    // Contiene il baseUri dell' applicazione
-    public  $uri = null;                        // Contiene l'uri della pagina richiamata
-    public  $clientIp = null;                   // Hold user ip
-    public  $userGeoPosition = null;            // Hold user geoInfo
-    public  $userBrowserInfo = null;            // Hold user browser info
-    public  $guessedLocale = null;              // Hold locale guessed
+    public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
+    public  $uri = null;                                // Contiene l'uri della pagina richiamata
+    public  $clientIp = null;                           // Hold user ip
+    public  $userGeoPosition = null;                    // Hold user geoInfo
+    public  $userBrowserInfo = null;                    // Hold user browser info
+    public  $guessedLocale = null;                      // Hold locale guessed
 
     /**
     * Costruttore del metodo a cui viene passato l'intero contenitore dei servizi da cui recuperare request e routing
@@ -53,23 +65,17 @@ class MainKernel
         $this->container = $container;
         $this->em = $this->container->get('doctrine')->getEntityManager();
 
-        if ($this->container->hasParameter('tech_g_sf_baseprj.enableCollectUserGeoInfo')) {
-            $this->enableCollectUserGeoInfo = $this->container->getParameter('tech_g_sf_baseprj.enableCollectUserGeoInfo');            
-        }
-        if ($this->container->hasParameter('tech_g_sf_baseprj.enableGuessLocale')) {
-            $this->enableGuessLocale = $this->container->getParameter('tech_g_sf_baseprj.enableGuessLocale');            
-        }
-        if ($this->container->hasParameter('tech_g_sf_baseprj.enableMobileDetection')) {
-            $this->enableMobileDetection = $this->container->getParameter('tech_g_sf_baseprj.enableMobileDetection');            
+        foreach ($this->modules as $module=>$module_opt) {
+            $this->modules[$module]['enabled'] = $this->getConfValue('enable.'.$module);
         }
         
-        if ($this->enableCollectUserGeoInfo) {
+        if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
             // inizialize geocoder ( https://github.com/willdurand/Geocoder )
             $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
             $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));              
         }
         
-        if ($this->enableMobileDetection) {
+        if ($this->isModuleEnabled(self::MODULE_NAME_MOBILE_DECT)) {
             $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
         }
         
@@ -94,7 +100,7 @@ class MainKernel
         $this->userBrowserInfo = $this->getBrowser();
         $this->clientIp = $request->getClientIp();
         
-        if ($this->enableCollectUserGeoInfo) {
+        if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
             
             $this->userGeoPosition = $this->geocoder->using('geo_plugin')->geocode($this->clientIp, true);           
             $this->userGeoPosition->setProvider('geo_plugin');
@@ -102,7 +108,7 @@ class MainKernel
         }
         
         // If Locale is not set on Uri guessed right Locale
-        if ($this->enableGuessLocale && !$this->isSetLocaleOnUrl($this->uri)) {
+        if ($this->isModuleEnabled(self::MODULE_NAME_GUESS_LOCALE) && !$this->isSetLocaleOnUrl($this->uri)) {
             
             if (null !== $this->guessedLocale = $this->guessLocale($request)) {
                 $request->setLocale($this->guessedLocale->getLocale());    
@@ -132,8 +138,6 @@ class MainKernel
 
         return 0;
     }
-    
-    
     
 
     // Metodo per la generazione di uno slug
@@ -258,6 +262,19 @@ class MainKernel
 /*              METODI PRIVATI                    */
 /* ---------------------------------------------- */
 
+    private function getConfValue($confKey, $default = null)
+    {
+        
+        $retValue = $default;
+        $confKey = 'tech_g_sf_baseprj.'.$confKey;
+
+        if ($this->container->hasParameter($confKey)) {
+            return $this->container->getParameter($confKey);            
+        }
+        
+        return $retValue;        
+    }
+
     private function isSetLocaleOnUrl($uri)
     {
         return preg_match('%^/[a-z]{2}[-_][A-Za-z]{2}%', $uri);    
@@ -293,7 +310,7 @@ class MainKernel
         }
         
         // if no result and GeoInfo is enabled try to guess by contry code
-        if (is_null($langObj) && $this->enableCollectUserGeoInfo) {
+        if (is_null($langObj) && $this->isModuleEnabled(self::MODULE_NAME_GEO)) {
 
            // todo: implement method
            
@@ -512,6 +529,36 @@ class MainKernel
     public function getBundleVersion()
     {
         return $this::BUNDLE_VERSION;
+    }        
+     
+    public function isModuleEnabled($moduleName)
+    {
+        return $this->modules[$moduleName]['enabled'];
+    }        
+     
+    public function isGeoEnabled()
+    {
+        return $this->isModuleEnabled(self::MODULE_NAME_GEO);
+    }        
+     
+    public function isGuessLocaleEnabled()
+    {
+        return $this->isModuleEnabled(self::MODULE_NAME_GUESS_LOCALE);
+    }        
+     
+    public function isMobileDetectEnabled()
+    {
+        return $this->isModuleEnabled(self::MODULE_NAME_MOBILE_DECT);
+    }        
+     
+    public function isBlackListEnabled()
+    {
+        return $this->isModuleEnabled(self::MODULE_NAME_BLACK_LIST);
+    }        
+     
+    public function isWhiteListEnabled()
+    {
+        return $this->isModuleEnabled(self::MODULE_NAME_WHITE_LIST);
     }        
      
         

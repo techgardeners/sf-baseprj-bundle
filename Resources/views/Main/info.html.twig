@@ -17,27 +17,15 @@
     <p>
         <ul>
             <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.noguess"|trans) }}</li>
-            <li><span class="key">{{ "info.system.guesslocale" | trans }}</span>:
-                {% if tgKernel.enableGuessLocale %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>
-            <li><span class="key">{{ "info.system.collectUserGeoInfo" | trans }}</span>:
-                {% if tgKernel.enableCollectUserGeoInfo %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>
-            <li><span class="key">{{ "info.system.mobileDetection" | trans }}</span>:
-                {% if tgKernel.enableMobileDetection %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>
+            {% for name, module in tgKernel.modules %}
+                <li><span class="key">{{ "info.module." ~ name | trans }}</span>:</span>:
+                    {% if module.enabled %}
+                        {{ 'info.value.active' | trans }}
+                    {% else %}
+                        {{ 'info.value.noactive' | trans }}
+                    {% endif %}
+                </li>
+            {% endfor %}
         </ul>
     </p>
     <h3>Request info</h3>
@@ -47,9 +35,10 @@
             <li><span class="key">{{ "info.request.baseUri" | trans }}</span>: {{ tgKernel.baseUri }}</li>
             <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ "info.value.true" |trans }} {% else %} {{ "info.value.false" |trans }} {% endif %}</li>
             <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
+            <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>
 
             <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
-                {% if tgKernel.enableGuessLocale %}
+                {% if tgKernel.isGuessLocaleEnabled %}
                     {{ tgKernel.guessedLocale.getLocale | default("info.noguess"|trans) }}
                 {% else %}
                     {{ 'system.guesslocale.noactive' | trans }}
@@ -66,7 +55,8 @@
     </p>
     
     <h3>Geolocation info</h3>
-    {% if tgKernel.enableCollectUserGeoInfo %}
+    <p>https://github.com/willdurand/BazingaGeocoderBundle</p>
+    {% if tgKernel.isGeoEnabled %}
         <p>
             <ul>
                 {% for k,value in tgKernel.userGeoPosition.toArray(true)  %}
@@ -80,7 +70,7 @@
     
     <h3>Mobile detection info</h3>
     <p>https://github.com/suncat2000/MobileDetectBundle</p>
-    {% if tgKernel.enableMobileDetection %}
+    {% if tgKernel.isMobileDetectEnabled %}
         <p>
         <ul>
             <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
