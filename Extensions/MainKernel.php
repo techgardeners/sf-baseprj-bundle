@@ -11,20 +11,22 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
-use Symfony\Component\HttpFoundation\Request;
-use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Locale\Locale;
+
+use Doctrine\ORM\EntityManager;
+
+use TechG\Bundle\SfBaseprjBundle\Entity\BlackWhiteList;
 
 class MainKernel
 {
 
     const BUNDLE_VERSION = '0.0.1-beta';
     const KERNEL_VERSION = '0.0.1-beta';
-    
-    
+        
     const MODULE_NAME_GEO = 'geodecode';
     const MODULE_NAME_GUESS_LOCALE = 'guessLocale';
     const MODULE_NAME_MOBILE_DECT = 'mobileDetection';
@@ -34,21 +36,29 @@ class MainKernel
     private $container = null;
     private $em = null;
     private $router = null;
+    private $isInit = false;                            // Indica se la classe è stata inizializzata
+
+    
     public  $geocoder = null;
     public  $mobileDetector = null;
-
-    private $isInit = false;                            // Indica se la classe è stata inizializzata
 
     public $modules = array(
        self::MODULE_NAME_GEO => array('enabled' => false), 
        self::MODULE_NAME_GUESS_LOCALE=> array('enabled' => false), 
        self::MODULE_NAME_MOBILE_DECT => array('enabled' => false), 
-       self::MODULE_NAME_BLACK_LIST => array('enabled' => false), 
-       self::MODULE_NAME_WHITE_LIST => array('enabled' => false)    
+       self::MODULE_NAME_BLACK_LIST => array('enabled' => false,
+                                             'types' => array(BlackWhiteList::DATA_TYPE_GEO),                                   // possible value = ip|host|geo
+                                             'geo_field' => 'countryCode',                                                                 // campo delle info geo su cui controllare
+                                            ), 
+       self::MODULE_NAME_WHITE_LIST => array('enabled' => false,
+                                             'types' => array(),
+                                             'geo_field' => '',                                                                 // campo delle info geo su cui controllare                                             
+                                            ),    
     );
     
     public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
     public  $uri = null;                                // Contiene l'uri della pagina richiamata
+    public  $host = null;                               // Contiene l'host della pagina richiamata
     public  $clientIp = null;                           // Hold user ip
     public  $userGeoPosition = null;                    // Hold user geoInfo
     public  $userBrowserInfo = null;                    // Hold user browser info
@@ -66,7 +76,7 @@ class MainKernel
         $this->em = $this->container->get('doctrine')->getEntityManager();
 
         foreach ($this->modules as $module=>$module_opt) {
-            $this->modules[$module]['enabled'] = $this->getConfValue('enable.'.$module);
+            $this->modules[$module]['enabled'] = $this->getConfValue('module.'.$module.'.enable');
         }
         
         if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
@@ -93,7 +103,8 @@ class MainKernel
         $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         
-        // Set the baseUri
+        // Set the baseUri & host
+        $this->host = $request->getHttpHost();
         $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
         // get information for User Browser
@@ -115,6 +126,45 @@ class MainKernel
             }            
         }
 
+        // Qui implemento la white e la black list
+
+        if ($this->isModuleEnabled(self::MODULE_NAME_WHITE_LIST)) {
+        
+            foreach ($this->modules[self::MODULE_NAME_WHITE_LIST]['types'] as $type) {
+
+                $_data = BlackWhiteList::getDataFromKernel($this, $type, $this->modules[self::MODULE_NAME_WHITE_LIST]);
+                
+                if (!is_null($_data)) {
+                    $_inList = BlackWhiteList::isInList($this->em, BlackWhiteList::LIST_TYPE_WHITE, $_data, $type);
+                    
+                    if (!$_inList) {
+                        //header("location: http://www.tin.it");
+                        exit();
+                    }                
+                }
+            }
+            
+        }
+        
+        if ($this->isModuleEnabled(self::MODULE_NAME_BLACK_LIST)) {
+
+            foreach ($this->modules[self::MODULE_NAME_BLACK_LIST]['types'] as $type) {
+
+                $_data = BlackWhiteList::getDataFromKernel($this, $type, $this->modules[self::MODULE_NAME_BLACK_LIST]);
+                
+                if (!is_null($_data)) {
+                    $_inList = BlackWhiteList::isInList($this->em, BlackWhiteList::LIST_TYPE_BLACK, $_data, $type);
+                
+                    if ($_inList) {
+                        //header("location: http://www.tin.it");
+                        echo "in lista";
+                        exit();
+                    }             
+                }
+            }
+            
+        }
+        
         
         // A questo punto sono inizilizzato
         $this->isInit = true;

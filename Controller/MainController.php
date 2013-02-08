@@ -24,4 +24,10 @@ class MainController extends Controller
         
         return $this->render('TechGSfBaseprjBundle:Main:info.html.twig', array());
     }
+
+    public function errorAction()
+    {
+        
+        return $this->render('TechGSfBaseprjBundle:Main:error.html.twig', array());
+    }
 }

@@ -32,7 +32,7 @@
     <p>
         <ul>
             <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
-            <li><span class="key">{{ "info.request.baseUri" | trans }}</span>: {{ tgKernel.baseUri }}</li>
+            <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.host }}</li>
             <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ "info.value.true" |trans }} {% else %} {{ "info.value.false" |trans }} {% endif %}</li>
             <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
             <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>

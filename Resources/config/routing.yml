@@ -1,3 +1,7 @@
 tech_g_baseprj_bundle_info:
     pattern:  /info
     defaults: { _controller: TechGSfBaseprjBundle:Main:info }
+    
+tech_g_baseprj_bundle_base_error:
+    pattern:  /error
+    defaults: { _controller: TechGSfBaseprjBundle:Main:error }    
