@@ -48,7 +48,7 @@ class BlackWhiteList extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="list", type="string", length=2, nullable=true)
+     * @ORM\Column(name="list", type="string", length=10, nullable=true)
      */
     private $list;
 

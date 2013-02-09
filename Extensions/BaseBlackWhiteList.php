@@ -19,8 +19,8 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity;
 class BaseBlackWhiteList extends BaseEntity
 {
     
-    const LIST_TYPE_BLACK = 'BL';
-    const LIST_TYPE_WHITE = 'WH';
+    const LIST_TYPE_BLACK = 'BLACK';
+    const LIST_TYPE_WHITE = 'WHITE';
     const DATA_TYPE_IP = 'IP';
     const DATA_TYPE_HOST = 'HOST';
     const DATA_TYPE_GEO = 'GEO';
