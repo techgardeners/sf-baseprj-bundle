@@ -43,7 +43,10 @@ class MainKernelTest extends WebTestCase
         
         // Effettuo la chiamata
         $crawler = $client->request($method, $url); 
-        
+        if($client->getResponse()->isRedirect()){
+            $crawler = $client->followRedirect(true);    
+        }
+                
         // Effettuo i test post inizializzazione
         if ($enableKernelTest){ $this->checkPostInit(); }
         
