@@ -44,8 +44,6 @@ class MainKernelTest extends WebTestCase
         // Effettuo la chiamata
         $crawler = $client->request($method, $url); 
         
-        $this->assertTrue($client->getResponse()->isSuccessful());               
-        
         // Effettuo i test post inizializzazione
         if ($enableKernelTest){ $this->checkPostInit(); }
         
