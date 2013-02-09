@@ -99,7 +99,7 @@ class MainKernel
     */
     public function init(Request $request)
     {
-        
+
         $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         
@@ -108,7 +108,7 @@ class MainKernel
         $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
         // get information for User Browser
-        $this->userBrowserInfo = $this->getBrowser();
+        $this->userBrowserInfo = $this->getBrowser(); 
         $this->clientIp = $request->getClientIp();
         
         if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
@@ -139,7 +139,7 @@ class MainKernel
                     
                     if (!$_inList) {
                         //header("location: http://www.tin.it");
-                        exit();
+                        //exit();
                     }                
                 }
             }
@@ -157,8 +157,8 @@ class MainKernel
                 
                     if ($_inList) {
                         //header("location: http://www.tin.it");
-                        echo "in lista";
-                        exit();
+                        //echo "in lista";
+                        //exit();
                     }             
                 }
             }
@@ -224,10 +224,11 @@ class MainKernel
     
     public static function getBrowser($u_agent = null) 
     { 
-        $u_agent = ($u_agent) ? $u_agent : $_SERVER['HTTP_USER_AGENT']; 
+        $u_agent = ($u_agent) ? $u_agent : @$_SERVER['HTTP_USER_AGENT']; 
         $bname = 'Unknown';
         $platform = 'Unknown';
         $version= "";
+        $ub= "";
 
         //First get the platform?
         if (preg_match('/linux/i', $u_agent)) {
@@ -273,27 +274,27 @@ class MainKernel
         } 
         
         // finally get the correct version number
-        $known = array('Version', $ub, 'other');
+        $known = array('Version', $ub, 'other');  
         $pattern = '#(?<browser>' . join('|', $known) .
-        ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#';
+        ')[/ ]+(?<version>[0-9.|a-zA-Z.]*)#'; 
         if (!preg_match_all($pattern, $u_agent, $matches)) {
             // we have no matching number just continue
         }
         
         // see how many we have
-        $i = count($matches['browser']);
+        $i = count($matches['browser']);  
         if ($i != 1) {
             //we will have two since we are not using 'other' argument yet
             //see if version is before or after the name
             if (strripos($u_agent,"Version") < strripos($u_agent,$ub)){
-                $version= $matches['version'][0];
+                $version= @$matches['version'][0];
             }
             else {
-                $version= $matches['version'][1];
+                $version= @$matches['version'][1];
             }
         }
         else {
-            $version= $matches['version'][0];
+            $version= @$matches['version'][0];
         }
         
         // check if we have a number

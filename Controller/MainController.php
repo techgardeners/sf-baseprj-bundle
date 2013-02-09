@@ -18,7 +18,7 @@ class MainController extends Controller
     {
         
         // instanzio il kernel principale
-        $tgKernel = $this->get("tech_g_sf_baseprj.kernel");
+        $tgKernel = $this->get("techg.kernel");
         
         $userInfo = $tgKernel;
         
