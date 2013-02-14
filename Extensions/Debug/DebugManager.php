@@ -8,37 +8,35 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect;
+namespace TechG\Bundle\SfBaseprjBundle\Extensions\Debug;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
-class MobiledetectManager extends BaseModule
+class DebugManager extends BaseModule
 {    
-    const MODULE_NAME = 'mobiledetect';
-    
-    public $mobileDetector;
+    const MODULE_NAME = 'debug';    
 
 
-    public function __construct(SettingManager $settingManager, $container)
+    public function __construct(SettingManager $settingManager)
     {
         parent::__construct($settingManager);
-       
+        
+        // se è attivo il debug cancello i dati delle configurazioni in sessione
         if ($this->isEnabled()) {
-            $this->mobileDetector  = $container->get('mobile_detect.mobile_detector');
-        }       
+            $settingManager->clearSession();
+        }
         
     }
-
+ 
  
     // Setta le configurazioni per il modulo in oggetto
     public static function setConfiguration(array $config, ContainerBuilder $container)
     {
         parent::setConfiguration($config, $container);
 
-    }
-    
+    }    
     
 }

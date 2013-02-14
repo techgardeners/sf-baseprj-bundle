@@ -12,15 +12,31 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions\Setting;
 
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 
 class SettingManager
 {
     
+    /**
+    * Constanti per la configurazione
+    */
     const PREFIX_BUNDLE = 'tgsfbaseprj';
     
+    /**
+    * Costanti per abilitare / diabilitare un modulo
+    */
     const SUFFIX_ENABLE = 'enable';
     const SUFFIX_DISABLE = 'disable';
     
+    
+    /**
+    * Settaggi 
+    */
+    
+    
+    // Nome della variabile in sessione contenente la cache della configurazione
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/settings/cache';
     
     private $settingCache = null;
@@ -28,9 +44,9 @@ class SettingManager
     private $em = null;
     private $gParameterBag = null;
 
-    public function __construct(Session $session, $container)
+    public function __construct(ContainerInterface $container)
     {   
-        $this->session = $session;
+        $this->session = $container->get('session');
         $this->em = $container->get('doctrine')->getEntityManager();
         $this->gParameterBag = $container->getParameterBag();
         
@@ -42,6 +58,7 @@ class SettingManager
         if(is_null($this->settingCache)) {
             $this->loadSettingFromDb();
         }
+        
     } 
     
     /**
@@ -53,6 +70,12 @@ class SettingManager
         $this->settingCache = $this->em->getRepository('TechGSfBaseprjBundle:Setting')->loadAll();
         $this->session->set(self::SESSION_VARS_CACHE, $this->settingCache);            
     }
+    
+    public function clearSession()
+    {
+        $this->session->remove(self::SESSION_VARS_CACHE);    
+    }
+    
     
     public function getGlobalSetting($key, $default = null)
     {
@@ -80,6 +103,13 @@ class SettingManager
     }
     
     
+    /**
+    * Ritorna una configurazione cercandola solo nei file di configurazione
+    * 
+    * @param mixed $key
+    * @param mixed $default
+    * @return Boolean
+    */
     public function getFileConfigSetting($key, $default = null)
     {
 
@@ -92,6 +122,14 @@ class SettingManager
     *  STATIC METHOD
     */
     
+    
+    /**
+    * Setta una configurazione nel container
+    * 
+    * @param mixed $key
+    * @param mixed $value
+    * @param mixed $container
+    */
     public static function setGlobalSetting($key, $value, $container)
     {
         $container->setParameter(SettingManager::PREFIX_BUNDLE.'.'.$key, $value);    

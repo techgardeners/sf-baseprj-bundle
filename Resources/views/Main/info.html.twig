@@ -2,6 +2,10 @@
 
 {% block main_container_content %}
 
+<style type="text/css">
+    .active { font-weight: bold; color: green; }
+    .deactive { font-weight: bold; color: red; }
+</style>
 
     <h1>Test page</h1>
 
@@ -17,48 +21,15 @@
     <p>
         <ul>
             <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.noguess"|trans) }}</li>
-            <li><span class="key">{{ "info.module.guesslocale" | trans }}</span>:
-                {% if tgKernel.isGuessLocaleEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
-            <li><span class="key">{{ "info.module.geodecoding" | trans }}</span>:
-                {% if tgKernel.isGeoEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
-            <li><span class="key">{{ "info.module.mobiledetection" | trans }}</span>:
-                {% if tgKernel.isMobileDetectEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
-            <li><span class="key">{{ "info.module.logging" | trans }}</span>:
-                {% if tgKernel.isLogEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
-            <li><span class="key">{{ "info.module.blacklist" | trans }}</span>:
-                {% if tgKernel.isBlackListEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
-            <li><span class="key">{{ "info.module.whitelist" | trans }}</span>:
-                {% if tgKernel.isWhiteListEnabled %}
-                    {{ 'info.value.active' | trans }}
-                {% else %}
-                    {{ 'info.value.noactive' | trans }}
-                {% endif %}
-            </li>            
+            {% for  modname,modobj in tgKernel.modules %}
+                <li><span class="key">{{ ("info.module." ~ modname) | trans }}</span>:
+                    {% if tgKernel.isModuleEnable(modname) %}
+                        {{ 'info.value.active' | trans |raw }}
+                    {% else %}
+                        {{ 'info.value.noactive' | trans |raw }}
+                    {% endif %}
+                </li>
+            {% endfor %}                      
         </ul>
     </p>
     <h3>Request info</h3>
@@ -66,7 +37,7 @@
         <ul>
             <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
             <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.host }}</li>
-            <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ "info.value.true" |trans }} {% else %} {{ "info.value.false" |trans }} {% endif %}</li>
+            <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ 'info.value.true' |trans |raw }} {% else %} {{ 'info.value.false' |trans |raw }} {% endif %}</li>
             <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
             <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>
 
@@ -106,15 +77,15 @@
     {% if tgKernel.isMobileDetectEnabled %}
         <p>
         <ul>
-            <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_tablet" | trans }}</span>: {% if is_tablet() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_iphone" | trans }}</span>: {% if is_device('iphone') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_ipad" | trans }}</span>: {% if is_device('ipad') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_htc" | trans }}</span>: {% if is_device('htc') %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_full_view" | trans }}</span>: {% if is_full_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_mobile_view" | trans }}</span>: {% if is_mobile_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_tablet_view" | trans }}</span>: {% if is_tablet_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_not_mobile_view" | trans }}</span>: {% if is_not_mobile_view() %}{{ 'info.value.true' | trans }} {% else %} {{ 'info.value.false' | trans }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_tablet" | trans }}</span>: {% if is_tablet() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_iphone" | trans }}</span>: {% if is_device('iphone') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_ipad" | trans }}</span>: {% if is_device('ipad') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_device_htc" | trans }}</span>: {% if is_device('htc') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_full_view" | trans }}</span>: {% if is_full_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_mobile_view" | trans }}</span>: {% if is_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_tablet_view" | trans }}</span>: {% if is_tablet_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+            <li><span class="key">{{ "info.mobile.is_not_mobile_view" | trans }}</span>: {% if is_not_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
         </ul>
         </p>
     {% else %}

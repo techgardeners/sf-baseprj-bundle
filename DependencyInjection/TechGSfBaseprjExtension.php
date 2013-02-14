@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\Loader;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
@@ -44,6 +45,7 @@ class TechGSfBaseprjExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
                 
+        DebugManager::setConfiguration($config, $container);
         GeocoderManager::setConfiguration($config, $container);
         GuessLocaleManager::setConfiguration($config, $container);
         MobiledetectManager::setConfiguration($config, $container);

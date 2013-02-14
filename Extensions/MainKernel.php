@@ -19,10 +19,9 @@ use Symfony\Component\Locale\Locale;
 
 use Doctrine\ORM\EntityManager;
 
-use TechG\Bundle\SfBaseprjBundle\Entity\BlackWhiteList;
-use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
-
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
@@ -45,6 +44,7 @@ class MainKernel
 
     public  $settingManager = null;
     public  $logManager = null;
+    public  $debugManager = null;
     public  $geocoderManager = null;
     public  $mobiledetectManager = null;
     public  $guessLocaleManager = null;
@@ -59,6 +59,16 @@ class MainKernel
     public  $userBrowserInfo = null;                    // Hold user browser info
     public  $guessedLocale = null;                      // Hold locale guessed
 
+    public $modules = array( DebugManager::MODULE_NAME => '',
+                             LogManager::MODULE_NAME => '',
+                             GuessLocaleManager::MODULE_NAME => '',
+                             MobiledetectManager::MODULE_NAME => '',
+                             GeocoderManager::MODULE_NAME => '',
+                             BlackListManager::MODULE_NAME => '',
+                             WhiteListManager::MODULE_NAME => '',
+                            );
+    
+    
     /**
     * Costruttore del metodo a cui viene passato l'intero contenitore dei servizi da cui recuperare request e routing
     * 
@@ -84,7 +94,8 @@ class MainKernel
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
         
-        $this->settingManager = new SettingManager($this->session, $this->container);
+        $this->settingManager = new SettingManager($this->container);
+        $this->debugManager = new DebugManager($this->settingManager, $this->container);        
         $this->logManager = new LogManager($this->settingManager);        
         $this->geocoderManager = new GeocoderManager($this->settingManager);
         $this->mobiledetectManager = new MobiledetectManager($this->settingManager, $this->container);
@@ -92,6 +103,15 @@ class MainKernel
         $this->blackListManager = new BlackListManager($this->settingManager);
         $this->whiteListManager = new WhiteListManager($this->settingManager);
 
+        // Setto i vari oggetti nell' array dei moduli
+        $this->modules[DebugManager::MODULE_NAME] = $this->debugManager;
+        $this->modules[LogManager::MODULE_NAME] = $this->logManager;
+        $this->modules[GeocoderManager::MODULE_NAME] = $this->geocoderManager;
+        $this->modules[MobiledetectManager::MODULE_NAME] = $this->mobiledetectManager;
+        $this->modules[GuessLocaleManager::MODULE_NAME] = $this->guessLocaleManager;
+        $this->modules[BlackListManager::MODULE_NAME] = $this->blackListManager;
+        $this->modules[WhiteListManager::MODULE_NAME] = $this->whiteListManager;
+        
         // Set the baseUri & host
         $this->host = $request->getHttpHost();
         $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
@@ -471,6 +491,12 @@ class MainKernel
         return $this::BUNDLE_VERSION;
     }                
      
+    public function isModuleEnable($name)
+    {
+        return $this->modules[$name]->isEnabled();
+    }
+
+
     public function isGeoEnabled()
     {
         return $this->geocoderManager->isEnabled();
