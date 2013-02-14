@@ -33,6 +33,9 @@ class GuessLocaleManager extends BaseModule
         $langObj = null;
         
         if ($this->isEnabled() && !$this->isSetLocaleOnUrl($request->getRequestUri())) {
+            
+            $this->addDebugLap('Start guess language'); 
+            
             // get right Language by Browser Preferred Language(ONLY xx_XX format)
             foreach ($request->getLanguages() as $lang) {
                 if (preg_match('%^[a-z]{2}_[A-Z]{2}$%', $lang) && is_null($langObj)) {
@@ -62,7 +65,11 @@ class GuessLocaleManager extends BaseModule
 
                // todo: implement method
                
-            }            
+            }  
+            
+            
+            $this->addDebugLap('End guess language'); 
+                      
         }
 
         return $langObj;            

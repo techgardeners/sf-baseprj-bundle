@@ -32,8 +32,6 @@ class DebugManager extends BaseModule
         // se è attivo il debug cancello i dati delle configurazioni in sessione
         if ($this->isEnabled()) {
             $this->settingManager->clearSession();
-            
-
         }
         
     }

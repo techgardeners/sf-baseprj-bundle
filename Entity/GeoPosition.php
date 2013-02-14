@@ -193,6 +193,13 @@ class GeoPosition extends BaseEntity
      * @ORM\Column(name="data_origin", type="string", length=255, nullable=true)
      */
     private $dataOrigin;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="geo_date", type="datetime", nullable=false)
+     */
+    private $geoDate;    
 
 
     /**

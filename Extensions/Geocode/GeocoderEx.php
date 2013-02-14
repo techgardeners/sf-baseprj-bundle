@@ -30,20 +30,13 @@ class GeocoderEx extends BaseClass
     public function geocode($address)
     {
         
-        // Geoposition Object
-        $geoInfoObj = new GeoPosition();         
-        $geoInfoObj->setIpAddr($address);
-        
-        if (in_array($address, array('127.0.0.1', 'fe80::1', '::1'))) {
-            $address = '190.218.72.14';    
-        }
-        
-        // se è vuoto l'ip non faccio la richiesta
+        $retArr = array();
+
         if (!empty($address)) {
-            $geoInfoObj->fromArray($this->getProvider()->getGeocodedData(trim($address)));
+            $retArr = $this->getProvider()->getGeocodedData(trim($address));
         }
         
-        return $geoInfoObj;
+        return $retArr;
     }
     
     
