@@ -14,7 +14,7 @@ use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\NonUniqueResultException;
 
 use TechG\Bundle\SfBaseprjBundle\Entity\BlackWhiteList;
-use TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntityRepository as BaseRepository;
+use TechG\Bundle\SfBaseprjBundle\Repository\Base\BaseEntityRepository as BaseRepository;
 
 class BlackWhiteListRepository extends BaseRepository
 {

@@ -20,41 +20,36 @@ use Symfony\Component\Locale\Locale;
 use Doctrine\ORM\EntityManager;
 
 use TechG\Bundle\SfBaseprjBundle\Entity\BlackWhiteList;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
+
+use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\BlackListManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
+
+
 
 class MainKernel
 {
 
     const BUNDLE_VERSION = '0.0.1-beta';
     const KERNEL_VERSION = '0.0.1-beta';
-        
-    const MODULE_NAME_GEO = 'geodecode';
-    const MODULE_NAME_GUESS_LOCALE = 'guessLocale';
-    const MODULE_NAME_MOBILE_DECT = 'mobileDetection';
-    const MODULE_NAME_BLACK_LIST = 'blackList';
-    const MODULE_NAME_WHITE_LIST = 'whitekList';
-    
+  
     private $container = null;
     private $em = null;
     private $router = null;
+    private $session = null;
     private $isInit = false;                            // Indica se la classe è stata inizializzata
 
-    
-    public  $geocoder = null;
-    public  $mobileDetector = null;
-
-    public $modules = array(
-       self::MODULE_NAME_GEO => array('enabled' => false), 
-       self::MODULE_NAME_GUESS_LOCALE=> array('enabled' => false), 
-       self::MODULE_NAME_MOBILE_DECT => array('enabled' => false), 
-       self::MODULE_NAME_BLACK_LIST => array('enabled' => false,
-                                             'types' => array(BlackWhiteList::DATA_TYPE_GEO),                                   // possible value = ip|host|geo
-                                             'geo_field' => 'countryCode',                                                                 // campo delle info geo su cui controllare
-                                            ), 
-       self::MODULE_NAME_WHITE_LIST => array('enabled' => false,
-                                             'types' => array(),
-                                             'geo_field' => '',                                                                 // campo delle info geo su cui controllare                                             
-                                            ),    
-    );
+    public  $settingManager = null;
+    public  $logManager = null;
+    public  $geocoderManager = null;
+    public  $mobiledetectManager = null;
+    public  $guessLocaleManager = null;
+    public  $blackListManager = null;
+    public  $whiteListManager = null;
     
     public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
     public  $uri = null;                                // Contiene l'uri della pagina richiamata
@@ -73,21 +68,7 @@ class MainKernel
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->em = $this->container->get('doctrine')->getEntityManager();
-
-        foreach ($this->modules as $module=>$module_opt) {
-            $this->modules[$module]['enabled'] = $this->getConfValue('module.'.$module.'.enable');
-        }
-        
-        if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
-            // inizialize geocoder ( https://github.com/willdurand/Geocoder )
-            $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
-            $this->geocoder ->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));              
-        }
-        
-        if ($this->isModuleEnabled(self::MODULE_NAME_MOBILE_DECT)) {
-            $this->mobileDetector  = $this->container->get('mobile_detect.mobile_detector');
-        }
+        $this->em = $this->container->get('doctrine')->getEntityManager();      
         
     }
 
@@ -99,72 +80,36 @@ class MainKernel
     */
     public function init(Request $request)
     {
-
         $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
+        $this->session = $this->container->get('session');
         
+        $this->settingManager = new SettingManager($this->session, $this->container);
+        $this->logManager = new LogManager($this->settingManager);        
+        $this->geocoderManager = new GeocoderManager($this->settingManager);
+        $this->mobiledetectManager = new MobiledetectManager($this->settingManager, $this->container);
+        $this->guessLocaleManager = new GuessLocaleManager($this->settingManager);
+        $this->blackListManager = new BlackListManager($this->settingManager);
+        $this->whiteListManager = new WhiteListManager($this->settingManager);
+
         // Set the baseUri & host
         $this->host = $request->getHttpHost();
         $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
 
         // get information for User Browser
         $this->userBrowserInfo = $this->getBrowser(); 
-        $this->clientIp = $request->getClientIp();
-        
-        if ($this->isModuleEnabled(self::MODULE_NAME_GEO)) {
-            
-            $this->userGeoPosition = $this->geocoder->using('geo_plugin')->geocode($this->clientIp, true);           
-            $this->userGeoPosition->setProvider('geo_plugin');
-            $this->userGeoPosition->setDataOrigin('ip');
-        }
+        $this->clientIp = $request->getClientIp();        
+
+        $this->userGeoPosition = $this->geocoderManager->getGeoInfoByIp($this->clientIp);
         
         // If Locale is not set on Uri guessed right Locale
-        if ($this->isModuleEnabled(self::MODULE_NAME_GUESS_LOCALE) && !$this->isSetLocaleOnUrl($this->uri)) {
-            
-            if (null !== $this->guessedLocale = $this->guessLocale($request)) {
-                $request->setLocale($this->guessedLocale->getLocale());    
-            }            
-        }
+        if (null !== $this->guessedLocale = $this->guessLocaleManager->guessLocale($request, $this->em, $this->geocoderManager)) {
+            $request->setLocale($this->guessedLocale->getLocale());    
+        }            
 
         // Qui implemento la white e la black list
-
-        if ($this->isModuleEnabled(self::MODULE_NAME_WHITE_LIST)) {
-        
-            foreach ($this->modules[self::MODULE_NAME_WHITE_LIST]['types'] as $type) {
-
-                $_data = BlackWhiteList::getDataFromKernel($this, $type, $this->modules[self::MODULE_NAME_WHITE_LIST]);
-                
-                if (!is_null($_data)) {
-                    $_inList = BlackWhiteList::isInList($this->em, BlackWhiteList::LIST_TYPE_WHITE, $_data, $type);
-                    
-                    if (!$_inList) {
-                        //header("location: http://www.tin.it");
-                        //exit();
-                    }                
-                }
-            }
-            
-        }
-        
-        if ($this->isModuleEnabled(self::MODULE_NAME_BLACK_LIST)) {
-
-            foreach ($this->modules[self::MODULE_NAME_BLACK_LIST]['types'] as $type) {
-
-                $_data = BlackWhiteList::getDataFromKernel($this, $type, $this->modules[self::MODULE_NAME_BLACK_LIST]);
-                
-                if (!is_null($_data)) {
-                    $_inList = BlackWhiteList::isInList($this->em, BlackWhiteList::LIST_TYPE_BLACK, $_data, $type);
-                
-                    if ($_inList) {
-                        //header("location: http://www.tin.it");
-                        //echo "in lista";
-                        //exit();
-                    }             
-                }
-            }
-            
-        }
-        
+        $this->blackListManager->executeFilter();
+        $this->whiteListManager->executeFilter();
         
         // A questo punto sono inizilizzato
         $this->isInit = true;
@@ -313,62 +258,6 @@ class MainKernel
 /*              METODI PRIVATI                    */
 /* ---------------------------------------------- */
 
-    private function getConfValue($confKey, $default = null)
-    {
-        
-        $retValue = $default;
-        $confKey = 'tech_g_sf_baseprj.'.$confKey;
-
-        if ($this->container->hasParameter($confKey)) {
-            return $this->container->getParameter($confKey);            
-        }
-        
-        return $retValue;        
-    }
-
-    private function isSetLocaleOnUrl($uri)
-    {
-        return preg_match('%^/[a-z]{2}[-_][A-Za-z]{2}%', $uri);    
-    }
-    
-    private function guessLocale(Request $request)
-    {
-           
-        $langObj = null;
-        
-        // get right Language by Browser Preferred Language(ONLY xx_XX format)
-        foreach ($request->getLanguages() as $lang) {
-            if (preg_match('%^[a-z]{2}_[A-Z]{2}$%', $lang) && is_null($langObj)) {
-                
-                if ($_obj = $this->em->getRepository("TechGSfBaseprjBundle:Language")->findOneBy(array('locale' => $lang, 'enabled' => true))){
-                    $langObj = $_obj;
-                }
-                    
-            }    
-        }
-        
-        // if no result get right Language by Browser Preferred Language(ONLY xx format)
-        if (is_null($langObj)) {
-            foreach ($request->getLanguages() as $lang) {
-                if (preg_match('%^[a-z]{2}$%', $lang) && is_null($langObj)) {
-                    
-                    if (is_null($langObj) && $_obj = $this->em->getRepository("TechGSfBaseprjBundle:Language")->findOneBy(array('iso639' => $lang, 'enabled' => true))){
-                        $langObj = $_obj;
-                    }
-                        
-                }   
-            }                
-        }
-        
-        // if no result and GeoInfo is enabled try to guess by contry code
-        if (is_null($langObj) && $this->isModuleEnabled(self::MODULE_NAME_GEO)) {
-
-           // todo: implement method
-           
-        }
-        
-        return $langObj;            
-    }
 
     private static function seems_utf8($Str) 
     { 
@@ -569,7 +458,7 @@ class MainKernel
      
     public function isLocaleinUrl()
     {
-        return $this->isSetLocaleOnUrl($this->uri);
+        return $this->guessLocaleManager->isSetLocaleOnUrl($this->uri);
     }        
      
     public function getKernelVersion()
@@ -580,36 +469,36 @@ class MainKernel
     public function getBundleVersion()
     {
         return $this::BUNDLE_VERSION;
-    }        
-     
-    public function isModuleEnabled($moduleName)
-    {
-        return $this->modules[$moduleName]['enabled'];
-    }        
+    }                
      
     public function isGeoEnabled()
     {
-        return $this->isModuleEnabled(self::MODULE_NAME_GEO);
+        return $this->geocoderManager->isEnabled();
     }        
      
     public function isGuessLocaleEnabled()
     {
-        return $this->isModuleEnabled(self::MODULE_NAME_GUESS_LOCALE);
+        return $this->guessLocaleManager->isEnabled();
     }        
      
     public function isMobileDetectEnabled()
     {
-        return $this->isModuleEnabled(self::MODULE_NAME_MOBILE_DECT);
+        return $this->mobiledetectManager->isEnabled();
+    }        
+     
+    public function isLogEnabled()
+    {
+        return $this->logManager->isEnabled();
     }        
      
     public function isBlackListEnabled()
     {
-        return $this->isModuleEnabled(self::MODULE_NAME_BLACK_LIST);
+        return $this->blackListManager->isEnabled();
     }        
      
     public function isWhiteListEnabled()
     {
-        return $this->isModuleEnabled(self::MODULE_NAME_WHITE_LIST);
+        return $this->whiteListManager->isEnabled();
     }        
      
         

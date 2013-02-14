@@ -17,15 +17,48 @@
     <p>
         <ul>
             <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.noguess"|trans) }}</li>
-            {% for name, module in tgKernel.modules %}
-                <li><span class="key">{{ "info.module." ~ name | trans }}</span>:</span>:
-                    {% if module.enabled %}
-                        {{ 'info.value.active' | trans }}
-                    {% else %}
-                        {{ 'info.value.noactive' | trans }}
-                    {% endif %}
-                </li>
-            {% endfor %}
+            <li><span class="key">{{ "info.module.guesslocale" | trans }}</span>:
+                {% if tgKernel.isGuessLocaleEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
+            <li><span class="key">{{ "info.module.geodecoding" | trans }}</span>:
+                {% if tgKernel.isGeoEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
+            <li><span class="key">{{ "info.module.mobiledetection" | trans }}</span>:
+                {% if tgKernel.isMobileDetectEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
+            <li><span class="key">{{ "info.module.logging" | trans }}</span>:
+                {% if tgKernel.isLogEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
+            <li><span class="key">{{ "info.module.blacklist" | trans }}</span>:
+                {% if tgKernel.isBlackListEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
+            <li><span class="key">{{ "info.module.whitelist" | trans }}</span>:
+                {% if tgKernel.isWhiteListEnabled %}
+                    {{ 'info.value.active' | trans }}
+                {% else %}
+                    {{ 'info.value.noactive' | trans }}
+                {% endif %}
+            </li>            
         </ul>
     </p>
     <h3>Request info</h3>

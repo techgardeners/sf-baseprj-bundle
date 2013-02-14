@@ -11,7 +11,16 @@
 namespace TechG\Bundle\SfBaseprjBundle\DependencyInjection;
 
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\BlackListManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
 
 /**
  * This is the class that validates and merges configuration from your app/config files
@@ -32,6 +41,88 @@ class Configuration implements ConfigurationInterface
         // configure your bundle. See the documentation linked above for
         // more information on that topic.
 
+        $this->addGeoCodingSection($rootNode);
+        $this->addGuessLocaleSection($rootNode);
+        $this->addMobilDetectSection($rootNode);
+        $this->addBlackListSection($rootNode);
+        $this->addWhiteListSection($rootNode);
+        
         return $treeBuilder;
     }
+    
+    
+    private function addGeoCodingSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(GeocoderManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }    
+    
+    private function addGuessLocaleSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(GuessLocaleManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }    
+    
+    private function addMobilDetectSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(MobiledetectManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }    
+
+    private function addBlackListSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(BlackListManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }    
+    
+    private function addWhiteListSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(WhiteListManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }        
 }

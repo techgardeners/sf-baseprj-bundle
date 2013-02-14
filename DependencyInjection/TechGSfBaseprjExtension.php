@@ -15,6 +15,17 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\BlackListManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
+
+
+
 /**
  * This is the class that loads and manages your bundle configuration
  *
@@ -32,5 +43,13 @@ class TechGSfBaseprjExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
+                
+        GeocoderManager::setConfiguration($config, $container);
+        GuessLocaleManager::setConfiguration($config, $container);
+        MobiledetectManager::setConfiguration($config, $container);
+        LogManager::setConfiguration($config, $container);
+        BlackListManager::setConfiguration($config, $container);
+        WhiteListManager::setConfiguration($config, $container);
+
     }
 }

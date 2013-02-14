@@ -8,14 +8,14 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\Bundle\SfBaseprjBundle\Extensions;
+namespace TechG\Bundle\SfBaseprjBundle\Entity\Base;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
-use TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity;
+use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity;
 
-class BaseLog extends BaseEntity
+class BaseSetting extends BaseEntity
 {
     
     public function __construct()
@@ -35,7 +35,7 @@ class BaseLog extends BaseEntity
     */
     public static function isValidEntity($item)
     {
-        return (\TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity::isValidEntity($item) && $item instanceof \TechG\Bundle\SfBaseprjBundle\Entity\Log);
+        return (\TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity::isValidEntity($item) && $item instanceof \TechG\Bundle\SfBaseprjBundle\Entity\Setting);
     } 
  
 }

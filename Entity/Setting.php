@@ -12,13 +12,13 @@ namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use TechG\Bundle\SfBaseprjBundle\Extensions\BaseGeoPosition as BaseEntity;
+use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseSetting as BaseEntity;
 
 /**
  * Settings
  *
  * @ORM\Table(name="setting")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\SettingRepository")
  */
 class Setting extends BaseEntity
 {

@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace TechG\Bundle\SfBaseprjBundle\Extensions;
+namespace TechG\Bundle\SfBaseprjBundle\Repository\Base;
 
 use Doctrine\ORM\EntityRepository;
 

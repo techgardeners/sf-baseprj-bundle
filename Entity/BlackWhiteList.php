@@ -12,7 +12,7 @@ namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use TechG\Bundle\SfBaseprjBundle\Extensions\BaseBlackWhiteList as BaseEntity;
+use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseBlackWhiteList as BaseEntity;
                   
 /**
  * Log

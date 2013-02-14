@@ -12,7 +12,7 @@ namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-use TechG\Bundle\SfBaseprjBundle\Extensions\BaseEntity as BaseEntity;
+use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity as BaseEntity;
 
 /**
  * LanguageTrans
