@@ -13,7 +13,7 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
-use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 
 class MobiledetectManager extends BaseModule
 {    
@@ -21,13 +21,12 @@ class MobiledetectManager extends BaseModule
     
     public $mobileDetector;
 
-
-    public function __construct(SettingManager $settingManager, $container)
+    public function __construct(MainKernel $tgKernel)
     {
-        parent::__construct($settingManager);
+        parent::__construct($tgKernel);
        
         if ($this->isEnabled()) {
-            $this->mobileDetector  = $container->get('mobile_detect.mobile_detector');
+            $this->mobileDetector  = $tgKernel->getContainer()->get('mobile_detect.mobile_detector');
         }       
         
     }

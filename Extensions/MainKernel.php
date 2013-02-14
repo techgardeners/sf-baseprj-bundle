@@ -94,15 +94,17 @@ class MainKernel
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
         
-        $this->settingManager = new SettingManager($this->container);
-        $this->debugManager = new DebugManager($this->settingManager, $this->container);        
-        $this->logManager = new LogManager($this->settingManager);        
-        $this->geocoderManager = new GeocoderManager($this->settingManager);
-        $this->mobiledetectManager = new MobiledetectManager($this->settingManager, $this->container);
-        $this->guessLocaleManager = new GuessLocaleManager($this->settingManager);
-        $this->blackListManager = new BlackListManager($this->settingManager);
-        $this->whiteListManager = new WhiteListManager($this->settingManager);
+        $this->settingManager = new SettingManager($this);
+        $this->debugManager = new DebugManager($this);        
+        $this->logManager = new LogManager($this);        
+        $this->geocoderManager = new GeocoderManager($this);
+        $this->mobiledetectManager = new MobiledetectManager($this);
+        $this->guessLocaleManager = new GuessLocaleManager($this);
+        $this->blackListManager = new BlackListManager($this);
+        $this->whiteListManager = new WhiteListManager($this);
 
+        $this->addDebugLap('End init module');
+        
         // Setto i vari oggetti nell' array dei moduli
         $this->modules[DebugManager::MODULE_NAME] = $this->debugManager;
         $this->modules[LogManager::MODULE_NAME] = $this->logManager;
@@ -119,7 +121,7 @@ class MainKernel
         // get information for User Browser
         $this->userBrowserInfo = $this->getBrowser(); 
         $this->clientIp = $request->getClientIp();        
-
+        
         $this->userGeoPosition = $this->geocoderManager->getGeoInfoByIp($this->clientIp);
         
         // If Locale is not set on Uri guessed right Locale
@@ -139,6 +141,15 @@ class MainKernel
 /* ---------------------------------------------- */
 /*              METODI PUBBLICI                   */
 /* ---------------------------------------------- */
+
+
+    public function addDebugLap($string, $ts = null)
+    {
+        if (is_object($this->debugManager)) {
+            $this->debugManager->addLap($string, $ts);    
+        }
+        
+    }
     
     // metodi di utilità generale
     
@@ -469,6 +480,16 @@ class MainKernel
     public function getEntityManager()
     {
         return $this->em;
+    }    
+
+    public function getContainer()
+    {
+        return $this->container;
+    }    
+
+    public function getSession()
+    {
+        return $this->session;
     }    
 
     public function getRouter()

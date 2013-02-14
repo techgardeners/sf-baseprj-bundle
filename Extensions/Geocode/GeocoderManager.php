@@ -32,16 +32,20 @@ class GeocoderManager extends BaseModule
     {
         if ($this->isEnabled()) {
             
+            $this->addDebugLap('Start geo decoding');
+            
             if (!$this->geocoder) {
                 // inizialize geocoder ( https://github.com/willdurand/Geocoder )
                 $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
             }
-
+            
             $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));
             
             $userGeoPosition = $this->geocoder->using('geo_plugin')->geocode($clientIp, true);           
             $userGeoPosition->setProvider('geo_plugin');
             $userGeoPosition->setDataOrigin('ip');            
+            
+            $this->addDebugLap('End geo decoding');
             
             return $userGeoPosition;
         }        

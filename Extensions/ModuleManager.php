@@ -12,22 +12,31 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
 class ModuleManager
 {    
     const MODULE_NAME = '';
     
+    const ERR_MODULE_NOT_ACTIVE = -100;
+    
     protected $isEnabled;    
     protected $settingManager;    
+    protected $tgKernel;    
  
     
-    public function __construct(SettingManager $settingManager)
+    public function __construct(MainKernel $tgKernel)
     {
         $c = get_called_class();
         
-        $this->settingManager = $settingManager;
+        $this->tgKernel = $tgKernel;
+        $this->settingManager = $tgKernel->settingManager;
         $this->isEnabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
+
+        if ($this->isEnabled()) {
+            $this->addDebugLap('Init module '.$c::MODULE_NAME);            
+        }
         
     }
  
@@ -49,6 +58,17 @@ class ModuleManager
     {
         return $this->isEnabled;    
     }
+    
+    
+    protected static function returnNoEnable()
+    {
+        return self::ERR_MODULE_NOT_ACTIVE;
+    }
+    
+    public function addDebugLap($string, $ts = null)
+    {
+        $this->tgKernel->addDebugLap($string, $ts);    
+    }    
        
     
 }

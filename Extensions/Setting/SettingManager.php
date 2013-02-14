@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 
 class SettingManager
@@ -44,11 +45,11 @@ class SettingManager
     private $em = null;
     private $gParameterBag = null;
 
-    public function __construct(ContainerInterface $container)
+    public function __construct(MainKernel $tgKernel)
     {   
-        $this->session = $container->get('session');
-        $this->em = $container->get('doctrine')->getEntityManager();
-        $this->gParameterBag = $container->getParameterBag();
+        $this->session = $tgKernel->getSession();
+        $this->em = $tgKernel->getEntityManager();
+        $this->gParameterBag = $tgKernel->getContainer()->getParameterBag();
         
         // Se trova i settaggi in sessione li carica
         if ($this->session->has(self::SESSION_VARS_CACHE)) {

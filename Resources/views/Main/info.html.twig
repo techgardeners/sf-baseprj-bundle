@@ -5,22 +5,28 @@
 <style type="text/css">
     .active { font-weight: bold; color: green; }
     .deactive { font-weight: bold; color: red; }
+    .noguess { font-style: italic; color: #999; }
 </style>
-
+    <ul>
+            {% for  time,lap in tgKernel.debugManager.getLapArr %}
+                <li><span class="key">{{ lap.startDiff }} </span>: {{ lap.info }} [{{ lap.lastDiff }} s]
+                </li>
+            {% endfor %} 
+</ul>            
     <h1>Test page</h1>
 
     <h3>Bundle info</h3>
     <p>
         <ul>
             <li><span class="key">{{ "info.system.bundlename" | trans }}</span>: {{ "info.bundlename" | trans }}</li>
-            <li><span class="key">{{ "info.system.bundleversion" | trans }}</span>: {{ tgKernel.getBundleVersion | default("info.noguess"|trans) }}</li>
+            <li><span class="key">{{ "info.system.bundleversion" | trans }}</span>: {{ tgKernel.getBundleVersion | default("info.value.noguess"|trans) }}</li>
         </ul>
 
     </p>
     <h3>Kernel info</h3>
     <p>
         <ul>
-            <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.noguess"|trans) }}</li>
+            <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.value.noguess"|trans) }}</li>
             {% for  modname,modobj in tgKernel.modules %}
                 <li><span class="key">{{ ("info.module." ~ modname) | trans }}</span>:
                     {% if tgKernel.isModuleEnable(modname) %}
@@ -43,7 +49,7 @@
 
             <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
                 {% if tgKernel.isGuessLocaleEnabled %}
-                    {{ tgKernel.guessedLocale.getLocale | default("info.noguess"|trans) }}
+                    {{ tgKernel.guessedLocale.getLocale | default("info.value.noguess"|trans) }}
                 {% else %}
                     {{ 'system.guesslocale.noactive' | trans }}
                 {% endif %}
@@ -64,7 +70,7 @@
         <p>
             <ul>
                 {% for k,value in tgKernel.userGeoPosition.toArray(true)  %}
-                    <li><span class="key">{{ "info.geo." ~ k | trans }}</span>: {{ value | default("info.noguess"|trans) | raw }}</li>
+                    <li><span class="key">{{ ("info.geo." ~ k) | trans }}</span>: {{ value | default("info.value.noguess" |trans) | raw }}</li>
                 {% endfor %}
             </ul>
         </p>
@@ -97,7 +103,7 @@
         <p>
             <ul>
                 {% for k,value in tgKernel.userBrowserInfo  %}
-                    <li><span class="key">{{ "info.browser." ~ k | trans }}</span>: {{ value | default("info.noguess"|trans) | raw }}</li>
+                    <li><span class="key">{{ "info.browser." ~ k | trans }}</span>: {{ value | default("info.value.noguess"|trans) | raw }}</li>
                 {% endfor %}
             </ul>
         </p>

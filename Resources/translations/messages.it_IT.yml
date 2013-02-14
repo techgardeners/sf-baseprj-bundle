@@ -12,6 +12,7 @@ info:
         blacklist: "Modulo black list"
         whitelist: "Modulo white list"
     value:
+        noguess: '<span class="noguess">Non rilevata</span>'
         active: '<span class="active">Attivo</span>'
         noactive: '<span class="deactive">Disattivato</span>'
         'true': '<span class="active">Si</span>'
@@ -19,4 +20,7 @@ info:
     request:
         url: 'Url richiesta'
         host: 'Host richiesta'
+    geo:
+        latitude: 'Latitudine'
+        longitude: 'Longitudine'
 
