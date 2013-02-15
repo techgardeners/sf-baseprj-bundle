@@ -13,6 +13,7 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpFoundation\Request;
 
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
@@ -20,11 +21,23 @@ class GuessLocaleManager extends BaseModule
 {    
     const MODULE_NAME = 'guesslocale';
  
+
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    {                 
+    } 
+    
+    public function init()
+    {    
+    }        
+ 
+
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************  
+
     // Setta le configurazioni per il modulo in oggetto
     public static function setConfiguration(array $config, ContainerBuilder $container)
     {
-        parent::setConfiguration($config, $container);
-
     }
     
     public function guessLocale(Request $request, $em, $geocoderManager)

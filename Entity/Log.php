@@ -18,7 +18,7 @@ use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseLog as BaseEntity;
  * Log
  *
  * @ORM\Table(name="log")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\LogRepository")
  */
 class Log extends BaseEntity
 {
@@ -41,44 +41,76 @@ class Log extends BaseEntity
     /**
      * @var string
      *
-     * @ORM\Column(name="desc_short", type="string", length=255, nullable=false)
+     * @ORM\Column(name="desc_short", type="string", length=255, nullable=true)
      */
     private $descShort;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="desc_long", type="text", nullable=false)
+     * @ORM\Column(name="desc_long", type="text", nullable=true)
      */
     private $descLong;
 
     /**
      * @var $user
      *
-     * @ORM\Column(name="user_id", type="bigint", nullable=false)
+     * @ORM\Column(name="user_id", type="bigint", nullable=true)
      * 
      */
     private $user;
 
     /**
-     * @var \LogLevel
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="LogLevel")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="log_level_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="log_level", type="string", length=255, nullable=true)
      */
     private $logLevel;
 
     /**
-     * @var \LogType
+     * @var string
      *
-     * @ORM\ManyToOne(targetEntity="LogType")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="log_type_id", referencedColumnName="id")
-     * })
+     * @ORM\Column(name="log_type", type="string", length=255, nullable=true)
      */
     private $logType;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="session_id", type="string", length=255, nullable=true)
+     */
+    private $sessionId;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="task_id", type="string", length=255, nullable=true)
+     */
+    private $taskId;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="parent_id", type="bigint", nullable=true)
+     */
+    private $parentId;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="request_id", type="string", length=255, nullable=true)
+     */
+    private $requestId;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="info", type="text", nullable=true)
+     */
+    private $info;
+    
+    
+    
     
     public function __construct()
     {

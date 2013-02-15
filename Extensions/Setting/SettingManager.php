@@ -40,13 +40,18 @@ class SettingManager
     // Nome della variabile in sessione contenente la cache della configurazione
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/settings/cache';
     
-    private $settingCache = null;
     private $session = null;
     private $em = null;
-    private $gParameterBag = null;
+    
+    private $settingCache = null;
+    private $gParameterBag = null; 
+    
+// ********************************************************************************************************       
+// METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
+// ********************************************************************************************************
 
-    public function __construct(MainKernel $tgKernel)
-    {   
+    public function init(MainKernel $tgKernel)
+    {
         $this->session = $tgKernel->getSession();
         $this->em = $tgKernel->getEntityManager();
         $this->gParameterBag = $tgKernel->getContainer()->getParameterBag();
@@ -59,18 +64,31 @@ class SettingManager
         if(is_null($this->settingCache)) {
             $this->loadSettingFromDb();
         }
-        
-    } 
+            
+        foreach($tgKernel->getModules() as $nameModule => $moduleObj) {
+            $moduleObj->hydrateModuleConfinguration($tgKernel);
+        }
+                
+    }
+
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
     
     /**
     * Carica i settaggi dal db
     * 
     */
-    public function loadSettingFromDb()
+    private function loadSettingFromDb()
     {
         $this->settingCache = $this->em->getRepository('TechGSfBaseprjBundle:Setting')->loadAll();
         $this->session->set(self::SESSION_VARS_CACHE, $this->settingCache);            
     }
+
+
+// ********************************************************************************************************       
+// METODI PUBBLICI       
+// ********************************************************************************************************  
     
     public function clearSession()
     {
@@ -113,16 +131,13 @@ class SettingManager
     */
     public function getFileConfigSetting($key, $default = null)
     {
-
         return ($this->gParameterBag->has(SettingManager::PREFIX_BUNDLE.'.'.$key)) ? $this->gParameterBag->get(SettingManager::PREFIX_BUNDLE.'.'.$key) : $default;   
     }
     
     
-    
-    /**
-    *  STATIC METHOD
-    */
-    
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************      
     
     /**
     * Setta una configurazione nel container

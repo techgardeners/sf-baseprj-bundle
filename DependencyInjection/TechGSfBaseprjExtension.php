@@ -45,13 +45,13 @@ class TechGSfBaseprjExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('services.yml');
                 
-        DebugManager::setConfiguration($config, $container);
-        GeocoderManager::setConfiguration($config, $container);
-        GuessLocaleManager::setConfiguration($config, $container);
-        MobiledetectManager::setConfiguration($config, $container);
-        LogManager::setConfiguration($config, $container);
-        BlackListManager::setConfiguration($config, $container);
-        WhiteListManager::setConfiguration($config, $container);
+        DebugManager::setModuleConfiguration($config, $container);
+        GeocoderManager::setModuleConfiguration($config, $container);
+        GuessLocaleManager::setModuleConfiguration($config, $container);
+        MobiledetectManager::setModuleConfiguration($config, $container);
+        LogManager::setModuleConfiguration($config, $container);
+        BlackListManager::setModuleConfiguration($config, $container);
+        WhiteListManager::setModuleConfiguration($config, $container);
 
     }
 }

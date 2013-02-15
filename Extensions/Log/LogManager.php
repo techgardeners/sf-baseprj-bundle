@@ -10,10 +10,33 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Log;
 
+use Symfony\Component\DependencyInjection\ContainerBuilder;
+
+use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
 class LogManager extends BaseModule
 {
-    const MODULE_NAME = 'log';    
+    const MODULE_NAME = 'log';
+    
+
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    {                 
+    } 
+    
+    public function init()
+    {   
+    }        
+ 
+
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************  
+
+    // Setta le configurazioni per il modulo in oggetto
+    public static function setConfiguration(array $config, ContainerBuilder $container)
+    {
+    }    
+        
 }

@@ -43,13 +43,6 @@ class MainKernel
     private $isInit = false;                            // Indica se la classe è stata inizializzata
 
     public  $settingManager = null;
-    public  $logManager = null;
-    public  $debugManager = null;
-    public  $geocoderManager = null;
-    public  $mobiledetectManager = null;
-    public  $guessLocaleManager = null;
-    public  $blackListManager = null;
-    public  $whiteListManager = null;
     
     public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
     public  $uri = null;                                // Contiene l'uri della pagina richiamata
@@ -59,14 +52,7 @@ class MainKernel
     public  $userBrowserInfo = null;                    // Hold user browser info
     public  $guessedLocale = null;                      // Hold locale guessed
 
-    public $modules = array( DebugManager::MODULE_NAME => '',
-                             LogManager::MODULE_NAME => '',
-                             GuessLocaleManager::MODULE_NAME => '',
-                             MobiledetectManager::MODULE_NAME => '',
-                             GeocoderManager::MODULE_NAME => '',
-                             BlackListManager::MODULE_NAME => '',
-                             WhiteListManager::MODULE_NAME => '',
-                            );
+    public $modules = array();
     
     
     /**
@@ -78,7 +64,17 @@ class MainKernel
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->em = $this->container->get('doctrine')->getEntityManager();      
+        $this->em = $this->container->get('doctrine')->getEntityManager();
+        $this->settingManager = new SettingManager();
+        
+        // Innesto i vari moduli
+        $this->modules[DebugManager::MODULE_NAME] = new DebugManager();
+        $this->modules[LogManager::MODULE_NAME] = new LogManager();
+        $this->modules[GeocoderManager::MODULE_NAME] = new GeocoderManager();
+        $this->modules[MobiledetectManager::MODULE_NAME] = new MobiledetectManager();
+        $this->modules[GuessLocaleManager::MODULE_NAME] = new GuessLocaleManager();
+        $this->modules[BlackListManager::MODULE_NAME] = new BlackListManager();
+        $this->modules[WhiteListManager::MODULE_NAME] = new WhiteListManager();             
         
     }
 
@@ -94,25 +90,14 @@ class MainKernel
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
         
-        $this->settingManager = new SettingManager($this);
-        $this->debugManager = new DebugManager($this);        
-        $this->logManager = new LogManager($this);        
-        $this->geocoderManager = new GeocoderManager($this);
-        $this->mobiledetectManager = new MobiledetectManager($this);
-        $this->guessLocaleManager = new GuessLocaleManager($this);
-        $this->blackListManager = new BlackListManager($this);
-        $this->whiteListManager = new WhiteListManager($this);
-
-        $this->addDebugLap('End init module');
+        // Inizializzo il Manager dei settaggi che a suo volta a cascata innietta le configurazioni a tutti i moduli 
+        $this->settingManager->init($this);
+        foreach($this->modules as $nameModule => $moduleObj) {
+            $moduleObj->initModule();
+        }
         
-        // Setto i vari oggetti nell' array dei moduli
-        $this->modules[DebugManager::MODULE_NAME] = $this->debugManager;
-        $this->modules[LogManager::MODULE_NAME] = $this->logManager;
-        $this->modules[GeocoderManager::MODULE_NAME] = $this->geocoderManager;
-        $this->modules[MobiledetectManager::MODULE_NAME] = $this->mobiledetectManager;
-        $this->modules[GuessLocaleManager::MODULE_NAME] = $this->guessLocaleManager;
-        $this->modules[BlackListManager::MODULE_NAME] = $this->blackListManager;
-        $this->modules[WhiteListManager::MODULE_NAME] = $this->whiteListManager;
+        // a questo punto ho tutti i moduli pronti        
+        $this->addDebugLap('End init module');
         
         // Set the baseUri & host
         $this->host = $request->getHttpHost();
@@ -122,16 +107,16 @@ class MainKernel
         $this->userBrowserInfo = $this->getBrowser(); 
         $this->clientIp = $request->getClientIp();        
         
-        $this->userGeoPosition = $this->geocoderManager->getGeoInfoByIp($this->clientIp);
+        $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
         
         // If Locale is not set on Uri guessed right Locale
-        if (null !== $this->guessedLocale = $this->guessLocaleManager->guessLocale($request, $this->em, $this->geocoderManager)) {
+        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($request, $this->em, $this->getGeocoderManager())) {
             $request->setLocale($this->guessedLocale->getLocale());    
         }            
 
         // Qui implemento la white e la black list
-        $this->blackListManager->executeFilter();
-        $this->whiteListManager->executeFilter();
+        $this->getBlackListManager()->executeFilter();
+        $this->getWhiteListManager()->executeFilter();
         
         // A questo punto sono inizilizzato
         $this->isInit = true;
@@ -145,8 +130,8 @@ class MainKernel
 
     public function addDebugLap($string, $ts = null)
     {
-        if (is_object($this->debugManager)) {
-            $this->debugManager->addLap($string, $ts);    
+        if (is_object($this->getDebugManager())) {
+            $this->getDebugManager()->addLap($string, $ts);    
         }
         
     }
@@ -499,7 +484,7 @@ class MainKernel
      
     public function isLocaleinUrl()
     {
-        return $this->guessLocaleManager->isSetLocaleOnUrl($this->uri);
+        return $this->getGuessLocaleManager()->isSetLocaleOnUrl($this->uri);
     }        
      
     public function getKernelVersion()
@@ -511,41 +496,93 @@ class MainKernel
     {
         return $this::BUNDLE_VERSION;
     }                
+
+// *************************************    
+
+    public function getModules()
+    {
+           return $this->modules;
+    }
+    
+    public function getModule($name)
+    {
+           return $this->modules[$name];
+    }
      
     public function isModuleEnable($name)
     {
-        return $this->modules[$name]->isEnabled();
+        return $this->getModule($name)->isEnabled();
+    }
+    
+    
+    public function getDebugManager()
+    {
+        return $this->getModule(DebugManager::MODULE_NAME);    
+    }
+    
+    public function getGeocoderManager()
+    {
+        return $this->getModule(GeocoderManager::MODULE_NAME);    
+    }
+    
+    public function getGuessLocaleManager()
+    {
+        return $this->getModule(GuessLocaleManager::MODULE_NAME);    
+    }
+    
+    public function getMobiledetectManager()
+    {
+        return $this->getModule(MobiledetectManager::MODULE_NAME);    
+    }
+    
+    public function getLogManager()
+    {
+        return $this->getModule(LogManager::MODULE_NAME);    
+    }
+    
+    public function getBlackListManager()
+    {
+        return $this->getModule(BlackListManager::MODULE_NAME);    
+    }
+    
+    public function getWhiteListManager()
+    {
+        return $this->getModule(WhiteListManager::MODULE_NAME);    
     }
 
-
+    public function isDebugEnabled()
+    {
+        return $this->getDebugManager()->isEnabled();
+    }        
+     
     public function isGeoEnabled()
     {
-        return $this->geocoderManager->isEnabled();
+        return $this->getGeocoderManager()->isEnabled();
     }        
      
     public function isGuessLocaleEnabled()
     {
-        return $this->guessLocaleManager->isEnabled();
+        return $this->getGuessLocaleManager()->isEnabled();
     }        
      
     public function isMobileDetectEnabled()
     {
-        return $this->mobiledetectManager->isEnabled();
+        return $this->getMobiledetectManager()->isEnabled();
     }        
      
     public function isLogEnabled()
     {
-        return $this->logManager->isEnabled();
+        return $this->getLogManager()->isEnabled();
     }        
      
     public function isBlackListEnabled()
     {
-        return $this->blackListManager->isEnabled();
+        return $this->getBlackListManager()->isEnabled();
     }        
      
     public function isWhiteListEnabled()
     {
-        return $this->whiteListManager->isEnabled();
+        return $this->getWhiteListManager()->isEnabled();
     }        
      
         

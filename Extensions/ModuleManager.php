@@ -21,42 +21,111 @@ class ModuleManager
     
     const ERR_MODULE_NOT_ACTIVE = -100;
     
-    protected $isEnabled;    
+    // 
+    protected $enabled;
+    protected $configured;    
+    protected $init;    
+
+    // 
     protected $settingManager;    
+    protected $session;
     protected $tgKernel;    
  
     
-    public function __construct(MainKernel $tgKernel)
+    public function __construct()
+    {
+        $this->enabled = false;    
+        $this->configured = false;      
+        $this->init = false;      
+    }
+    
+    // Effettua il settaggio della configurazione ed l'init minima necessaria (enabled fondamentalmente)
+    public function hydrateModuleConfinguration(MainKernel $tgKernel)
     {
         $c = get_called_class();
         
         $this->tgKernel = $tgKernel;
-        $this->settingManager = $tgKernel->settingManager;
-        $this->isEnabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
+        $this->settingManager = $this->tgKernel->settingManager;
+        $this->session = $this->tgKernel->getSession();
 
+        $this->enabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
+        
+        $c::hydrateConfinguration($this->tgKernel);
+        
+        $this->configured = true;
+    }    
+    
+    // (funzione sovrascritta dal figlio)
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    {       
+    } 
+    
+    // Inizializza il modulo
+    public function initModule()
+    {   
+        
+        $c = get_called_class();
+        
         if ($this->isEnabled()) {
             $this->addDebugLap('Init module '.$c::MODULE_NAME);            
-        }
+        }        
         
+        $c::init();
+        
+        $this->init = true;        
     }
- 
+    
+    // Inizializza il modulo (funzione sovrascritta dal figlio)   
+    public function init()
+    {
+    }
+       
+       
+// ********************************************************************************************************       
+// METODI PUBBLICI       
+// ********************************************************************************************************         
+    
+    public function isEnabled()
+    {
+        return $this->enabled;    
+    }
+
+    public function isConfigured()
+    {
+        return $this->configured;    
+    }
+
+    public function isInit()
+    {
+        return $this->init();    
+    }
+
+    public function addDebugLap($string, $ts = null)
+    {
+        $this->tgKernel->addDebugLap($string, $ts);    
+    }    
+       
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************       
+       
     // Setta le configurazioni per il modulo in oggetto
-    public static function setConfiguration(array $config, ContainerBuilder $container)
+    public static function setModuleConfiguration(array $config, ContainerBuilder $container)
     {   
         $c = get_called_class();
         
         $isEnabled = (array_key_exists($c::MODULE_NAME, $config) && array_key_exists(SettingManager::SUFFIX_ENABLE, $config[$c::MODULE_NAME])) ? $config[$c::MODULE_NAME][SettingManager::SUFFIX_ENABLE] : false;
-        
              
         // Setta il valore dell' enabled
         SettingManager::setGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE, $isEnabled, $container);        
 
+        $c::setConfiguration($config, $container);
+        
     }
-    
-    
-    public function isEnabled()
-    {
-        return $this->isEnabled;    
+
+    // Setta le configurazioni per il modulo in oggetto (funzione sovrascritta dal figlio)
+    public static function setConfiguration(array $config, ContainerBuilder $container)
+    {        
     }
     
     
@@ -65,10 +134,5 @@ class ModuleManager
         return self::ERR_MODULE_NOT_ACTIVE;
     }
     
-    public function addDebugLap($string, $ts = null)
-    {
-        $this->tgKernel->addDebugLap($string, $ts);    
-    }    
-       
     
 }

@@ -21,22 +21,27 @@ class MobiledetectManager extends BaseModule
     
     public $mobileDetector;
 
-    public function __construct(MainKernel $tgKernel)
-    {
-        parent::__construct($tgKernel);
-       
-        if ($this->isEnabled()) {
-            $this->mobileDetector  = $tgKernel->getContainer()->get('mobile_detect.mobile_detector');
-        }       
-        
-    }
 
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    { 
+                       
+    } 
+    
+    public function init()
+    {
+        if ($this->isEnabled()) {
+            $this->mobileDetector  = $this->tgKernel->getContainer()->get('mobile_detect.mobile_detector');
+        }        
+    }        
  
+
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************  
+
     // Setta le configurazioni per il modulo in oggetto
     public static function setConfiguration(array $config, ContainerBuilder $container)
     {
-        parent::setConfiguration($config, $container);
-
     }
     
     

@@ -24,29 +24,60 @@ class DebugManager extends BaseModule
     private $startLapTs = 0;
     private $lastLapTs = 0;
 
-    public function __construct(MainKernel $tgKernel)
+    public function __construct()
     {
-        parent::__construct($tgKernel);
+
         $this->lastLapTs = $this->startLapTs = microtime();
         
-        // se è attivo il debug cancello i dati delle configurazioni in sessione
-        if ($this->isEnabled()) {
-            $this->settingManager->clearSession();
-        }
+
         
     }
     
+// ********************************************************************************************************       
+// METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
+// ********************************************************************************************************
     
-    // Setta le configurazioni per il modulo in oggetto
-    public static function setConfiguration(array $config, ContainerBuilder $container)
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    {                 
+    } 
+    
+    public function init()
     {
-        parent::setConfiguration($config, $container);
+        // se è attivo il debug cancello i dati delle configurazioni in sessione
+        if ($this->isEnabled()) {
+            $this->settingManager->clearSession();
+        }        
+    }          
 
+    
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
+    
+    
+
+    private function convertMsToTime($mc)
+    {
+        list($microSec, $timeStamp) = explode(" ", $mc);
+        return date('H:i:', $timeStamp) . (date('s', $timeStamp) + $microSec);    
+    }
+    
+    private function calcDiff($mc_start, $mc_end)
+    {
+        list($S_microSec, $S_timeStamp) = explode(" ", $mc_start);
+        list($E_microSec, $E_timeStamp) = explode(" ", $mc_end);
+        
+        $sec = $E_timeStamp - $S_timeStamp;
+        $mill = $E_microSec - $S_microSec;
+        
+        return round(0 + $sec + $mill, 5);
+        
     }    
-    
-    // ************************************************************    
-    
 
+// ********************************************************************************************************       
+// METODI PUBBLICI       
+// ********************************************************************************************************  
+    
     public function addLap($info, $microsec = null)
     {
         if (!$this->isEnabled()) return self::returnNoEnable();
@@ -59,33 +90,22 @@ class DebugManager extends BaseModule
                                          'lastDiff' => $this->calcDiff($this->lastLapTs, $microsec),
                                          );
         $this->lastLapTs = $microsec;  
-    }
-    
-    
-    
-    // ***************************
+    } 
     
     public function getLapArr()
     {
         return $this->lapArr;
-    }
+    }      
 
-    public function convertMsToTime($mc)
+
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************  
+
+    // Setta le configurazioni per il modulo in oggetto
+    public static function setConfiguration(array $config, ContainerBuilder $container)
     {
-        list($microSec, $timeStamp) = explode(" ", $mc);
-        return date('H:i:', $timeStamp) . (date('s', $timeStamp) + $microSec);    
-    }
-    
-    public function calcDiff($mc_start, $mc_end)
-    {
-        list($S_microSec, $S_timeStamp) = explode(" ", $mc_start);
-        list($E_microSec, $E_timeStamp) = explode(" ", $mc_end);
-        
-        $sec = $E_timeStamp - $S_timeStamp;
-        $mill = $E_microSec - $S_microSec;
-        
-        return round(0 + $sec + $mill, 5);
-        
-    }
+    }    
+
     
 }

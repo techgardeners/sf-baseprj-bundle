@@ -25,26 +25,30 @@ class GeocoderManager extends BaseModule
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/geocode/cache';
 
     private $userGeoPositionCache;
-    public $geocoder;
+    public $geocoder; 
 
-    public function __construct(MainKernel $tgKernel)
+// ********************************************************************************************************       
+// METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
+// ********************************************************************************************************
+    
+    public function hydrateConfinguration(MainKernel $tgKernel)
+    {             
+     
+    }       
+
+    public function init()
     {
-        parent::__construct($tgKernel);
-       
         if ($this->isEnabled()) {
             // inizialize geocoder ( https://github.com/willdurand/Geocoder )
             $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
-            $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));            
+            $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));   
         }       
-        
-    }    
- 
-    // Setta le configurazioni per il modulo in oggetto
-    public static function setConfiguration(array $config, ContainerBuilder $container)
-    {
-        parent::setConfiguration($config, $container);
+    }      
+    
 
-    }
+// ********************************************************************************************************       
+// METODI PUBBLICI       
+// ********************************************************************************************************  
     
     public function getGeoInfoByIp($clientIp)
     {
@@ -66,14 +70,14 @@ class GeocoderManager extends BaseModule
             }
             
             // Check if in session
-            if ($this->tgKernel->getSession()->has(self::SESSION_VARS_CACHE)) {
+            if ($this->session->has(self::SESSION_VARS_CACHE)) {
             
-                $this->userGeoPositionCache = $this->tgKernel->getSession()->get(self::SESSION_VARS_CACHE);    
+                $this->userGeoPositionCache = $this->session->get(self::SESSION_VARS_CACHE);    
             
             } else {
                
                 $this->userGeoPositionCache = $this->geocoder->using('geo_plugin')->geocode($clientIp, true);           
-                $this->tgKernel->getSession()->set(self::SESSION_VARS_CACHE, $this->userGeoPositionCache);                 
+                $this->session->set(self::SESSION_VARS_CACHE, $this->userGeoPositionCache);                 
             }
             
             $geoPositionObj->fromArray($this->userGeoPositionCache);
@@ -85,7 +89,16 @@ class GeocoderManager extends BaseModule
         }        
     }
     
-    
+
+
+// ********************************************************************************************************       
+// METODI STATICI       
+// ********************************************************************************************************  
+
+    // Setta le configurazioni per il modulo in oggetto
+    public static function setConfiguration(array $config, ContainerBuilder $container)
+    {
+    }    
     
     
 }
