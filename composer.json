@@ -19,7 +19,7 @@
         "suncat/mobile-detect-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master",
         "doctrine/migrations": "dev-master",
-        "egeloen/google-map-bundle": "*"                 
+        "egeloen/google-map": "dev-master"                
     },
     "require-dev": {
         "symfony/framework-bundle": ">=2.7,<2.2-dev"    
