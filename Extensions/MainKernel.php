@@ -40,8 +40,8 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
 class MainKernel
 {
 
-    const BUNDLE_VERSION = '0.0.1-beta';
-    const KERNEL_VERSION = '0.0.1-beta';
+    const BUNDLE_VERSION = '0.1.0-beta';
+    const KERNEL_VERSION = '0.1.0-beta';
   
     private $container = null;
     private $em = null;
