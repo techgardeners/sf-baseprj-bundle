@@ -44,6 +44,7 @@ class MainKernel
 
     public  $settingManager = null;
     
+    public  $requestInfo = null;                        // Contiene il baseUri dell' applicazione
     public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
     public  $uri = null;                                // Contiene l'uri della pagina richiamata
     public  $host = null;                               // Contiene l'host della pagina richiamata
@@ -92,6 +93,8 @@ class MainKernel
         $this->session = $this->container->get('session');
         $this->requestId = uniqid(rand(), true);
 
+        $this->requestInfo = $this->populateRequestInfo($request);
+        
         // Setto varie impostazioni base
         $this->clientIp = $request->getClientIp();
         $this->host = $request->getHttpHost();
@@ -104,8 +107,6 @@ class MainKernel
         foreach($this->modules as $nameModule => $moduleObj) {
             $moduleObj->initModule();
         }
-        
-        $this->getLogManager()->addLog();
         
         // a questo punto ho tutti i moduli pronti        
         $this->addDebugLap('End init module');
@@ -278,6 +279,18 @@ class MainKernel
 /* ---------------------------------------------- */
 /*              METODI PRIVATI                    */
 /* ---------------------------------------------- */
+
+    private static function populateRequestInfo(Request $request)
+    {
+        $requestInfo = array();
+        
+        $requestInfo['uri'] = $request->getUri();
+        $requestInfo['host'] = $request->getHost();
+        $requestInfo['queryString'] = $request->getQueryString();
+        $requestInfo['format'] = $request->getRequestFormat();
+        
+        return $requestInfo;
+    }
 
 
     private static function seems_utf8($Str) 

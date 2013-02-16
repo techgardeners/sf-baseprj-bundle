@@ -95,9 +95,7 @@ class LogManager extends BaseModule
     public function init()
     {   
         
-        $this->sessionSaved = null;        
-
-        // qui posso crearmi il log di request se necessario
+        $this->sessionSaved = null;
         $this->logRequest();
         
     }        
@@ -107,7 +105,7 @@ class LogManager extends BaseModule
 // METODI PUBBLICI       
 // ******************************************************************************************************** 
  
-    public function addLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
     {
         $newLog = new Log();
         $newLog->setSessionId($this->session->getId());
@@ -120,12 +118,12 @@ class LogManager extends BaseModule
         $newLog->setInfo($info);
 
         // salvo il log
-        //$this->em->persist($newLog);
-        //$this->em->flush();
+        $this->em->persist($newLog);
+        $this->em->flush();
 
     } 
     
-    
+    // Salva la sessione nel db
     public function logSession()
     {
        
@@ -174,9 +172,9 @@ class LogManager extends BaseModule
         // se i permessi lo consentono salvo la request
         if (!$this->saveRequest) return false;
         
-        // salvo il log
-        //$this->em->persist();
-        //$this->em->flush(); 
+        $info = $this->tgKernel->requestInfo;        
+        $this->addRawLog(self::TYPE_GENERIC_APP, self::LEVEL_APP, '', '', $info);
+        
     }
     
 
@@ -184,9 +182,9 @@ class LogManager extends BaseModule
 // METODI PRIVATI       
 // ********************************************************************************************************     
 
+    // Ritorna l'oggetto di sessione salvato, se non lo trova nell'oggetto lo carica dal db
     private function getSessionSaved()
-    {
-        
+    {        
         if (is_null($this->sessionSaved))                 
             $this->sessionSaved = $this->em->getRepository("TechGSfBaseprjBundle:LogSession")->find($this->session->getId());
         

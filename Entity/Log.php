@@ -370,7 +370,7 @@ class Log extends BaseEntity
      */
     public function setInfo($info)
     {
-        $this->info = $info;
+        $this->info = json_encode($info);
     
         return $this;
     }
@@ -382,6 +382,6 @@ class Log extends BaseEntity
      */
     public function getInfo()
     {
-        return $this->info;
+        return json_decode($this->info);
     }
 }
