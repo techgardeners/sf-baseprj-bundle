@@ -287,7 +287,9 @@ class GeoPosition extends BaseEntity
         // in base al provider ci sono parametri che geocoded non mette nell'oggetto.
         if (isset($data['rawdata'])) {
             $this->rawData = $data['rawdata'];
-        }        
+        } 
+                
+        $this->setGeoDate(new \DateTime());
         
     }
 
@@ -317,6 +319,16 @@ class GeoPosition extends BaseEntity
         
         if ($retRawData) { $dataArray['rawdata'] = $this->rawData; }
 
+        return $dataArray;
+    }    
+
+    public function getLogInfo()
+    {                                
+        $dataArray = $this->toArray();
+        $dataArray['provider'] = $this->getProvider();
+        $dataArray['origin'] = $this->getDataOrigin();
+        $dataArray['geodata'] = $this->getGeoDate();
+        
         return $dataArray;
     }    
 
@@ -891,5 +903,28 @@ class GeoPosition extends BaseEntity
     public function getDataOrigin()
     {
         return $this->dataOrigin;
+    }
+
+    /**
+     * Set geoDate
+     *
+     * @param \DateTime $geoDate
+     * @return GeoPosition
+     */
+    public function setGeoDate($geoDate)
+    {
+        $this->geoDate = $geoDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get geoDate
+     *
+     * @return \DateTime 
+     */
+    public function getGeoDate()
+    {
+        return $this->geoDate;
     }
 }

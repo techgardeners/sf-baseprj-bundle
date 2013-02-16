@@ -51,6 +51,8 @@ class MainKernel
     public  $userGeoPosition = null;                    // Hold user geoInfo
     public  $userBrowserInfo = null;                    // Hold user browser info
     public  $guessedLocale = null;                      // Hold locale guessed
+    
+    public  $requestId = null;                          
 
     public $modules = array();
     
@@ -86,9 +88,16 @@ class MainKernel
     */
     public function init(Request $request)
     {
-        $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
+        $this->requestId = uniqid(rand(), true);
+
+        // Setto varie impostazioni base
+        $this->clientIp = $request->getClientIp();
+        $this->host = $request->getHttpHost();
+        $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
+        $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
+        $this->userBrowserInfo = $this->getBrowser();  // get information for User Browser
         
         // Inizializzo il Manager dei settaggi che a suo volta a cascata innietta le configurazioni a tutti i moduli 
         $this->settingManager->init($this);
@@ -96,16 +105,10 @@ class MainKernel
             $moduleObj->initModule();
         }
         
+        $this->getLogManager()->addLog();
+        
         // a questo punto ho tutti i moduli pronti        
         $this->addDebugLap('End init module');
-        
-        // Set the baseUri & host
-        $this->host = $request->getHttpHost();
-        $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
-
-        // get information for User Browser
-        $this->userBrowserInfo = $this->getBrowser(); 
-        $this->clientIp = $request->getClientIp();        
         
         $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
         
@@ -117,6 +120,8 @@ class MainKernel
         // Qui implemento la white e la black list
         $this->getBlackListManager()->executeFilter();
         $this->getWhiteListManager()->executeFilter();
+                
+        $this->getLogManager()->logSession();
         
         // A questo punto sono inizilizzato
         $this->isInit = true;

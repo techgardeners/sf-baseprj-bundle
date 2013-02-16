@@ -69,7 +69,147 @@ class LogSession extends BaseEntity
     public function __construct()
     {
         parent::__construct();
+        
+        $this->setLogDate(new \DateTime());        
     }       
 
 
+
+    /**
+     * Set id
+     *
+     * @param string $id
+     * @return LogSession
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    
+        return $this;
+    }
+
+    /**
+     * Get id
+     *
+     * @return string 
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set logDate
+     *
+     * @param \DateTime $logDate
+     * @return LogSession
+     */
+    public function setLogDate($logDate)
+    {
+        $this->logDate = $logDate;
+    
+        return $this;
+    }
+
+    /**
+     * Get logDate
+     *
+     * @return \DateTime 
+     */
+    public function getLogDate()
+    {
+        return $this->logDate;
+    }
+
+    /**
+     * Set infoUser
+     *
+     * @param string $infoUser
+     * @return LogSession
+     */
+    public function setInfoUser($infoUser)
+    {
+        $this->infoUser = $infoUser;
+    
+        return $this;
+    }
+
+    /**
+     * Get infoUser
+     *
+     * @return string 
+     */
+    public function getInfoUser()
+    {
+        return $this->infoUser;
+    }
+
+    /**
+     * Set infoGeo
+     *
+     * @param string $infoGeo
+     * @return LogSession
+     */
+    public function setInfoGeo($infoGeo)
+    {
+        $this->infoGeo = $infoGeo;
+    
+        return $this;
+    }
+
+    /**
+     * Get infoGeo
+     *
+     * @return string 
+     */
+    public function getInfoGeo()
+    {
+        return $this->infoGeo;
+    }
+
+    /**
+     * Set info
+     *
+     * @param string $info
+     * @return LogSession
+     */
+    public function setInfo($info)
+    {
+        $this->info = $info;
+    
+        return $this;
+    }
+
+    /**
+     * Get info
+     *
+     * @return string 
+     */
+    public function getInfo()
+    {
+        return $this->info;
+    }
+
+    /**
+     * Set lastActivity
+     *
+     * @param \DateTime $lastActivity
+     * @return LogSession
+     */
+    public function setLastActivity($lastActivity)
+    {
+        $this->lastActivity = $lastActivity;
+    
+        return $this;
+    }
+
+    /**
+     * Get lastActivity
+     *
+     * @return \DateTime 
+     */
+    public function getLastActivity()
+    {
+        return $this->lastActivity;
+    }
 }

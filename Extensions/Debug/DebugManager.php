@@ -24,18 +24,14 @@ class DebugManager extends BaseModule
     private $startLapTs = 0;
     private $lastLapTs = 0;
 
-    public function __construct()
-    {
-
-        $this->lastLapTs = $this->startLapTs = microtime();
-        
-
-        
-    }
-    
 // ********************************************************************************************************       
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
 // ********************************************************************************************************
+
+    public function __construct()
+    {
+        $this->lastLapTs = $this->startLapTs = microtime();
+    }
     
     public function hydrateConfinguration(MainKernel $tgKernel)
     {                 

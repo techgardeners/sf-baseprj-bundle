@@ -11,6 +11,7 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Doctrine\ORM\EntityManager;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
@@ -29,6 +30,7 @@ class ModuleManager
     // 
     protected $settingManager;    
     protected $session;
+    protected $em;
     protected $tgKernel;    
  
     
@@ -47,6 +49,7 @@ class ModuleManager
         $this->tgKernel = $tgKernel;
         $this->settingManager = $this->tgKernel->settingManager;
         $this->session = $this->tgKernel->getSession();
+        $this->em = $this->tgKernel->getEntityManager();
 
         $this->enabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
         
@@ -128,6 +131,15 @@ class ModuleManager
     {        
     }
     
+
+    public static function setSingleConf($name, array $config, ContainerBuilder $container)
+    {
+        $c = get_called_class();
+        $moduleName = $c::MODULE_NAME;
+        
+        $configuration = (array_key_exists($moduleName, $config) && array_key_exists($name, $config[$moduleName])) ? $config[$moduleName][$name] : false;
+        SettingManager::setGlobalSetting($moduleName.'.'.$name, $configuration, $container);        
+    }
     
     protected static function returnNoEnable()
     {
