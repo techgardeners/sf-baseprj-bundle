@@ -16,6 +16,8 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
+use Symfony\Component\HttpFoundation\Response;
+
 use TechG\Bundle\SfBaseprjBundle\Entity\Log;
 use TechG\Bundle\SfBaseprjBundle\Entity\LogSession;
 
@@ -24,6 +26,7 @@ class LogManager extends BaseModule
     const MODULE_NAME = 'log';
     
     const CONF_LOG_LEVEL = 'level';
+    const CONF_ENABLE_QUEUE = 'queue';
     const CONF_SAVE_SESSION = 'savesession';
     const CONF_SAVE_LAST_ACTIVITY = 'keepalive';
     const CONF_SAVE_REQUEST = 'saverequest';
@@ -36,6 +39,7 @@ class LogManager extends BaseModule
 // LIVELLI DI LOG
 // ******************************************
 
+    const LEVEL_SYSTEM = 0;
     const LEVEL_ERROR = 100;
     const LEVEL_WARNING = 200;
     const LEVEL_APP = 300;
@@ -49,7 +53,10 @@ class LogManager extends BaseModule
 // TIPI DI LOG
 // ******************************************
               
+    const TYPE_SAVE_REQUEST = 1;    
+    const TYPE_SAVE_RESPONSE = 2;    
     const TYPE_GENERIC = 100;    
+    const TYPE_GENERIC_EXEPTION = 100;    
     const TYPE_GENERIC_SQL = 200;
     const TYPE_GENERIC_TASK = 300;
     const TYPE_GENERIC_APP = 300;
@@ -61,7 +68,13 @@ class LogManager extends BaseModule
     const TYPE_GENERIC_INSANE = 300;
 
     static $logTypes = array(
-                              self::TYPE_GENERIC => array( 'defaultLevel' => self::TYPE_GENERIC_INFO,                                                            
+                              self::TYPE_SAVE_REQUEST => array( 'defaultLevel' => self::LEVEL_SYSTEM,                                                            
+                                                         ),
+                              self::TYPE_SAVE_RESPONSE => array( 'defaultLevel' => self::LEVEL_SYSTEM,                                                            
+                                                         ),
+                              self::TYPE_GENERIC_EXEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,                                                            
+                                                         ),
+                              self::TYPE_GENERIC => array( 'defaultLevel' => self::LEVEL_INFO,                                                            
                                                          ),
                               self::TYPE_GENERIC_SQL => array( 'defaultLevel' => self::LEVEL_DEBUG,                                                            
                                                          ),
@@ -70,12 +83,15 @@ class LogManager extends BaseModule
                             );
     
     
-    private $logLevel;
+    private $maxLogLevel;
     private $saveSession;
     private $saveRequest;
     private $keepAlive;
+    private $enableQueue;
     
     private $sessionSaved;
+    private $requestSaved;
+    private $persistQueue;
     
 
 // ********************************************************************************************************       
@@ -85,7 +101,8 @@ class LogManager extends BaseModule
     public function hydrateConfinguration(MainKernel $tgKernel)
     {            
     
-        $this->logLevel = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_LOG_LEVEL);
+        $this->maxLogLevel = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_LOG_LEVEL);
+        $this->enableQueue = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_ENABLE_QUEUE);
         $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);
         $this->saveRequest = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_REQUEST);
         $this->keepAlive = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_LAST_ACTIVITY);
@@ -95,7 +112,9 @@ class LogManager extends BaseModule
     public function init()
     {   
         
+        $this->requestSaved = null;
         $this->sessionSaved = null;
+        $this->persistQueue = array();
         $this->logRequest();
         
     }        
@@ -105,8 +124,39 @@ class LogManager extends BaseModule
 // METODI PUBBLICI       
 // ******************************************************************************************************** 
  
+    /**
+    * Crea un log e lo salva
+    * 
+    * @param mixed $type
+    * @param mixed $level
+    * @param mixed $short
+    * @param mixed $long
+    * @param mixed $info
+    * @param mixed $taskId
+    * @param mixed $parentId
+    */
     private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    {   
+        $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId);
+        $this->saveLog($log);   
+    }
+
+    /**
+    * Ritorna un oggetto Log compilato pronto per il salvataggio
+    * 
+    * @param mixed $type
+    * @param mixed $level
+    * @param mixed $short
+    * @param mixed $long
+    * @param mixed $info
+    * @param mixed $taskId
+    * @param mixed $parentId
+    * @return Log
+    */
+    private function getRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
     {
+        if (!$this->isLoggable($level)) return null;
+        
         $newLog = new Log();
         $newLog->setSessionId($this->session->getId());
         $newLog->setRequestId($this->tgKernel->requestId);
@@ -117,12 +167,55 @@ class LogManager extends BaseModule
         $newLog->setUser(null);
         $newLog->setInfo($info);
 
-        // salvo il log
-        $this->em->persist($newLog);
-        $this->em->flush();
+        return $newLog;
 
     } 
     
+    private function saveLog($log, $forceImmediate = false)
+    {              
+        return (!$this->enableQueue || $forceImmediate) ?  $this->persisteLog($log) : $this->addToQueue($log);       
+    }
+    
+    private function persisteLog($log, $flush = true)
+    {
+        if (is_null($log)) return false;
+        
+        $this->em->persist($log);
+        if($flush) { $this->em->flush(); }
+        
+    }
+
+    private function addToQueue($newLog)
+    {
+        if (is_null($newLog)) return false;
+        
+        // aggiungo il log alla coda dei log da salvare
+        $this->persistQueue[] = $newLog;
+    }    
+    
+    private function flushQueue()
+    {
+        if (!(count($this->persistQueue) > 0)) return false;
+        
+        foreach ($this->persistQueue as $idx=>$log) {
+            $this->persisteLog($log, false);
+            unset($this->persistQueue[$idx]);
+        }
+        
+        $this->em->flush();
+        return true;
+    }    
+    
+    
+    private function isLoggable($level)
+    {
+        return ($this->isEnabled() && $this->maxLogLevel >= $level);    
+    }
+
+//******************************************
+    
+
+
     // Salva la sessione nel db
     public function logSession()
     {
@@ -135,7 +228,7 @@ class LogManager extends BaseModule
               
               if (!$this->keepAlive) return false;
               
-              $session = $this->getSessionSaved();
+              $session = $this->getLogSessionSaved();
               $session->setLastActivity(new \DateTime());
               
               $this->em->persist($session);
@@ -145,8 +238,99 @@ class LogManager extends BaseModule
                 
             } 
         
-        //save the session record
+        // a volte è capitato che ricarica una sessione con lo stesso id;
+        // quindi provo a ricaricarlo comunque dal db
+        $newLogSession = $this->getLogSessionSaved();
+
+        // persisto nel db
+        $this->em->persist($newLogSession);
+        $this->em->flush();
+        
+        $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
+        $this->sessionSaved = $newLogSession;
+    }
+
+
+    // ************ EVENTS CONTROLLER *******************
+
+    // Logga una request
+    public function logRequest($forceSave = false)
+    {
+        // se i permessi lo consentono salvo la request
+        if (!$this->saveRequest && !$forceSave) return false;
+        
+        if ($this->requestSaved) return false;
+        
+        $info = $this->tgKernel->requestInfo;        
+        $this->addRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
+
+        $this->requestSaved = true;
+        
+    }
+    
+    // Logga una eccezione
+    public function logException(\Exception $exception)
+    {
+        // Se avviene prima del salvataggio, la salvo, se è già salvata salta da solo
+        $this->logRequest(true);
+        
+        // Aggiungo il log dell'eccezione        
+        $info = array();        
+        $info['code'] = $exception->getCode();        
+        $info['file'] = $exception->getFile();        
+        $info['line'] = $exception->getLine();        
+        $info['message'] = $exception->getMessage();        
+        $info['trace'] = $exception->getTrace();        
+        
+        $this->addRawLog(self::TYPE_GENERIC_EXEPTION, self::LEVEL_WARNING, '', '', $info);
+                
+    }
+    
+    // Logga una response
+    public function logResponse(Response $response)
+    {
+        // se i permessi lo consentono salvo la request
+        //if (!$this->saveRequest) return false;
+        if (!$this->requestSaved) return false;
+
+        // Aggiungo il log della response        
+        $info = array();        
+        $info['statusCode'] = $response->getStatusCode();
+        $info['charset'] = $response->getCharset();
+        $info['headers'] = $response->headers->all();
+        
+        $this->addRawLog(self::TYPE_SAVE_RESPONSE, self::LEVEL_SYSTEM, '', '', $info);
+
+    }
+    
+    // Chiude i log
+    public function shutdown($event)
+    {
+        $this->flushQueue();
+    }
+    
+
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
+
+    // Ritorna l'oggetto di sessione salvato, se non lo trova nell'oggetto lo carica dal db
+    private function getLogSessionSaved()
+    {        
+        if (is_null($this->sessionSaved))                 
+            $this->sessionSaved = $this->em->getRepository("TechGSfBaseprjBundle:LogSession")->find($this->session->getId());
+        
+        if (is_null($this->sessionSaved))
+            $this->sessionSaved = $this->getNewLogSessionObj(); 
+        
+        return $this->sessionSaved;
+    }
+ 
+     // Ritorna un nuovo oggetto di sessione pronto per essere salvato
+    private function getNewLogSessionObj()
+    {        
         $newLogSession = new LogSession();
+        //save the session record
         $newLogSession->setId($this->session->getId());
 
         // Collect User info
@@ -156,39 +340,9 @@ class LogManager extends BaseModule
         $newLogSession->setInfoUser( json_encode($userInfo) );
         
         // Collect Geo info
-        $newLogSession->setInfoGeo( json_encode($this->tgKernel->userGeoPosition->getLogInfo()) );         
+        $newLogSession->setInfoGeo( json_encode($this->tgKernel->userGeoPosition->getLogInfo()) );
         
-        // persisto nel db
-        $this->em->persist($newLogSession);
-        $this->em->flush();
-        
-        $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
-        $this->sessionSaved = $newLogSession;
-    }
-    
-    
-    public function logRequest()
-    {
-        // se i permessi lo consentono salvo la request
-        if (!$this->saveRequest) return false;
-        
-        $info = $this->tgKernel->requestInfo;        
-        $this->addRawLog(self::TYPE_GENERIC_APP, self::LEVEL_APP, '', '', $info);
-        
-    }
-    
-
-// ********************************************************************************************************       
-// METODI PRIVATI       
-// ********************************************************************************************************     
-
-    // Ritorna l'oggetto di sessione salvato, se non lo trova nell'oggetto lo carica dal db
-    private function getSessionSaved()
-    {        
-        if (is_null($this->sessionSaved))                 
-            $this->sessionSaved = $this->em->getRepository("TechGSfBaseprjBundle:LogSession")->find($this->session->getId());
-        
-        return $this->sessionSaved;
+        return $newLogSession; 
     }
  
 
@@ -201,6 +355,7 @@ class LogManager extends BaseModule
     {
         
         self::setSingleConf(self::CONF_LOG_LEVEL, $config, $container);
+        self::setSingleConf(self::CONF_ENABLE_QUEUE, $config, $container);
         self::setSingleConf(self::CONF_SAVE_SESSION, $config, $container);
         self::setSingleConf(self::CONF_SAVE_REQUEST, $config, $container);
         self::setSingleConf(self::CONF_SAVE_LAST_ACTIVITY, $config, $container);

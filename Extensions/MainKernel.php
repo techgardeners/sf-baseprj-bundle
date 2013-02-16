@@ -13,6 +13,13 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
 
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Locale\Locale;
@@ -107,9 +114,16 @@ class MainKernel
         foreach($this->modules as $nameModule => $moduleObj) {
             $moduleObj->initModule();
         }
-        
+
+        // A questo punto sono inizilizzato
+        $this->isInit = true;
+
         // a questo punto ho tutti i moduli pronti        
-        $this->addDebugLap('End init module');
+        $this->addDebugLap('End init kernel');
+        
+        // *********************************************************************
+        // Da qui si potrebbe definire PostInit
+        // *********************************************************************
         
         $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
         
@@ -124,11 +138,44 @@ class MainKernel
                 
         $this->getLogManager()->logSession();
         
-        // A questo punto sono inizilizzato
-        $this->isInit = true;
-        
+        // *********************************************************************
+        // Qui ho finito completamente il lavoro del kernel a livello request
+        // *********************************************************************        
      }    
 
+     
+    public function elaborateException(\Exception $exception) 
+    {
+        $logM = $this->getLogManager();
+        $logM->logException($exception);
+        
+    }
+     
+    public function elaborateController(FilterControllerEvent $event) 
+    {
+        
+    }
+     
+    public function elaborateView(GetResponseForControllerResultEvent $event) 
+    {
+        
+    }
+     
+    public function elaborateResponse(FilterResponseEvent $event) 
+    {
+        $logM = $this->getLogManager();       
+        $logM->logResponse($event->getResponse());        
+        
+    }
+     
+    public function elaborateTerminate($event) 
+    {
+        $logM = $this->getLogManager();
+        $logM->shutdown($event);
+        
+    }
+     
+     
 /* ---------------------------------------------- */
 /*              METODI PUBBLICI                   */
 /* ---------------------------------------------- */
@@ -288,6 +335,7 @@ class MainKernel
         $requestInfo['host'] = $request->getHost();
         $requestInfo['queryString'] = $request->getQueryString();
         $requestInfo['format'] = $request->getRequestFormat();
+        $requestInfo['route'] = $request->get('_route');
         
         return $requestInfo;
     }

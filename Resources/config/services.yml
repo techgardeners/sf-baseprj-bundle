@@ -16,9 +16,43 @@ services:
         arguments: [@techg.kernel]
         tags:
             - { name: twig.extension }
+
+
+################# EVENTS LISTER #####################
             
-    tech_g_sf_baseprj.onRequest_listener:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\AppOnRequestListener
+    tech_g_sf_baseprj.kernel.request:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
         arguments: [ @techg.kernel ]
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }              
+            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }
+
+    tech_g_sf_baseprj.kernel.exception:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }            
+
+    tech_g_sf_baseprj.kernel.controller:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }                        
+
+    tech_g_sf_baseprj.kernel.view:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.view, method: onKernelView }                        
+
+    tech_g_sf_baseprj.kernel.response:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }                        
+
+    tech_g_sf_baseprj.kernel.terminate:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }                        
+            
