@@ -303,7 +303,7 @@ class LogManager extends BaseModule
         $info['charset'] = $response->getCharset();
         $info['headers'] = $response->headers->all();
         
-        $this->addRawLog(self::TYPE_SAVE_RESPONSE, self::LEVEL_SYSTEM, '', '', $info);
+        $this->addRawLog(self::TYPE_SAVE_RESPONSE, self::LEVEL_SYSTEM, '', '', $info); 
 
     }
     

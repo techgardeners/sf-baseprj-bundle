@@ -1,8 +1,8 @@
 global:
     app:
-        name: "gPanel"
+        name: "gPanel_GB"
 info:
-    title: "Info page"
+    title: "Info page GB"
     section:
         bundle:
             label: "Bundle"

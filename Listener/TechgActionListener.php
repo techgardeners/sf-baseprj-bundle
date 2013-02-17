@@ -47,11 +47,15 @@ class TechgActionListener
   
     public function onRequestEvent(GetResponseEvent $event)
     {
-
-
-        if ($this->skipSubRequest($event)) return;
-
+        
         $request = $event->getRequest();
+        
+        // Viene richiamato SOLO nelle richieste principali
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+            $this->mainKernel->initSubRequest($request);
+            return true;
+        }
+        
         // Richiamo l'init del kernel per inniettargli la request
         // (per problemi di scope dei servizi http://symfony.com/it/doc/current/cookbook/service_container/scopes.html)
         $this->mainKernel->init($request);  

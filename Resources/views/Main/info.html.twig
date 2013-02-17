@@ -2,113 +2,142 @@
 
 {% block main_container_content %}
 
-<style type="text/css">
-    .active { font-weight: bold; color: green; }
-    .deactive { font-weight: bold; color: red; }
-    .noguess { font-style: italic; color: #999; }
-</style>
-    <ul>
-            {% for  time,lap in tgKernel.debugManager.getLapArr %}
-                <li><span class="key">{{ lap.startDiff }} </span>: {{ lap.info }} [{{ lap.lastDiff }} s]
-                </li>
-            {% endfor %} 
-</ul>            
-    <h1>Test page</h1>
+    <style type="text/css">
+        ._active { font-weight: bold; color: green; }
+        .deactive { font-weight: bold; color: red; }
+        .noguess { font-style: italic; color: #999; }
+    </style>
 
-    <h3>Bundle info</h3>
-    <p>
-        <ul>
-            <li><span class="key">{{ "info.system.bundlename" | trans }}</span>: {{ "info.bundlename" | trans }}</li>
-            <li><span class="key">{{ "info.system.bundleversion" | trans }}</span>: {{ tgKernel.getBundleVersion | default("info.value.noguess"|trans) }}</li>
-        </ul>
+    <h1>{{ "info.title" |trans }}</h1>
+    <div class="tabbable"> <!-- Only required for left/right tabs -->
+      <ul class="nav nav-tabs">
+        <li class="active"><a href="#bundle" data-toggle="tab">{{ "info.section.bundle.label" | trans }}</a></li>
+        <li><a href="#kernel" data-toggle="tab">{{ "info.section.kernel.label" | trans }}</a></li>
+        <li><a href="#request" data-toggle="tab">{{ "info.section.request.label" | trans }}</a></li>
+        <li><a href="#geo" data-toggle="tab">{{ "info.section.geo.label" | trans }}</a></li>
+        <li><a href="#mobile" data-toggle="tab">{{ "info.section.mobile.label" | trans }}</a></li>
+        <li><a href="#user" data-toggle="tab">{{ "info.section.user.label" | trans }}</a></li>
+        <li><a href="#browser" data-toggle="tab">{{ "info.section.browser.label" | trans }}</a></li>
+        <li><a href="#profiler" data-toggle="tab">{{ "info.section.profiler.label" | trans }}</a></li>
+      </ul>
+      <div class="tab-content">
+        <div class="tab-pane active" id="bundle">
+            <h3>{{ "info.section.bundle.title" | trans }}</h3>
+            <p>
+                <ul>
+                    <li><span class="key">{{ "info.system.bundlename" | trans }}</span>: {{ "info.bundlename" | trans }}</li>
+                    <li><span class="key">{{ "info.system.bundleversion" | trans }}</span>: {{ tgKernel.getBundleVersion | default("info.value.noguess"|trans) }}</li>
+                </ul>
 
-    </p>
-    <h3>Kernel info</h3>
-    <p>
-        <ul>
-            <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.value.noguess"|trans) }}</li>
-            {% for  modname,modobj in tgKernel.modules %}
-                <li><span class="key">{{ ("info.module." ~ modname) | trans }}</span>:
-                    {% if tgKernel.isModuleEnable(modname) %}
-                        {{ 'info.value.active' | trans |raw }}
-                    {% else %}
-                        {{ 'info.value.noactive' | trans |raw }}
-                    {% endif %}
-                </li>
-            {% endfor %}                      
-        </ul>
-    </p>
-    <h3>Request info</h3>
-    <p>
-        <ul>
-            <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
-            <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.host }}</li>
-            <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ 'info.value.true' |trans |raw }} {% else %} {{ 'info.value.false' |trans |raw }} {% endif %}</li>
-            <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
-            <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>
+            </p>
+        </div>
+        <div class="tab-pane" id="kernel">
+            <h3>{{ "info.section.kernel.title" | trans }}</h3>
+            <p>
+                <ul>
+                    <li><span class="key">{{ "info.system.kernelversion" | trans }}</span>: {{ tgKernel.getKernelVersion | default("info.value.noguess"|trans) }}</li>
+                    {% for  modname,modobj in tgKernel.modules %}
+                        <li><span class="key">{{ ("info.module." ~ modname) | trans }}</span>:
+                            {% if tgKernel.isModuleEnable(modname) %}
+                                {{ 'info.value.active' | trans |raw }}
+                            {% else %}
+                                {{ 'info.value.noactive' | trans |raw }}
+                            {% endif %}
+                        </li>
+                    {% endfor %}                      
+                </ul>
+            </p>
+        </div>
+        <div class="tab-pane" id="request">
+            <h3>{{ "info.section.request.title" | trans }}</h3>
+            <p>
+                <ul>
+                    <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
+                    <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.host }}</li>
+                    <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ 'info.value.true' |trans |raw }} {% else %} {{ 'info.value.false' |trans |raw }} {% endif %}</li>
+                    <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
+                    <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>
 
-            <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
-                {% if tgKernel.isGuessLocaleEnabled %}
-                    {{ tgKernel.guessedLocale.getLocale | default("info.value.noguess"|trans) }}
-                {% else %}
-                    {{ 'system.guesslocale.noactive' | trans }}
-                {% endif %}
-            </li>
-        </ul>
-    </p>
-
-    <h3>User info</h3>
-    <p>
-        <ul>
-            <li><span class="key">{{ "info.user.clientIp" | trans }}</span>: {{ tgKernel.clientIp }}</li>
-        </ul>
-    </p>
-    
-    <h3>Geolocation info</h3>
-    <p>https://github.com/willdurand/BazingaGeocoderBundle</p>
-    {% if tgKernel.isGeoEnabled %}
-        <p>
-            <ul>
-                {% for k,value in tgKernel.userGeoPosition.toArray(true)  %}
-                    <li><span class="key">{{ ("info.geo." ~ k) | trans }}</span>: {{ value | default("info.value.noguess" |trans) | raw }}</li>
-                {% endfor %}
-            </ul>
-        </p>
-    {% else %}
-        <p>{{ 'system.geo.noactive' | trans }}</p>
-    {% endif %}
-    
-    <h3>Mobile detection info</h3>
-    <p>https://github.com/suncat2000/MobileDetectBundle</p>
-    {% if tgKernel.isMobileDetectEnabled %}
-        <p>
-        <ul>
-            <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_tablet" | trans }}</span>: {% if is_tablet() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_iphone" | trans }}</span>: {% if is_device('iphone') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_ipad" | trans }}</span>: {% if is_device('ipad') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_device_htc" | trans }}</span>: {% if is_device('htc') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_full_view" | trans }}</span>: {% if is_full_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_mobile_view" | trans }}</span>: {% if is_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_tablet_view" | trans }}</span>: {% if is_tablet_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-            <li><span class="key">{{ "info.mobile.is_not_mobile_view" | trans }}</span>: {% if is_not_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
-        </ul>
-        </p>
-    {% else %}
-        <p>{{ 'system.mobileDetection.noactive' | trans }}</p>
-    {% endif %}
-    
-    <h3>Browser info</h3>
-    {% if tgKernel.userBrowserInfo is not empty %}
-        <p>
-            <ul>
-                {% for k,value in tgKernel.userBrowserInfo  %}
-                    <li><span class="key">{{ "info.browser." ~ k | trans }}</span>: {{ value | default("info.value.noguess"|trans) | raw }}</li>
-                {% endfor %}
-            </ul>
-        </p>
-    {% else %}
-        <p>{{ 'system.geo.noactive' | trans }}</p>
-    {% endif %}
+                    <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
+                        {% if tgKernel.isGuessLocaleEnabled %}
+                            {{ tgKernel.guessedLocale | default("info.value.noguess"|trans) }}
+                        {% else %}
+                            {{ 'system.guesslocale.noactive' | trans }}
+                        {% endif %}
+                    </li>
+                </ul>
+            </p>
+        </div>
+        <div class="tab-pane" id="mobile">
+            <h3>{{ "info.section.mobile.title" | trans }}</h3>
+            <p>{{ "info.section.mobile.subtitle" | trans }}</p>
+            {% if tgKernel.isMobileDetectEnabled %}
+                <p>
+                <ul>
+                    <li><span class="key">{{ "info.mobile.is_mobile" | trans }}</span>: {% if is_mobile() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_tablet" | trans }}</span>: {% if is_tablet() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_device_iphone" | trans }}</span>: {% if is_device('iphone') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_device_ipad" | trans }}</span>: {% if is_device('ipad') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_device_htc" | trans }}</span>: {% if is_device('htc') %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_full_view" | trans }}</span>: {% if is_full_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_mobile_view" | trans }}</span>: {% if is_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_tablet_view" | trans }}</span>: {% if is_tablet_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                    <li><span class="key">{{ "info.mobile.is_not_mobile_view" | trans }}</span>: {% if is_not_mobile_view() %}{{ 'info.value.true' | trans |raw }} {% else %} {{ 'info.value.false' | trans |raw }} {% endif %} </li>
+                </ul>
+                </p>
+            {% else %}
+                <p>{{ 'system.mobileDetection.noactive' | trans }}</p>
+            {% endif %}
+        </div>
+        <div class="tab-pane" id="geo">
+            <h3>{{ "info.section.geo.title" | trans }}</h3>
+            <p>{{ "info.section.geo.subtitle" | trans }}</p>
+            {% if tgKernel.isGeoEnabled %}
+                <p>
+                    <ul>
+                        {% for k,value in tgKernel.userGeoPosition.toArray(true)  %}
+                            <li><span class="key">{{ ("info.geo." ~ k) | trans }}</span>: {{ value | default("info.value.noguess" |trans) | raw }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% else %}
+                <p>{{ 'system.geo.noactive' | trans }}</p>
+            {% endif %}
+        </div>
+        <div class="tab-pane" id="user">
+            <h3>{{ "info.section.user.title" | trans }}</h3>
+            <p>
+                <ul>
+                    <li><span class="key">{{ "info.user.clientIp" | trans }}</span>: {{ tgKernel.clientIp }}</li>
+                </ul>
+            </p>
+        </div>
+        <div class="tab-pane" id="browser">
+            <h3>{{ "info.section.browser.title" | trans }}</h3>
+            {% if tgKernel.userBrowserInfo is not empty %}
+                <p>
+                    <ul>
+                        {% for k,value in tgKernel.userBrowserInfo  %}
+                            <li><span class="key">{{ "info.browser." ~ k | trans }}</span>: {{ value | default("info.value.noguess"|trans) | raw }}</li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% else %}
+                <p>{{ 'system.geo.noactive' | trans }}</p>
+            {% endif %}
+        </div>        
+        <div class="tab-pane" id="profiler">
+            <h3>{{ "info.section.profiler.title" | trans }}</h3>
+            <p>
+                <ul>
+                    {% for  time,lap in tgKernel.debugManager.getLapArr %}
+                        <li><span class="key">{{ lap.startDiff }} </span>: {{ lap.info }} [{{ lap.lastDiff }} s]
+                        </li>
+                    {% endfor %} 
+                </ul>             
+            </p>
+        </div>
+      </div>
+    </div>           
 
 {% endblock %}

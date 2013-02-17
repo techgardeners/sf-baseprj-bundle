@@ -1,1 +1,25 @@
 {% extends "TechGSfBaseprjBundle::base_dist.html.twig" %}
+
+    {% block navbar %}
+        
+        {% render url("fragment_navbar", { 'route': app.request.get('_route') }) with {}, { 'standalone': true } %}           
+        
+    {% endblock %}
+
+    {% block main_content %}
+        <div class="container main">
+            <div class="row">
+                <div class="span3">
+                    <ul class="nav nav-list affix">
+                        <li><a href="{{ path('tech_g_baseprj_bundle_info') }}">Information</a></li>
+                        <li><a href="{{ path('tech_g_baseprj_bundle_info') }}">Configuration</a></li>
+                        <li><a href="{{ path('tech_g_baseprj_bundle_info') }}">Live session</a></li>
+                    </ul>        
+                </div>
+                <div class="span9">
+                    {% block main_container_content %}{% endblock %}
+                </div>
+            </div>
+        </div>   
+    {% endblock %}     
+    

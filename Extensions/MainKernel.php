@@ -58,6 +58,7 @@ class MainKernel
     public  $clientIp = null;                           // Hold user ip
     public  $userGeoPosition = null;                    // Hold user geoInfo
     public  $userBrowserInfo = null;                    // Hold user browser info
+    public  $requestLocale = null;                      // Hold locale setted
     public  $guessedLocale = null;                      // Hold locale guessed
     
     public  $requestId = null;                          
@@ -115,16 +116,6 @@ class MainKernel
             $moduleObj->initModule();
         }
 
-        // A questo punto sono inizilizzato
-        $this->isInit = true;
-
-        // a questo punto ho tutti i moduli pronti        
-        $this->addDebugLap('End init kernel');
-        
-        // *********************************************************************
-        // Da qui si potrebbe definire PostInit
-        // *********************************************************************
-        
         $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
         
         // If Locale is not set on Uri guessed right Locale
@@ -132,17 +123,39 @@ class MainKernel
             $request->setLocale($this->guessedLocale);    
         }            
 
+        $this->requestLocale = $request->getLocale();
+        
         // Qui implemento la white e la black list
         $this->getBlackListManager()->executeFilter();
         $this->getWhiteListManager()->executeFilter();
                 
         $this->getLogManager()->logSession();
         
+        // ************************************************************************************************
+        // Qui ho finito completamente il lavoro del kernel a livello request  per la richiesta principale
+        // ************************************************************************************************
+        
+        // A questo punto sono inizilizzato
+        $this->isInit = true;
+
+        // a questo punto ho tutti i moduli pronti        
+        $this->addDebugLap('End init kernel');        
+
         // *********************************************************************
-        // Qui ho finito completamente il lavoro del kernel a livello request
-        // *********************************************************************        
+        // Da qui si potrebbe definire PostInit
+        // *********************************************************************                
      }    
 
+     
+    public function initSubRequest(Request $request)
+    {
+        
+        if ($this->isInit()){
+            // nelle richieste secondarie risetto il locale della request a quello scelto        
+            $request->setLocale($this->requestLocale);            
+        }
+
+    }
      
     public function elaborateException(\Exception $exception) 
     {

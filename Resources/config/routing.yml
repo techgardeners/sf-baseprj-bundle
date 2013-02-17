@@ -1,3 +1,7 @@
+tech_g_baseprj_bundle_home:
+    pattern:  /
+    defaults: { _controller: TechGSfBaseprjBundle:Main:index }
+
 tech_g_baseprj_bundle_info:
     pattern:  /info
     defaults: { _controller: TechGSfBaseprjBundle:Main:info }
@@ -5,3 +9,18 @@ tech_g_baseprj_bundle_info:
 tech_g_baseprj_bundle_base_error:
     pattern:  /error
     defaults: { _controller: TechGSfBaseprjBundle:Main:error }    
+    
+    
+########################################################################################
+# Sezione FRAGMENT
+fragment_navbar:
+    pattern:  /fragment/navbar/{route}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:navbar }
+
+fragment_header:
+    pattern:  /fragment/header/{route}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:header }
+
+fragment_footer:
+    pattern:  /fragment/footer
+    defaults: { _controller: TechGSfBaseprjBundle:Component:footer }

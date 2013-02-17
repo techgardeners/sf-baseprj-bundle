@@ -1,0 +1,34 @@
+      <div class="navbar navbar-inverse navbar-fixed-top">
+          <div class="navbar-inner">
+            <div class="container">
+         
+              <!-- .btn-navbar is used as the toggle for collapsed navbar content -->
+              <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </a>
+         
+              <!-- Be sure to leave the brand out there if you want it shown -->
+              <a class="brand" href="{{ path('tech_g_baseprj_bundle_home') }}">{{ "global.app.name" |trans }}</a>
+            <div class="btn-group pull-left">
+              <button class="btn btn-small">{{ app.request.locale }}</button>
+              <button class="btn  btn-small dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu">
+                <!-- dropdown menu links -->
+              </ul>
+            </div>
+         
+              <!-- Everything you want hidden at 940px or less, place within here -->
+              <div class="nav-collapse collapse">
+                <!-- .nav, .navbar-search, .navbar-form, etc -->
+                <ul class="nav">
+                  <li class="divider-vertical"></li>
+                </ul>
+              </div>
+         
+            </div>
+          </div>
+        </div>
