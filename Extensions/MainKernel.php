@@ -128,8 +128,8 @@ class MainKernel
         $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
         
         // If Locale is not set on Uri guessed right Locale
-        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($request, $this->em, $this->getGeocoderManager())) {
-            $request->setLocale($this->guessedLocale->getLocale());    
+        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($request)) {
+            $request->setLocale($this->guessedLocale);    
         }            
 
         // Qui implemento la white e la black list
@@ -538,6 +538,20 @@ class MainKernel
         return $this->container;
     }    
 
+    public function getContainerElement($name)
+    {
+        return $this->container->get($name);
+    }    
+    
+    
+    public function getUser()
+    {
+        $securityContext = $this->getContainerElement('security.context');
+        $token = $securityContext->getToken();
+        return $token->getUser();
+    }    
+    
+    
     public function getSession()
     {
         return $this->session;

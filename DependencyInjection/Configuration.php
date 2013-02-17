@@ -110,6 +110,9 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode(SettingManager::SUFFIX_ENABLE)
                             ->defaultFalse()
                         ->end()
+                        ->booleanNode(GeocoderManager::CONF_SAVE_SESSION)
+                            ->defaultTrue()
+                        ->end()                        
                     ->end()
                 ->end()
             ->end();
@@ -125,6 +128,12 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode(SettingManager::SUFFIX_ENABLE)
                             ->defaultFalse()
                         ->end()
+                        ->booleanNode(GuessLocaleManager::CONF_SAVE_SESSION)
+                            ->defaultTrue()
+                        ->end()                        
+                        ->booleanNode(GuessLocaleManager::CONF_ONLY_FIRST_REQUEST)
+                            ->defaultTrue()
+                        ->end()                        
                     ->end()
                 ->end()
             ->end();

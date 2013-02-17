@@ -32,6 +32,7 @@ class ModuleManager
     protected $session;
     protected $em;
     protected $tgKernel;    
+    protected $serializer;    
  
     
     public function __construct()
@@ -50,6 +51,7 @@ class ModuleManager
         $this->settingManager = $this->tgKernel->settingManager;
         $this->session = $this->tgKernel->getSession();
         $this->em = $this->tgKernel->getEntityManager();
+        $this->serializer =  \JMS\Serializer\SerializerBuilder::create()->build();
 
         $this->enabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
         

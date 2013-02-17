@@ -18,7 +18,7 @@ use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity as BaseEntity;
  * Language
  *
  * @ORM\Table(name="language")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\LanguageRepository")
  */
 class Language extends BaseEntity
 {

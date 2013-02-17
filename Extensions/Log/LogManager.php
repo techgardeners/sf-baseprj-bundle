@@ -338,13 +338,18 @@ class LogManager extends BaseModule
         $newLogSession->setId($this->session->getId());
 
         // Collect User info
+        // Devo ricavare l'utente e se è loggato
+        $user = $this->tgKernel->getUser();
+        
         $userInfo = array();
+        $userInfo['userInfo'] = $this->serializer->serialize($user, 'json');
         $userInfo['ip'] = $this->tgKernel->clientIp;
         $userInfo['browserInfo'] = $this->tgKernel->userBrowserInfo;
+
         $newLogSession->setInfoUser( json_encode($userInfo) );
         
         // Collect Geo info
-        $newLogSession->setInfoGeo( json_encode($this->tgKernel->userGeoPosition->getLogInfo()) );
+        $newLogSession->setInfoGeo( $this->serializer->serialize($this->tgKernel->userGeoPosition, 'json') );
         
         return $newLogSession; 
     }

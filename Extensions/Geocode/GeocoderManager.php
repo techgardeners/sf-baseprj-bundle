@@ -20,10 +20,13 @@ use TechG\Bundle\SfBaseprjBundle\Entity\GeoPosition;
 class GeocoderManager extends BaseModule
 {    
     const MODULE_NAME = 'geodecode';
+    const CONF_SAVE_SESSION = 'savesession';    
     
     // Nome della variabile in sessione contenente la cache della configurazione
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/geocode/cache';
 
+    private $saveSession;
+    
     private $userGeoPositionCache;
     public $geocoder; 
 
@@ -33,7 +36,7 @@ class GeocoderManager extends BaseModule
     
     public function hydrateConfinguration(MainKernel $tgKernel)
     {             
-     
+        $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);     
     }       
 
     public function init()
@@ -70,14 +73,17 @@ class GeocoderManager extends BaseModule
             }
             
             // Check if in session
-            if ($this->session->has(self::SESSION_VARS_CACHE)) {
+            if ($this->saveSession && $this->session->has(self::SESSION_VARS_CACHE)) {
             
                 $this->userGeoPositionCache = $this->session->get(self::SESSION_VARS_CACHE);    
             
             } else {
                
                 $this->userGeoPositionCache = $this->geocoder->using('geo_plugin')->geocode($clientIp, true);           
-                $this->session->set(self::SESSION_VARS_CACHE, $this->userGeoPositionCache);                 
+                
+                if ($this->saveSession) {
+                    $this->session->set(self::SESSION_VARS_CACHE, $this->userGeoPositionCache);                    
+                }                 
             }
             
             $geoPositionObj->fromArray($this->userGeoPositionCache);
@@ -98,6 +104,7 @@ class GeocoderManager extends BaseModule
     // Setta le configurazioni per il modulo in oggetto
     public static function setConfiguration(array $config, ContainerBuilder $container)
     {
+        self::setSingleConf(self::CONF_SAVE_SESSION, $config, $container);        
     }    
     
     
