@@ -220,7 +220,7 @@ class LogManager extends BaseModule
     public function logSession()
     {
        
-        if (!$this->saveSession) return false;
+        if (!$this->isEnabled() || !$this->saveSession) return false;
 
         // Check if just in session
         if ($this->session->has(self::SESSION_VARS_SAVED_SESSION) &&
@@ -256,10 +256,14 @@ class LogManager extends BaseModule
     // Logga una request
     public function logRequest($forceSave = false)
     {
+        
+        if (!$this->isEnabled()) return false;
+        
         // se i permessi lo consentono salvo la request
         if (!$this->saveRequest && !$forceSave) return false;
         
         if ($this->requestSaved) return false;
+        
         
         $info = $this->tgKernel->requestInfo;        
         $this->addRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
