@@ -29,6 +29,8 @@ class LogSessionRepository extends BaseRepository
                   WHERE 
                       (DATE_ADD(last_activity,INTERVAL $session_active_duration MINUTE) > NOW()) OR
                       (last_activity IS NULL AND DATE_ADD(log_date,INTERVAL $session_active_duration MINUTE) > NOW())
+                  ORDER BY
+                       last_activity DESC, log_date DESC
                   
                   ".(($limit) ? $this->addLimit($limit) : '')."";             
 

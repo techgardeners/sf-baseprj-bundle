@@ -69,7 +69,7 @@ class GeocoderManager extends BaseModule
             $geoPositionObj->setDataOrigin('ip');
             
             if (in_array($clientIp, array('127.0.0.1', 'fe80::1', '::1'))) {
-                $clientIp = '190.218.72.14';    
+                $clientIp = '8.8.8.8';    
             }
             
             // Check if in session

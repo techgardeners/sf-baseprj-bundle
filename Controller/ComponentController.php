@@ -11,11 +11,12 @@
 namespace TechG\Bundle\SfBaseprjBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Ivory\GoogleMapBundle\Model\MapTypeId;
+use Ivory\GoogleMapBundle\Model\Overlays\Animation;
 
 class ComponentController extends Controller
 {
 
-    
     // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
     function time_ago($date,$granularity=2) {
         
@@ -61,7 +62,8 @@ class ComponentController extends Controller
         $startSession = $this->time_ago($sessione->getLogDate());
         $lastActivity = $this->time_ago($sessione->getLastActivity());
         
-        $map = $this->get('ivory_google_map.map');
+        $map = $this->getMap($geoInfo, $sessione);
+
         
         return $this->render('TechGSfBaseprjBundle:Component:render_session.html.twig', array('sessione' => $sessione,
                                                                                               'start' => $startSession,
@@ -72,6 +74,57 @@ class ComponentController extends Controller
                                                                                                 ));
     }    
     
+
+
+
+    public function getMap($geoInfo, $sessione)
+    {
+        $map = $this->get('ivory_google_map.map');
+
+        // Configure your map options
+        $map->setPrefixJavascriptVariable('map_'.$sessione->getId().'_');
+        $map->setHtmlContainerId('map_canvas_'.$sessione->getId());
+
+        $map->setAsync(false);
+
+        $map->setAutoZoom(false);
+
+        $map->setCenter($geoInfo['latitude'], $geoInfo['longitude'], true);
+        $map->setMapOption('zoom', 4);
+
+
+        $map->setMapOption('mapTypeId', MapTypeId::ROADMAP);
+
+        $map->setMapOption('disableDefaultUI', true);
+        $map->setMapOption('disableDoubleClickZoom', false);
+
+        $map->setStylesheetOptions(array(
+            'width' => '75px',
+            'height' => '75px'
+        ));
+        
+        
+        // MARKER
+        
+        // Requests the ivory google map marker service
+        $marker = $this->get('ivory_google_map.marker');
+
+        // Configure your marker options
+        $marker->setPrefixJavascriptVariable('marker_'.$sessione->getId());
+        $marker->setPosition($geoInfo['latitude'], $geoInfo['longitude'], true);
+        $marker->setAnimation(Animation::DROP);
+
+        $marker->setOptions(array(
+            'clickable' => false,
+            'flat' => true
+        ));        
+        
+        $map->addMarker($marker);
+        
+        return $map;        
+    }
+
+
     
 // ********************************************************
 // GLOBAL FRAGMENTS

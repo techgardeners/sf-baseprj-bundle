@@ -1,9 +1,23 @@
+
         <div class="clearfix well well-small livesession">
             <div class="userPosition pull-right img-polaroid">
                 {{ google_map_container(map) }}
             </div>
+            <div class="geoInfo pull-right">
+                <span class="title">Geo Info</span>
+                <div class="ip">{{ "live.session.field.ip.label" |trans }}: <span>{{ userInfo.ip }}</span></div>                
+                <div class="country">{{ "live.session.field.city.label" |trans }}: <span>{{ geoInfo.city }}</span></div>                
+                <div class="country">{{ "live.session.field.region.label" |trans }}: <span>{{ geoInfo.region |raw }}</span></div>                
+                <div class="country">{{ "live.session.field.country.label" |trans }}: <span>{{ geoInfo.country }}</span></div>                
+            </div>
+            <div class="browserInfo pull-right">
+                <span class="title">Browser Info</span>
+                <div class="name">{{ "live.session.field.browser.label" |trans }}: <span>{{ userInfo.browserInfo.name }}</span></div>                
+                <div class="version">{{ "live.session.field.versione.label" |trans }}: <span>{{ userInfo.browserInfo.version }}</span></div>                
+                <div class="system">{{ "live.session.field.platform.label" |trans }}: <span>{{ userInfo.browserInfo.platform }}</span></div>               
+            </div>                       
             <div class="userImage pull-left img-polaroid {% if userInfo.userInfo is iterable %}auth{% endif %}"></div>
-            <div class="userInfo">
+            <div class="userInfo pull-left">
                 <div class="name">
                 {% if userInfo.userInfo is iterable %}
                     {{ userInfo.userInfo.username  }} <span class="email">[<a href="mailto:{{ userInfo.userInfo.email  }}">{{ userInfo.userInfo.email  }}</a>]</span>
@@ -24,4 +38,8 @@
                 
                 </div>                
             </div>
+
+
         </div>
+        {{ google_map_css(map) }}
+        {{ google_map_js(map) }}        

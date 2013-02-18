@@ -37,7 +37,18 @@ class TechgActionListener
         $request = $event->getRequest();
         
         // Viene richiamato SOLO nelle richieste principali
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() || preg_match('/^_(wdt|assetic|profiler|configurator)/', $request->get('_route'))) {
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() || $this->skipOtherRequest($request)) {
+            return true;
+        }
+        
+        return false;         
+    }
+    
+    private function skipOtherRequest($request)
+    {              
+        
+        // Viene richiamato SOLO nelle richieste principali
+        if (preg_match('/^_(wdt|assetic|profiler|configurator)/', $request->get('_route'))) {
             return true;
         }
         
@@ -50,7 +61,9 @@ class TechgActionListener
         
         $request = $event->getRequest();
         
-        // Viene richiamato SOLO nelle richieste principali
+        if ($this->skipOtherRequest($request)) return true;
+        
+        // Nelle richieste secondarie devo inizializzarlo uguale ma solo alcune cose
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             $this->mainKernel->initSubRequest($request);
             return true;

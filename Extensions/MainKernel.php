@@ -561,7 +561,7 @@ class MainKernel
     {
         $securityContext = $this->getContainerElement('security.context');
         $token = $securityContext->getToken();
-        return $token->getUser();
+        return (is_object($token)) ? $token->getUser() : null;
     }    
     
     

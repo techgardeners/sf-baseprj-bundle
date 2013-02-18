@@ -150,9 +150,9 @@ class LogSession extends BaseEntity
      * @param string $infoGeo
      * @return LogSession
      */
-    public function setInfoGeo($infoGeo)
+    public function setInfoGeo($infoGeo, $encode = true)
     {
-        $this->infoGeo = json_encode($infoGeo);
+        $this->infoGeo = ($encode) ? json_encode($infoGeo) : $infoGeo;
     
         return $this;
     }

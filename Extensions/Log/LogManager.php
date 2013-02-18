@@ -349,7 +349,7 @@ class LogManager extends BaseModule
         $newLogSession->setInfoUser( $userInfo );
         
         // Collect Geo info
-        $newLogSession->setInfoGeo( $this->serializer->serialize($this->tgKernel->userGeoPosition, 'json') );
+        $newLogSession->setInfoGeo( $this->serializer->serialize($this->tgKernel->userGeoPosition, 'json'), false);
         
         return $newLogSession; 
     }
