@@ -346,7 +346,7 @@ class LogManager extends BaseModule
         $userInfo['ip'] = $this->tgKernel->clientIp;
         $userInfo['browserInfo'] = $this->tgKernel->userBrowserInfo;
 
-        $newLogSession->setInfoUser( json_encode($userInfo) );
+        $newLogSession->setInfoUser( $userInfo );
         
         // Collect Geo info
         $newLogSession->setInfoGeo( $this->serializer->serialize($this->tgKernel->userGeoPosition, 'json') );

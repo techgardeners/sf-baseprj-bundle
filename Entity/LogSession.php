@@ -129,7 +129,7 @@ class LogSession extends BaseEntity
      */
     public function setInfoUser($infoUser)
     {
-        $this->infoUser = $infoUser;
+        $this->infoUser = json_encode($infoUser);
     
         return $this;
     }
@@ -139,9 +139,9 @@ class LogSession extends BaseEntity
      *
      * @return string 
      */
-    public function getInfoUser()
+    public function getInfoUser($array = true)
     {
-        return $this->infoUser;
+        return json_decode($this->infoUser, $array);
     }
 
     /**
@@ -152,7 +152,7 @@ class LogSession extends BaseEntity
      */
     public function setInfoGeo($infoGeo)
     {
-        $this->infoGeo = $infoGeo;
+        $this->infoGeo = json_encode($infoGeo);
     
         return $this;
     }
@@ -162,9 +162,9 @@ class LogSession extends BaseEntity
      *
      * @return string 
      */
-    public function getInfoGeo()
+    public function getInfoGeo($array = true)
     {
-        return $this->infoGeo;
+        return json_decode($this->infoGeo, $array);
     }
 
     /**
@@ -175,7 +175,7 @@ class LogSession extends BaseEntity
      */
     public function setInfo($info)
     {
-        $this->info = $info;
+        $this->info = json_encode($info);
     
         return $this;
     }
@@ -185,9 +185,9 @@ class LogSession extends BaseEntity
      *
      * @return string 
      */
-    public function getInfo()
+    public function getInfo($array = true)
     {
-        return $this->info;
+        return json_decode($this->info, $array);
     }
 
     /**

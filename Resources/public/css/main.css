@@ -3,3 +3,14 @@
    ========================================================================== */
 
  body { padding-top: 40px;}
+ 
+/* PAGINA LIVE SESSION */
+ 
+ /* RENDER SESSION */
+ .livesession .userImage { height: 75px; width: 75px; background: #FFF url(../img/gpanel/useranon.png) center center no-repeat;}
+ .livesession .userImage.auth { background-image: url(../img/gpanel/userlogged.png)}
+ .livesession .userPosition { height: 75px; width: 75px;}
+ .livesession .userInfo { margin: 0 95px; font-size: .9em;}
+ .livesession .userInfo .name { font-weight: bold; font-size: 1.1em; }
+ .livesession .userInfo .name .email { font-weight: normal; font-size: .9em; }
+ .livesession .userInfo .sessionid { line-height: 1em; font-size: .85em; color: #999; margin-bottom: 4px; }

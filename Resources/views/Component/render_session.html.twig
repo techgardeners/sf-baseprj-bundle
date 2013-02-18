@@ -1,0 +1,27 @@
+        <div class="clearfix well well-small livesession">
+            <div class="userPosition pull-right img-polaroid">
+                {{ google_map_container(map) }}
+            </div>
+            <div class="userImage pull-left img-polaroid {% if userInfo.userInfo is iterable %}auth{% endif %}"></div>
+            <div class="userInfo">
+                <div class="name">
+                {% if userInfo.userInfo is iterable %}
+                    {{ userInfo.userInfo.username  }} <span class="email">[<a href="mailto:{{ userInfo.userInfo.email  }}">{{ userInfo.userInfo.email  }}</a>]</span>
+                {% else %}
+                    {{ "live.session.field.user.guest" | trans }}
+                {% endif  %}                
+                </div>                
+                <div class="sessionid">{{ sessione.id }}</div>
+                <div class="dateinfo started">{{ "live.session.field.start.label" |trans }}: <span>{{ start }}</span></div> 
+                <div class="dateinfo last">{{ "live.session.field.last.label" |trans }}:                 
+                    <span>
+                    {% if lastActivity is empty %}
+                        {{ "live.session.field.last.nologged" |trans |raw }}
+                    {% else %}
+                        {{ lastActivity }}
+                    {% endif %}
+                    </span>
+                
+                </div>                
+            </div>
+        </div>

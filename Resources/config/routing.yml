@@ -6,6 +6,10 @@ tech_g_baseprj_bundle_info:
     pattern:  /info
     defaults: { _controller: TechGSfBaseprjBundle:Main:info }
     
+tech_g_baseprj_bundle_live:
+    pattern:  /live
+    defaults: { _controller: TechGSfBaseprjBundle:Main:live }
+    
 tech_g_baseprj_bundle_base_error:
     pattern:  /error
     defaults: { _controller: TechGSfBaseprjBundle:Main:error }    
@@ -13,6 +17,16 @@ tech_g_baseprj_bundle_base_error:
     
 ########################################################################################
 # Sezione FRAGMENT
+########################################################################################
+
+# FRAGMENT SESSIONE
+
+fragment_render_session:
+    pattern:  /fragment/render/session/{session_id}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession }
+
+
+# FRAMMENTI LAYOUT GLOBALI
 fragment_navbar:
     pattern:  /fragment/navbar/{route}
     defaults: { _controller: TechGSfBaseprjBundle:Component:navbar }

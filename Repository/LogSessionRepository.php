@@ -19,4 +19,24 @@ use TechG\Bundle\SfBaseprjBundle\Repository\Base\BaseEntityRepository as BaseRep
 class LogSessionRepository extends BaseRepository
 {
     
+    public function getActiveSession($session_active_duration = 20, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    {
+      
+        $sql = "SELECT
+                         l.id                  
+                  FROM
+                         log_session l
+                  WHERE 
+                      (DATE_ADD(last_activity,INTERVAL $session_active_duration MINUTE) > NOW()) OR
+                      (last_activity IS NULL AND DATE_ADD(log_date,INTERVAL $session_active_duration MINUTE) > NOW())
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";             
+
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }     
+    
+    
 }

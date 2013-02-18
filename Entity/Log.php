@@ -380,8 +380,8 @@ class Log extends BaseEntity
      *
      * @return string 
      */
-    public function getInfo()
+    public function getInfo($array = true)
     {
-        return json_decode($this->info);
+        return json_decode($this->info, $array);
     }
 }

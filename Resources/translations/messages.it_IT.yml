@@ -1,6 +1,19 @@
 global:
     app:
         name: "gPanel"
+
+live:
+    title: "Live session"
+    session:
+        field:
+             user:
+                 label: "Utente"
+                 guest: "Utente anonimo"
+             start:
+                 label: "Iniziata"
+             last:
+                 label: "Ultima attività"
+                 nologged: "<span class=''>non loggata</span>"
 info:
     title: "Info page"
     section:
@@ -44,10 +57,10 @@ info:
         whitelist: "Modulo white list"
     value:
         noguess: '<span class="noguess">Non rilevata</span>'
-        active: '<span class="active">Attivo</span>'
-        noactive: '<span class="deactive">Disattivato</span>'
-        'true': '<span class="active">Si</span>'
-        'false': '<span class="deactive">No</span>'
+        active: '<span class="enable">Attivo</span>'
+        noactive: '<span class="disable">Disattivato</span>'
+        'true': '<span class="enable">Si</span>'
+        'false': '<span class="disable">No</span>'
     request:
         url: 'Url richiesta'
         host: 'Host richiesta'

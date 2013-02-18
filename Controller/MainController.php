@@ -31,6 +31,18 @@ class MainController extends Controller
         return $this->render('TechGSfBaseprjBundle:Main:info.html.twig', array());
     }
 
+    public function liveAction()
+    {
+        
+        // instanzio il kernel principale
+        $em = $this->getDoctrine()->getEntityManager();
+        $tgKernel = $this->get("techg.kernel");
+        
+        $session = $em->getRepository("TechGSfBaseprjBundle:LogSession")->getActiveSession();
+        
+        return $this->render('TechGSfBaseprjBundle:Main:live.html.twig', array('sessioni' => $session));
+    }
+
     public function errorAction()
     {
         
