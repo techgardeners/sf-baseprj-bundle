@@ -58,18 +58,12 @@ class GeocoderManager extends BaseModule
         if ($this->isEnabled()) {
 
             $this->addDebugLap('Start geo decoding');            
-
-            // Geoposition Object
-            $geoPositionObj = new GeoPosition();         
-            
-            // TODO:
-            // Da mettere in userGeoPositionCache e farli caricare dal from array (anche l'id)
-            $geoPositionObj->setIpAddr($clientIp);
-            $geoPositionObj->setProvider('geo_plugin');
-            $geoPositionObj->setDataOrigin('ip');
-            
+          
             if (in_array($clientIp, array('127.0.0.1', 'fe80::1', '::1'))) {
-                $clientIp = '8.8.8.8';    
+                
+                $debugIps = array('8.8.8.8', '213.92.16.171', '190.218.72.14', '201.218.92.155', '194.1.160.38', '149.5.47.131', '95.227.185.133', '213.215.155.212');
+                
+                $clientIp = $debugIps[rand(0, count($debugIps)-1)];
             }
             
             // Check if in session
@@ -78,16 +72,35 @@ class GeocoderManager extends BaseModule
                 $this->userGeoPositionCache = $this->session->get(self::SESSION_VARS_CACHE);    
             
             } else {
-               
-                $this->userGeoPositionCache = $this->geocoder->using('geo_plugin')->geocode($clientIp, true);           
+
+                try{
+                    $result = $this->geocoder->using('geo_plugin')->geocode($clientIp);    
+                }catch(\Exception $e){
+                    $this->tgKernel->getLogManager()->logException($e);
+                    $result = null;    
+                }
+                
+                $this->userGeoPositionCache = $result;           
                 
                 if ($this->saveSession) {
                     $this->session->set(self::SESSION_VARS_CACHE, $this->userGeoPositionCache);                    
-                }                 
+                }
+                
+                if (is_null($result)) {
+                    return null;                
+                }                                 
             }
             
+
+            // Geoposition Object
+            $geoPositionObj = new GeoPosition();         
+            
+            // TODO:
+            // Da mettere in userGeoPositionCache e farli caricare dal from array (anche l'id)
             $geoPositionObj->fromArray($this->userGeoPositionCache);
-      
+            $geoPositionObj->setIpAddr($clientIp);
+            $geoPositionObj->setProvider('geo_plugin');
+            $geoPositionObj->setDataOrigin('ip');      
             
             $this->addDebugLap('End geo decoding'); 
             

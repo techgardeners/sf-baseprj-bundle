@@ -202,6 +202,15 @@ class MainKernel
         
     }
     
+    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    {   
+        if (is_object($this->getLogManager())) {
+            $this->getLogManager()->addRawLog($type, $level, $short, $long, $info, $taskId, $parentId);    
+        }  
+    }     
+    
+    
+    
     // metodi di utilità generale
     
     public static function print_rh($arg, $print_pre = true)

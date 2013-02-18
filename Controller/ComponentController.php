@@ -14,6 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Ivory\GoogleMapBundle\Model\MapTypeId;
 use Ivory\GoogleMapBundle\Model\Overlays\Animation;
 
+use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
+
 class ComponentController extends Controller
 {
 
@@ -65,15 +67,50 @@ class ComponentController extends Controller
         $map = $this->getMap($geoInfo, $sessione);
 
         
+        // prendo i log collegati alla sessione
+        
+        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 3); 
+        
+        
         return $this->render('TechGSfBaseprjBundle:Component:render_session.html.twig', array('sessione' => $sessione,
                                                                                               'start' => $startSession,
                                                                                               'lastActivity' => $lastActivity,
                                                                                               'userInfo' => $userInfo,
                                                                                               'geoInfo' => $geoInfo,
                                                                                               'map' => $map,
+                                                                                              'requests' => $requests,
                                                                                                 ));
     }    
+
+
+    public function renderRequestAction($request_id)
+    {
     
+        $request = null;
+        $response = null;
+        
+        $em = $this->getDoctrine()->getEntityManager();
+        $logs = $em->getRepository("TechGSfBaseprjBundle:Log")->getLogsByRequestId($request_id);        
+        
+        foreach($logs as $k=>$log){
+
+            $logs[$k]['info'] = json_decode($logs[$k]['info'], true);
+
+            if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
+                $request = $logs[$k];
+                unset($logs[$k]);    
+            }   
+            if ($log['log_type'] == LogManager::TYPE_SAVE_RESPONSE) {
+                $response = $logs[$k];
+                unset($logs[$k]);    
+            }   
+        }
+        
+        return $this->render('TechGSfBaseprjBundle:Component:render_request.html.twig', array('request' => $request,
+                                                                                              'response' => $response,
+                                                                                              'logs' => $logs,
+                                                                                                ));
+    }       
 
 
 
@@ -81,6 +118,9 @@ class ComponentController extends Controller
     {
         $map = $this->get('ivory_google_map.map');
 
+        if (!(is_array($geoInfo) && array_key_exists('latitude', $geoInfo))) return null;
+        
+        
         // Configure your map options
         $map->setPrefixJavascriptVariable('map_'.$sessione->getId().'_');
         $map->setHtmlContainerId('map_canvas_'.$sessione->getId());

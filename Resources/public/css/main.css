@@ -11,19 +11,20 @@
 .livesession .userImage { height: 75px; width: 75px; margin-right: 10px;  background: #FFF url(../img/gpanel/useranon.png) center center no-repeat;}
     .livesession .userImage.auth { background-image: url(../img/gpanel/userlogged.png)}
 .livesession .userPosition { height: 75px; width: 75px; margin-left: 10px;}
+.livesession .userPosition.nomap { background: transparent url(../img/gpanel/nomap.png) center center no-repeat;}
  
  .livesession .geoInfo,
- .livesession .browserInfo { font-size: .8em; line-height: 1.4em;}
+ .livesession .browserInfo { font-size: .8em; line-height: 1.4em; overflow: hidden;}
  
  .livesession .geoInfo .title,
  .livesession .browserInfo .title { font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #CCC; display: block; margin-bottom: 2px; padding-bottom: 2px;}
  
-  .livesession .geoInfo { width: 150px;}
+  .livesession .geoInfo { min-width: 150px; max-width: 230px;}
  
- .livesession .userInfo { width: 375px; font-size: .9em;}
+ .livesession .userInfo { font-size: .9em; }
  .livesession .userInfo .name { font-weight: bold; font-size: 1.1em; }
  .livesession .userInfo .name .email { font-weight: normal; font-size: .9em; }
  .livesession .userInfo .sessionid { line-height: 1em; font-size: .85em; color: #999; margin-bottom: 3px; }
  
- .livesession .browserInfo { width: 200px; margin-right: 10px;}
+ .livesession .browserInfo { min-width: 200px; max-width: 230px;  margin-right: 10px;}
  

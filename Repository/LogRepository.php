@@ -18,5 +18,63 @@ use TechG\Bundle\SfBaseprjBundle\Repository\Base\BaseEntityRepository as BaseRep
 
 class LogRepository extends BaseRepository
 {
-    
+    public function getRequestIdsBySessionId($session_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    {
+      
+        $sql = "SELECT
+                         l.request_id as id                 
+                  FROM
+                         log l
+                  WHERE 
+                      l.session_id = '$session_id'
+                  GROUP BY
+                      l.request_id
+                  ORDER BY
+                       l.log_date
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";             
+
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }     
+
+    public function getLogsByRequestId($request_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    {
+      
+        $sql = "SELECT
+                         l.*                  
+                  FROM
+                         log l
+                  WHERE 
+                      l.request_id = '$request_id'
+                  ORDER BY
+                       l.log_date
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";             
+
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }     
+
+    public function getLogById($log_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    {
+      
+        $sql = "SELECT
+                         l.*                  
+                  FROM
+                         log l
+                  WHERE 
+                      l.id = $log_id
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";             
+
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }     
 }

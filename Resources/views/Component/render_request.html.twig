@@ -1,0 +1,12 @@
+<div class="well well-small">
+    <span class="data">{{ request.log_date }}</span> |
+    <span class="data">[{{ response.info.statusCode }}]</span>
+    <span class="url">{{ request.info.uri }}</span>
+    <ul>
+        {% for log in logs %}
+            <li>{{ log.id }}</li>
+        {% endfor %}
+    </ul> 
+</div>   
+
+       

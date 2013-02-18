@@ -1,14 +1,21 @@
 
         <div class="clearfix well well-small livesession">
-            <div class="userPosition pull-right img-polaroid">
-                {{ google_map_container(map) }}
+            <div class="userPosition pull-right img-polaroid {% if map is empty %}nomap{% endif %}">
+                {% if map is not empty %}
+                    {{ google_map_container(map) }}                
+                {% endif %}
+
             </div>
             <div class="geoInfo pull-right">
                 <span class="title">Geo Info</span>
-                <div class="ip">{{ "live.session.field.ip.label" |trans }}: <span>{{ userInfo.ip }}</span></div>                
-                <div class="country">{{ "live.session.field.city.label" |trans }}: <span>{{ geoInfo.city }}</span></div>                
-                <div class="country">{{ "live.session.field.region.label" |trans }}: <span>{{ geoInfo.region |raw }}</span></div>                
-                <div class="country">{{ "live.session.field.country.label" |trans }}: <span>{{ geoInfo.country }}</span></div>                
+                {% if geoInfo is not empty %}
+                    <div class="ip">{{ "live.session.field.ip.label" |trans }}: <span>{{ userInfo.ip }}</span></div>                
+                    <div class="country">{{ "live.session.field.city.label" |trans }}: <span>{{ geoInfo.city |default("live.session.field.last.nologged" |trans) |raw }}</span></div>                
+                    <div class="country">{{ "live.session.field.region.label" |trans }}: <span>{{ geoInfo.region |default("live.session.field.last.nologged" |trans ) |raw }}</span></div>                
+                    <div class="country">{{ "live.session.field.country.label" |trans }}: <span>{{ geoInfo.country |default("live.session.field.last.nologged" |trans) |raw }}</span></div>                  
+                {% else %}
+                    {{ "live.session.field.last.nologged" |trans |raw }}                
+                {% endif %}              
             </div>
             <div class="browserInfo pull-right">
                 <span class="title">Browser Info</span>
@@ -41,5 +48,12 @@
 
 
         </div>
-        {{ google_map_css(map) }}
-        {{ google_map_js(map) }}        
+        {% if map is not empty %}
+            {{ google_map_css(map) }}
+            {{ google_map_js(map) }}               
+        {% endif %} 
+        
+        {% for request in requests %}
+            {% render url("fragment_render_request", { 'request_id': request.id }) with { }, { 'standalone': true } %}  
+        {% endfor %}                  
+       

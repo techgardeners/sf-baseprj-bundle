@@ -13,7 +13,7 @@ live:
                  label: "Iniziata"
              last:
                  label: "Ultima attività"
-                 nologged: "<span class=''>non loggata</span>"
+                 nologged: "<span class='muted'>non loggata</span>"
              browser:
                  label: "Browser"
              versione:

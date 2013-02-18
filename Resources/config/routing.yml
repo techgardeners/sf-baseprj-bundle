@@ -25,6 +25,14 @@ fragment_render_session:
     pattern:  /fragment/render/session/{session_id}
     defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession }
 
+fragment_render_request:
+    pattern:  /fragment/render/request/{request_id}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:renderRequest }
+
+#fragment_render_log:
+#    pattern:  /fragment/render/log/{log_id}
+#    defaults: { _controller: TechGSfBaseprjBundle:Component:renderLog }
+
 
 # FRAMMENTI LAYOUT GLOBALI
 fragment_navbar:
