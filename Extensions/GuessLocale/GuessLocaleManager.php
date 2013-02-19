@@ -72,7 +72,7 @@ class GuessLocaleManager extends BaseModule
     }
 
     
-    public function guessLocale($uri, $requestLanguage)
+    public function guessLocale($uri, $requestLanguages)
     {
            
         $locale = null;
