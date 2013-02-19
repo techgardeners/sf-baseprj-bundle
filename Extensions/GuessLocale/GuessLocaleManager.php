@@ -28,6 +28,7 @@ class GuessLocaleManager extends BaseModule
 
     private $saveSession;
     private $onlyFirstRecord;
+    
     private $enabledLanguage;
     
     private $localeSaved;
@@ -41,8 +42,12 @@ class GuessLocaleManager extends BaseModule
     
     public function init()
     { 
-        $this->enabledLanguage = $this->getEnabledLanguage();
-        $this->localeSaved = null;       
+        $this->enabledLanguage = null;
+        $this->localeSaved = null;
+        
+        if ($this->isEnabled()) {
+            $this->enabledLanguage = $this->getEnabledLanguage();
+        }
     }        
  
     public function getEnabledLanguage()

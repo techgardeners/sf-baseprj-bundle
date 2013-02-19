@@ -31,6 +31,7 @@ class LogManager extends BaseModule
     const CONF_SAVE_SESSION = 'savesession';
     const CONF_SAVE_LAST_ACTIVITY = 'keepalive';
     const CONF_SAVE_REQUEST = 'saverequest';
+    const CONF_SKIP_PATTERN = 'skippattern';
 
     
     const SESSION_VARS_SAVED_SESSION = 'tgsfbaseprj/bundle/log/saved/session';
@@ -154,6 +155,7 @@ class LogManager extends BaseModule
     private $saveRequest;
     private $keepAlive;
     private $enableQueue;
+    private $skipPattern;
     
     private $sessionSaved;
     private $requestSaved;
@@ -174,6 +176,7 @@ class LogManager extends BaseModule
         $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);
         $this->saveRequest = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_REQUEST);
         $this->keepAlive = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_LAST_ACTIVITY);
+        $this->skipPattern = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SKIP_PATTERN);
          
     } 
     
@@ -184,8 +187,19 @@ class LogManager extends BaseModule
         $this->sessionSaved = null;
         $this->persistQueue = array();        
         $this->logRequest = null;
+
+        $uri = $this->tgKernel->uri;
+        // Controllo se devo disabilitare i log per un pattern
+        if ($this->skipPattern != '') {
+            if (preg_match($this->skipPattern, $uri)) {
+                $this->enabled = false;
+            }    
+        }
         
-        $this->initLogRequest();
+        if ($this->isEnabled()) {
+            // inizialize geocoder ( https://github.com/willdurand/Geocoder )
+            $this->initLogRequest();   
+        }          
         
     }        
 
@@ -208,12 +222,15 @@ class LogManager extends BaseModule
     public function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null)
     {   
         
-        if ($level === self::LEVEL_WARNING) {
-            $this->logRequest['info']['request_warning'] = true;    
+        if (!is_null($this->logRequest)){
+            if ($level === self::LEVEL_WARNING) {
+                $this->logRequest['info']['request_warning'] = true;    
+            }
+            if ($level === self::LEVEL_ERROR) {
+                $this->logRequest['info']['request_error'] = true;    
+            }            
         }
-        if ($level === self::LEVEL_ERROR) {
-            $this->logRequest['info']['request_error'] = true;    
-        }
+
         
         $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);
         $this->saveLog($log);   
@@ -257,7 +274,6 @@ class LogManager extends BaseModule
         $this->sessionSaved = $newLogSession;
     }
 
-
     // ************ EVENTS CONTROLLER *******************
 
     // prepara il log request da salvare
@@ -294,7 +310,7 @@ class LogManager extends BaseModule
     // Logga una response
     public function logResponse(Response $response)
     {
-        // se i permessi lo consentono salvo la request
+        // se è presente una request
         if (!$this->logRequest) return false;
                 
         // Aggiungo il log della response        
@@ -378,11 +394,13 @@ class LogManager extends BaseModule
     
     private function flushQueue()
     {
-
+        // Se non c'è nulla da salvare esco subito
         if (!(count($this->persistQueue) > 0) && !($this->saveRequest && !$this->requestSaved)) return false;
 
+        // salvo se c'è qualcosa in coda o se devo salvare la request
         if (!$this->requestSaved) {
-            $this->persisteLog($this->logRequest, false);    
+            $this->addToQueue($this->logRequest);
+            $this->requestSaved = true;    
         } 
         
         foreach ($this->persistQueue as $idx=>$log) {
@@ -391,9 +409,7 @@ class LogManager extends BaseModule
         }
         
         $this->em->flush();
-        
-        
-        $this->requestSaved = true;        
+                
         return true;
     }    
         
@@ -474,6 +490,7 @@ class LogManager extends BaseModule
         self::setSingleConf(self::CONF_SAVE_SESSION, $config, $container);
         self::setSingleConf(self::CONF_SAVE_REQUEST, $config, $container);
         self::setSingleConf(self::CONF_SAVE_LAST_ACTIVITY, $config, $container);
+        self::setSingleConf(self::CONF_SKIP_PATTERN, $config, $container);
         
     }
         

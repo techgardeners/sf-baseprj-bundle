@@ -95,6 +95,9 @@ class Configuration implements ConfigurationInterface
                         ->booleanNode(LogManager::CONF_SAVE_LAST_ACTIVITY)
                             ->defaultTrue()
                         ->end()
+                        ->scalarNode(LogManager::CONF_SKIP_PATTERN)
+                            ->defaultValue('')
+                        ->end()
                     ->end()
                 ->end()
             ->end();
