@@ -15,6 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
 use TechG\Bundle\SfBaseprjBundle\Entity\GeoPosition;
 
 class GeocoderManager extends BaseModule
@@ -76,7 +77,7 @@ class GeocoderManager extends BaseModule
                 try{
                     $result = $this->geocoder->using('geo_plugin')->geocode($clientIp);    
                 }catch(\Exception $e){
-                    $this->tgKernel->getLogManager()->logException($e);
+                    $this->logGeoError($e);
                     $result = null;    
                 }
                 
@@ -108,6 +109,17 @@ class GeocoderManager extends BaseModule
         }        
     }
     
+
+
+// ********************************************************************************************************       
+// METODI PRIVATE       
+// ********************************************************************************************************  
+
+    private function logGeoError(\Exception $exception)
+    {
+        $info = LogManager::getLogInfoByException($exception);
+        return $this->addRawLog(LogManager::TYPE_GEO_ERROR, LogManager::LEVEL_WARNING, '', '', $info);        
+    }
 
 
 // ********************************************************************************************************       

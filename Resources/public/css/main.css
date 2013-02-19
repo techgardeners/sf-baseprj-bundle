@@ -45,13 +45,23 @@
 .livesession .request.ok .code { color: green;}    
 .livesession .request.error .code,.livesession .request.error .url { color: red;}    
 
-    .livesession .logs { padding-left: 45px; }
-    .livesession .logs .log { border: 1px solid #e3e3e3; font-size: .8em; position: relative; }
+
+.livesession .logs { padding-left: 45px; margin-top: 3px; }
+    .livesession .logs .log { border: 1px solid #e3e3e3; font-size: .8em; line-height: 1.4em; position: relative; padding: 3px 0 3px 0; }
     .livesession .logs .log > .header .image { position: absolute; height: 16px; width: 16px; left: 5px; top: 3px }
     .livesession .logs .log .header { padding-left: 25px; }
     .livesession .logs .log .message { font-weight: bold; }
-    .livesession .logs .log.error { background-color: #ffdddd; }
 
+/* log level style */
+    .livesession .logs .log.error { background-color: #ffdddd; }
+        .livesession .logs .log.error .ico { background-image: url(../icons/farm-fresh/32x32/bullet_delete.png); }
+    
+    .livesession .logs .log.warning { background-color: #ffffCC; }
+        .livesession .logs .log.warning .ico { background-image: url(../icons/farm-fresh/16x16/error.png); }
+        
+
+/* Geo specific class */        
+.livesession .logs .log .ico.geoerror { background-image: url(../icons/farm-fresh/16x16/world_delete.png); }
 
 /* ICONS */    
     

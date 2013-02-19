@@ -110,9 +110,9 @@ class ModuleManager
         $this->tgKernel->addDebugLap($string, $ts);    
     }    
        
-    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    public function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null )
     {   
-        $this->tgKernel->addRawLog($type, $level, $short, $long, $info, $taskId, $parentId);   
+        $this->tgKernel->addRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);   
     }    
        
 // ********************************************************************************************************       

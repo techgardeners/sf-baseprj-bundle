@@ -28,17 +28,17 @@ class GeoPluginExProvider extends BaseClass
         $content = $this->getAdapter()->getContent($query);
 
         if (null === $content || '' === $content) {
-            throw new NoResultException(sprintf('Query no return results %s', $query));
+            throw new NoResultException(sprintf('No result returned from query [%s]', $query));
         }
 
         $json = json_decode($content, true);
 
         if (!is_array($json) || !count($json)) {
-            throw new NoResultException(sprintf('Query no return results after decoded %s', $query));
+            throw new NoResultException(sprintf('No result returned from query after json decoded [%s]', $query));
         }
 
         if (!array_key_exists('geoplugin_status', $json) || 200 > $json['geoplugin_status'] || 299 < $json['geoplugin_status']) {
-            throw new NoResultException(sprintf('Could not execute query 3 %s', $query));
+            throw new NoResultException(sprintf('Query return bad result [%s]', $query));
         }
 
         $data = array_filter($json);

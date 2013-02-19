@@ -15,42 +15,10 @@ use Ivory\GoogleMapBundle\Model\MapTypeId;
 use Ivory\GoogleMapBundle\Model\Overlays\Animation;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\UtilityManager;
 
 class ComponentController extends Controller
-{
-
-    // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
-    function time_ago(\DateTime $date,$granularity=2) {
-        
-        if (!is_object($date)) return '';
-        
-        $retval = '';
-        $now = new \DateTime();        
-        $now = strtotime($now->format('m/d/Y H:i:s'));
-        $date = strtotime($date->format('m/d/Y H:i:s'));
-        $difference = $now - $date;
-        $periods = array('decade' => 315360000,
-            'year' => 31536000,
-            'month' => 2628000,
-            'week' => 604800, 
-            'day' => 86400,
-            'hour' => 3600,
-            'minute' => 60,
-            'second' => 1);
-
-        foreach ($periods as $key => $value) {
-            if ($difference >= $value) {
-                $time = floor($difference/$value);
-                $difference %= $value;
-                $retval .= ($retval ? ' ' : '').$time.' ';
-                $retval .= (($time > 1) ? $key.'s' : $key);
-                $granularity--;
-            }
-            if ($granularity == '0') { break; }
-        }
-        return ($retval != '') ? $retval.' ago' : ' < 1 second ago' ;      
-    }    
-    
+{  
     
     public function renderSessionAction($session_id)
     {
@@ -61,8 +29,8 @@ class ComponentController extends Controller
         $userInfo['userInfo'] = json_decode($userInfo['userInfo'], true);
         $geoInfo = $sessione->getInfoGeo();
         
-        $startSession = $this->time_ago($sessione->getLogDate());
-        $lastActivity = $this->time_ago($sessione->getLastActivity());
+        $startSession = UtilityManager::time_ago($sessione->getLogDate());
+        $lastActivity = UtilityManager::time_ago($sessione->getLastActivity());
         
         $map = $this->getMap($geoInfo, $sessione);
 
@@ -105,7 +73,7 @@ class ComponentController extends Controller
             $logs[$k]['info'] = json_decode($logs[$k]['info'], true);
 
             if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
-                $requestDate = $this->time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
+                $requestDate = UtilityManager::time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
                 
                     $request = json_decode($logs[$k]['info']['request'], true);
                     $queryString = str_replace($request['path_info'], '', $request['request_uri']);                                                 
@@ -116,6 +84,12 @@ class ComponentController extends Controller
                 }     
                     
                 unset($logs[$k]);    
+            } else {
+                
+               $logs[$k]['gPanel']['log_class'] = LogManager::$logLevels[$logs[$k]['log_level']]['label'];
+               $logs[$k]['gPanel']['title'] = LogManager::$logTypes[$logs[$k]['log_type']]['title'];
+               $logs[$k]['gPanel']['icon_class'] = LogManager::$logTypes[$logs[$k]['log_type']]['label'];
+                
             }   
         }
         

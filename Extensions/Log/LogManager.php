@@ -50,36 +50,101 @@ class LogManager extends BaseModule
     const LEVEL_VERBOSE = 700;
     const LEVEL_INSANE = 800;
 
+    static $logLevels = array(
+                              self::LEVEL_SYSTEM => array( 'label' => 'system',
+                                                           ),
+                              self::LEVEL_ERROR => array( 'label' => 'error',
+                                                           ),
+                              self::LEVEL_WARNING => array( 'label' => 'warning',
+                                                           ),
+                              self::LEVEL_LOG => array( 'label' => 'log',
+                                                           ),
+                              self::LEVEL_INFO => array( 'label' => 'info',
+                                                           ),
+                              self::LEVEL_DEBUG => array( 'label' => 'debug',
+                                                           ),
+                              self::LEVEL_VERBOSE => array( 'label' => 'verbose',
+                                                           ),
+                              self::LEVEL_INSANE => array( 'label' => 'insane',
+                                                           ),
+                            );    
+    
 // ******************************************
 // TIPI DI LOG
 // ******************************************
               
-    const TYPE_SAVE_REQUEST = 1;    
-    const TYPE_SAVE_RESPONSE = 2;    
-    const TYPE_GENERIC = 100;    
+    const TYPE_SAVE_REQUEST = 1;
+    const TYPE_SYSTEM = 0;    
+    const TYPE_GENERIC = 1000;    
     const TYPE_GENERIC_EXEPTION = 100;    
     const TYPE_GENERIC_SQL = 200;
     const TYPE_GENERIC_TASK = 300;
-    const TYPE_GENERIC_APP = 300;
-    const TYPE_GENERIC_ERROR = 300;
-    const TYPE_GENERIC_WARNING = 300;
-    const TYPE_GENERIC_INFO = 300;
-    const TYPE_GENERIC_DEBUG = 300;
-    const TYPE_GENERIC_VERBOSE = 300;
-    const TYPE_GENERIC_INSANE = 300;
+    const TYPE_GENERIC_APP = 400;
+    const TYPE_GENERIC_ERROR = 500;
+    const TYPE_GENERIC_WARNING = 600;
+    const TYPE_GENERIC_INFO = 700;
+    const TYPE_GENERIC_DEBUG = 800;
+    const TYPE_GENERIC_VERBOSE = 900;
+    const TYPE_GENERIC_INSANE = 1000;
+    
+    const TYPE_GEO_ERROR = 50;
 
     static $logTypes = array(
-                              self::TYPE_SAVE_REQUEST => array( 'defaultLevel' => self::LEVEL_SYSTEM,                                                            
+                              self::TYPE_GEO_ERROR => array( 'defaultLevel' => self::TYPE_GENERIC_WARNING,
+                                                             'title' => 'Geo decoding error',
+                                                             'label' => 'geoerror'
+                                                           ),
+                              self::TYPE_SYSTEM => array( 'defaultLevel' => self::LEVEL_SYSTEM,
+                                                          'title' => 'SYS',
+                                                          'label' => ''
                                                          ),
-                              self::TYPE_SAVE_RESPONSE => array( 'defaultLevel' => self::LEVEL_SYSTEM,                                                            
+                              self::TYPE_SAVE_REQUEST => array( 'defaultLevel' => self::LEVEL_SYSTEM,
+                                                                'title' => 'REQUEST',
+                                                                'label' => ''                                                            
                                                          ),
-                              self::TYPE_GENERIC_EXEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,                                                            
+                              self::TYPE_GENERIC_EXEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,
+                                                                    'title' => 'GENERIC_EXEPTION',
+                                                                    'label' => ''                                                            
                                                          ),
-                              self::TYPE_GENERIC => array( 'defaultLevel' => self::LEVEL_INFO,                                                            
+                              self::TYPE_GENERIC => array( 'defaultLevel' => self::LEVEL_INSANE,
+                                                            'title' => 'GENERIC',
+                                                            'label' => ''                                                            
                                                          ),
-                              self::TYPE_GENERIC_SQL => array( 'defaultLevel' => self::LEVEL_DEBUG,                                                            
+                              self::TYPE_GENERIC_SQL => array( 'defaultLevel' => self::LEVEL_DEBUG,
+                                                                'title' => 'GENERIC_SQL',
+                                                                'label' => ''                                                            
                                                          ),
-                              self::TYPE_GENERIC_TASK => array( 'defaultLevel' => self::LEVEL_DEBUG,                                                            
+                              self::TYPE_GENERIC_TASK => array( 'defaultLevel' => self::LEVEL_DEBUG,
+                                                                  'title' => 'GENERIC_TASK',
+                                                                  'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_APP => array( 'defaultLevel' => self::LEVEL_APP,
+                                                            'title' => 'GENERIC_APP',
+                                                            'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_INFO => array( 'defaultLevel' => self::LEVEL_INFO,
+                                                                'title' => 'GENERIC_INFO',
+                                                                'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_ERROR => array( 'defaultLevel' => self::LEVEL_ERROR,
+                                                            'title' => 'GENERIC_ERROR',
+                                                            'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_WARNING => array( 'defaultLevel' => self::LEVEL_WARNING,
+                                                            'title' => 'GENERIC_WARNING',
+                                                            'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_DEBUG => array( 'defaultLevel' => self::LEVEL_DEBUG,
+                                                            'title' => 'GENERIC_DEBUG',
+                                                            'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_VERBOSE => array( 'defaultLevel' => self::LEVEL_VERBOSE,
+                                                            'title' => 'GENERIC_VERBOSE',
+                                                            'label' => ''                                                            
+                                                         ),
+                              self::TYPE_GENERIC_INSANE => array( 'defaultLevel' => self::LEVEL_INSANE,
+                                                            'title' => 'GENERIC_INSANE',
+                                                            'label' => ''                                                            
                                                          ),
                             );
     
@@ -140,11 +205,116 @@ class LogManager extends BaseModule
     * @param mixed $taskId
     * @param mixed $parentId
     */
-    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null)
+    public function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null)
     {   
+        
+        if ($level === self::LEVEL_WARNING) {
+            $this->logRequest['request_warning'] = true;    
+        }
+        if ($level === self::LEVEL_ERROR) {
+            $this->logRequest['request_error'] = true;    
+        }
+        
         $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);
         $this->saveLog($log);   
     }
+
+
+
+//******************************************
+    
+
+
+    // Salva la sessione nel db
+    public function logSession()
+    {
+       
+        if (!$this->isEnabled() || !$this->saveSession) return false;
+
+        // Check if just in session
+        if ($this->session->has(self::SESSION_VARS_SAVED_SESSION) &&
+            $this->session->get(self::SESSION_VARS_SAVED_SESSION) === $this->session->getId()){
+              
+              if (!$this->keepAlive) return false;
+              
+              $session = $this->getLogSessionSaved();
+              $session->setLastActivity(new \DateTime());
+              
+              $this->em->persist($session);
+              $this->em->flush();
+              
+              return true;
+                
+            } 
+        
+        // a volte è capitato che ricarica una sessione con lo stesso id;
+        // quindi provo a ricaricarlo comunque dal db
+        $newLogSession = $this->getLogSessionSaved();
+
+        // persisto nel db
+        $this->em->persist($newLogSession);
+        $this->em->flush();
+        
+        $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
+        $this->sessionSaved = $newLogSession;
+    }
+
+
+    // ************ EVENTS CONTROLLER *******************
+
+    // prepara il log request da salvare
+    public function initLogRequest()
+    {        
+        if (!$this->isEnabled()) return false;
+
+        // Svuoto la sessione per non portarmi dietro di tutto
+        $newRequest = clone $this->tgKernel->getRequest();        
+        $newRequest->setSession(new Session());
+        
+        $info['request'] = $this->serializer->serialize($newRequest, 'json');
+        $info['request_warning'] = false;
+        $info['request_error'] = false;
+        
+        $this->logRequest = $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
+        
+    }
+    
+    // Logga una eccezione
+    public function logException(\Exception $exception)
+    {
+        // Forzo il salvataggio della request in caso di eccezione
+        // TODO: non dovrebbe piu essere necessario, se c'è qualcosa in coda lui la request la salva
+        $this->saveRequest = true;
+
+        
+        // Aggiungo il log dell'eccezione        
+        $info = self::getLogInfoByException($exception);
+        $this->addRawLog(self::TYPE_GENERIC_EXEPTION, self::getDefaultLevel(self::TYPE_GENERIC_EXEPTION), '', '', $info);
+                
+    }
+    
+    // Logga una response
+    public function logResponse(Response $response)
+    {
+        // se i permessi lo consentono salvo la request
+        if (!$this->logRequest) return false;
+                
+        // Aggiungo il log della response        
+        $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json');   
+
+    }
+    
+    // Chiude i log
+    public function shutdown($event)
+    {
+        $this->flushQueue();
+    }
+    
+
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
+
 
     /**
     * Ritorna un oggetto Log compilato pronto per il salvataggio
@@ -228,111 +398,13 @@ class LogManager extends BaseModule
         $this->requestSaved = true;        
         return true;
     }    
-    
-    
+        
     private function isLoggable($level)
     {
         return ($this->isEnabled() && $this->maxLogLevel >= $level);    
     }
 
-//******************************************
-    
-
-
-    // Salva la sessione nel db
-    public function logSession()
-    {
-       
-        if (!$this->isEnabled() || !$this->saveSession) return false;
-
-        // Check if just in session
-        if ($this->session->has(self::SESSION_VARS_SAVED_SESSION) &&
-            $this->session->get(self::SESSION_VARS_SAVED_SESSION) === $this->session->getId()){
-              
-              if (!$this->keepAlive) return false;
-              
-              $session = $this->getLogSessionSaved();
-              $session->setLastActivity(new \DateTime());
-              
-              $this->em->persist($session);
-              $this->em->flush();
-              
-              return true;
-                
-            } 
-        
-        // a volte è capitato che ricarica una sessione con lo stesso id;
-        // quindi provo a ricaricarlo comunque dal db
-        $newLogSession = $this->getLogSessionSaved();
-
-        // persisto nel db
-        $this->em->persist($newLogSession);
-        $this->em->flush();
-        
-        $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
-        $this->sessionSaved = $newLogSession;
-    }
-
-
-    // ************ EVENTS CONTROLLER *******************
-
-    // prepara il log request da salvare
-    public function initLogRequest()
-    {        
-        if (!$this->isEnabled()) return false;
-
-        $newRequest = clone $this->tgKernel->getRequest();
-        
-        // Svuoto la sessione per non portarmi dietro di tutto
-        $newRequest->setSession(new Session());
-        
-        $info['request'] = $this->serializer->serialize($newRequest, 'json');
-        $this->logRequest = $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
-        
-    }
-    
-    // Logga una eccezione
-    public function logException(\Exception $exception)
-    {
-        // Forzo il salvataggio della request in caso di eccezione
-        // TODO: non dovrebbe piu essere necessario, se c'è qualcosa in coda lui la request la salva
-        $this->saveRequest = true;
-        
-        // Aggiungo il log dell'eccezione        
-        $info = array();        
-        $info['code'] = $exception->getCode();        
-        $info['file'] = $exception->getFile();        
-        $info['line'] = $exception->getLine();        
-        $info['message'] = $exception->getMessage();        
-        $info['trace'] = $exception->getTrace();        
-        
-        $this->addRawLog(self::TYPE_GENERIC_EXEPTION, self::LEVEL_WARNING, '', '', $info);
-                
-    }
-    
-    // Logga una response
-    public function logResponse(Response $response)
-    {
-        // se i permessi lo consentono salvo la request
-        if (!$this->logRequest) return false;
-                
-        // Aggiungo il log della response        
-        $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json');   
-
-    }
-    
-    // Chiude i log
-    public function shutdown($event)
-    {
-        $this->flushQueue();
-    }
-    
-
-// ********************************************************************************************************       
-// METODI PRIVATI       
-// ********************************************************************************************************     
-
-    // Ritorna l'oggetto di sessione salvato, se non lo trova nell'oggetto lo carica dal db
+    // Ritorna l'oggetto di sessione salvato, se non lo trova nell'oggetto lo crea nuovo
     private function getLogSessionSaved()
     {        
         if (is_null($this->sessionSaved))                 
@@ -372,6 +444,28 @@ class LogManager extends BaseModule
 // ********************************************************************************************************       
 // METODI STATICI       
 // ********************************************************************************************************  
+
+
+    // Ritorna una array di info di un eccezione
+    public static function getLogInfoByException(\Exception $exception)
+    {
+        // Aggiungo il log dell'eccezione        
+        $info = array();        
+        $info['code'] = $exception->getCode();        
+        $info['file'] = $exception->getFile();        
+        $info['line'] = $exception->getLine();        
+        $info['message'] = $exception->getMessage();        
+        $info['trace'] = $exception->getTrace();        
+        
+        return $info;
+                
+    }
+
+    // Ritorna il livello di default in base al tipo di log
+    public static function getDefaultLevel($logType)
+    {
+        return (array_key_exists($logType, self::$logTypes) && array_key_exists('defaultLevel', self::$logTypes[$logType])) ? self::$logTypes[$logType]['defaultLevel'] : self::LEVEL_LOG;        
+    }
 
     // Setta le configurazioni per il modulo in oggetto
     public static function setConfiguration(array $config, ContainerBuilder $container)

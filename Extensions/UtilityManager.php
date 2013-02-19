@@ -15,6 +15,40 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 class UtilityManager
 {    
 
+
+
+    // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
+    public static function time_ago(\DateTime $date,$granularity=2) {
+        
+        if (!is_object($date)) return '';
+        
+        $retval = '';
+        $now = new \DateTime();        
+        $now = strtotime($now->format('m/d/Y H:i:s'));
+        $date = strtotime($date->format('m/d/Y H:i:s'));
+        $difference = $now - $date;
+        $periods = array('decade' => 315360000,
+            'year' => 31536000,
+            'month' => 2628000,
+            'week' => 604800, 
+            'day' => 86400,
+            'hour' => 3600,
+            'minute' => 60,
+            'second' => 1);
+
+        foreach ($periods as $key => $value) {
+            if ($difference >= $value) {
+                $time = floor($difference/$value);
+                $difference %= $value;
+                $retval .= ($retval ? ' ' : '').$time.' ';
+                $retval .= (($time > 1) ? $key.'s' : $key);
+                $granularity--;
+            }
+            if ($granularity == '0') { break; }
+        }
+        return ($retval != '') ? $retval.' ago' : ' < 1 second ago' ;      
+    } 
+
     
     // metodi di utilità generale
     
