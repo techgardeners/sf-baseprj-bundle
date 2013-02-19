@@ -110,7 +110,7 @@ class MainKernel
         $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->getMasterRequest('ip'));
        
         // If Locale is not set on Uri guessed right Locale
-        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($this->getMasterRequest('requestUri'))) {
+        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($this->getMasterRequest('requestUri'), $this->getMasterRequest('languages'))) {
             $event->getRequest()->setLocale($this->guessedLocale);
             $this->masterRequest['guessedLocale'] = $this->guessedLocale;
         }            
@@ -143,7 +143,7 @@ class MainKernel
         
         if ($this->isInit()){
             // nelle richieste secondarie risetto il locale della request a quello scelto
-            if (null !== $guessedLocale = $this->getGuessLocaleManager()->guessLocale($event->getRequest()->getRequestUri())) {
+            if (null !== $guessedLocale = $this->getGuessLocaleManager()->guessLocale($event->getRequest()->getRequestUri(), $event->getRequest()->getLanguages())) {
                 $event->getRequest()->setLocale($guessedLocale);
             }                        
         }
@@ -227,9 +227,9 @@ class MainKernel
             $mapRequest['isSecure'] = $request->isSecure();
             $mapRequest['locale'] = $request->getLocale();
             $mapRequest['content'] = $request->getContent();
-            $mapRequest['PreferredLanguage'] = $request->getPreferredLanguage();
-            $mapRequest['Languages'] = $request->getLanguages();
-            $mapRequest['Charsets'] = $request->getCharsets();
+            $mapRequest['preferredLanguage'] = $request->getPreferredLanguage();
+            $mapRequest['languages'] = $request->getLanguages();
+            $mapRequest['charsets'] = $request->getCharsets();
             $mapRequest['acceptableContentTypes'] = $request->getAcceptableContentTypes();
             $mapRequest['isXmlHttpRequest'] = $request->isXmlHttpRequest();
             $mapRequest['to_string'] = $request->__toString();

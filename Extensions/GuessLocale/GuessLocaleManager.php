@@ -72,7 +72,7 @@ class GuessLocaleManager extends BaseModule
     }
 
     
-    public function guessLocale($uri)
+    public function guessLocale($uri, $requestLanguage)
     {
            
         $locale = null;
@@ -90,7 +90,7 @@ class GuessLocaleManager extends BaseModule
             } else {
             
                 // get right Language by Browser Preferred Language(ONLY xx_XX format)
-                foreach ($request->getLanguages() as $lang) {
+                foreach ($requestLanguages as $lang) {
                     if (preg_match('%^[a-z]{2}_[A-Z]{2}$%', $lang) && is_null($locale)) {
                         
                         foreach ($this->enabledLanguage as $language) {
@@ -104,7 +104,7 @@ class GuessLocaleManager extends BaseModule
                 
                 // if no result get right Language by Browser Preferred Language(ONLY xx format)
                 if (is_null($locale)) {
-                    foreach ($request->getLanguages() as $lang) {
+                    foreach ($requestLanguages as $lang) {
                         if (preg_match('%^[a-zA-Z]{2}$%', $lang) && is_null($locale)) {
                             
                             foreach ($this->enabledLanguage as $language) {
