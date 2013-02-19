@@ -30,7 +30,7 @@ class LogRepository extends BaseRepository
                   GROUP BY
                       l.request_id
                   ORDER BY
-                       l.log_date
+                       l.log_date DESC
                   
                   ".(($limit) ? $this->addLimit($limit) : '')."";             
 

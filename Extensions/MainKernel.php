@@ -573,6 +573,11 @@ class MainKernel
         return (is_object($token)) ? $token->getUser() : null;
     }    
     
+    public function getRequest()
+    {
+        return $this->getContainerElement('request');
+    }    
+    
     
     public function getSession()
     {

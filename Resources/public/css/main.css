@@ -8,23 +8,53 @@
  
  
  /* RENDER SESSION */
+.livesession .session { margin-bottom: 5px;}
+.livesession .requests { margin-bottom: 15px;}
+
 .livesession .userImage { height: 75px; width: 75px; margin-right: 10px;  background: #FFF url(../img/gpanel/useranon.png) center center no-repeat;}
     .livesession .userImage.auth { background-image: url(../img/gpanel/userlogged.png)}
 .livesession .userPosition { height: 75px; width: 75px; margin-left: 10px;}
 .livesession .userPosition.nomap { background: transparent url(../img/gpanel/nomap.png) center center no-repeat;}
  
- .livesession .geoInfo,
- .livesession .browserInfo { font-size: .8em; line-height: 1.4em; overflow: hidden;}
+.livesession .geoInfo,
+.livesession .browserInfo { font-size: .8em; line-height: 1.4em; overflow: hidden;}
+
+.livesession .geoInfo .title,
+.livesession .browserInfo .title { font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #CCC; display: block; margin-bottom: 2px; padding-bottom: 2px;}
+
+.livesession .geoInfo { min-width: 150px; max-width: 230px;}
+
+.livesession .userInfo { font-size: .9em; }
+.livesession .userInfo .name { font-weight: bold; font-size: 1.1em; }
+.livesession .userInfo .name .email { font-weight: normal; font-size: .9em; }
+.livesession .userInfo .sessionid { line-height: 1em; font-size: .85em; color: #999; margin-bottom: 3px; }
+
+.livesession .browserInfo { min-width: 200px; max-width: 230px;  margin-right: 10px;}
  
- .livesession .geoInfo .title,
- .livesession .browserInfo .title { font-size: 1.2em; font-weight: bold; border-bottom: 1px solid #CCC; display: block; margin-bottom: 2px; padding-bottom: 2px;}
- 
-  .livesession .geoInfo { min-width: 150px; max-width: 230px;}
- 
- .livesession .userInfo { font-size: .9em; }
- .livesession .userInfo .name { font-weight: bold; font-size: 1.1em; }
- .livesession .userInfo .name .email { font-weight: normal; font-size: .9em; }
- .livesession .userInfo .sessionid { line-height: 1em; font-size: .85em; color: #999; margin-bottom: 3px; }
- 
- .livesession .browserInfo { min-width: 200px; max-width: 230px;  margin-right: 10px;}
- 
+.livesession .request { background-color: #FEFEFE; border: 1px solid #e3e3e3; padding: 5px; position: relative; padding-left: 45px; margin-bottom: 5px;}
+    .livesession .request .image {  position: absolute; left: 6px; top: 8px }
+    .livesession .request .url { font-weight: bold; }
+    .livesession .request .date { font-weight: normal; font-size: .80em; color: #777;}
+    .livesession .request .code { font-weight: bold;}
+    .livesession .route { font-size: .8em; color: #777; line-height: 1.4em;}
+    .livesession .controller { font-size: .8em; color: #777; line-height: 1.4em;}
+
+
+.livesession .request.ok .code { color: green;}    
+.livesession .request.error  .code,.livesession .request.error .url { color: red;}    
+
+
+/* ICONS */    
+    
+.ico {width: 32px; height: 32px; background: transparent url(../icons/noicon.png) center center no-repeat; } 
+.ico.small {width: 16px; height: 16px; } 
+
+
+.ico.page {background-image: url(../icons/farm-fresh/32x32/page.png); } 
+.ico.small.page {background-image: url(../icons/farm-fresh/16x16/page.png); } 
+
+.ico.page_white_error {background-image: url(../icons/farm-fresh/32x32/page_white_error.png); } 
+.ico.small.page_white_error {background-image: url(../icons/farm-fresh/16x16/page_white_error.png); } 
+
+.ico.http_status_server_error {background-image: url(../icons/farm-fresh/32x32/http_status_server_error.png); } 
+.ico.small.http_status_server_error {background-image: url(../icons/farm-fresh/16x16/http_status_server_error.png); } 

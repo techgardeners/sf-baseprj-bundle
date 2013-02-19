@@ -93,6 +93,8 @@ class LogManager extends BaseModule
     private $requestSaved;
     private $persistQueue;
     
+    private $logRequest;
+    
 
 // ********************************************************************************************************       
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
@@ -114,8 +116,10 @@ class LogManager extends BaseModule
         
         $this->requestSaved = null;
         $this->sessionSaved = null;
-        $this->persistQueue = array();
-        $this->logRequest();
+        $this->persistQueue = array();        
+        $this->logRequest = null;
+        
+        $this->initLogRequest();
         
     }        
 
@@ -135,9 +139,9 @@ class LogManager extends BaseModule
     * @param mixed $taskId
     * @param mixed $parentId
     */
-    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    private function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null)
     {   
-        $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId);
+        $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);
         $this->saveLog($log);   
     }
 
@@ -153,19 +157,19 @@ class LogManager extends BaseModule
     * @param mixed $parentId
     * @return Log
     */
-    private function getRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null )
+    private function getRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null )
     {
         if (!$this->isLoggable($level)) return null;
         
-        $newLog = new Log();
-        $newLog->setSessionId($this->session->getId());
-        $newLog->setRequestId($this->tgKernel->requestId);
-        $newLog->setLogLevel($level);
-        $newLog->setLogType($type);
-        $newLog->setParentId($parentId);
-        $newLog->setTaskId($taskId);
-        $newLog->setUser(null);
-        $newLog->setInfo($info);
+        $newLog = array();
+        $newLog['sessionId'] = $this->session->getId();
+        $newLog['requestId'] = $this->tgKernel->requestId;
+        $newLog['logLevel'] = $level;
+        $newLog['logType'] = $type;
+        $newLog['parentId'] = $parentId;
+        $newLog['taskId'] = $taskId;
+        $newLog['user'] = $user;
+        $newLog['info'] = $info;
 
         return $newLog;
 
@@ -179,8 +183,18 @@ class LogManager extends BaseModule
     private function persisteLog($log, $flush = true)
     {
         if (is_null($log)) return false;
-        
-        $this->em->persist($log);
+
+        $newLog = new Log();
+        $newLog->setSessionId($log['sessionId']);
+        $newLog->setRequestId($log['requestId']);
+        $newLog->setLogLevel($log['logLevel']);
+        $newLog->setLogType($log['logType']);
+        $newLog->setParentId($log['parentId']);
+        $newLog->setTaskId($log['taskId']);
+        $newLog->setUser($log['user']);
+        $newLog->setInfo($log['info']);
+
+        $this->em->persist($newLog);
         if($flush) { $this->em->flush(); }
         
     }
@@ -195,7 +209,12 @@ class LogManager extends BaseModule
     
     private function flushQueue()
     {
-        if (!(count($this->persistQueue) > 0)) return false;
+
+        if (!(count($this->persistQueue) > 0) && !($this->saveRequest && !$this->requestSaved)) return false;
+
+        if ($this->saveRequest && !$this->requestSaved) {
+            $this->persisteLog($this->logRequest, false);    
+        } 
         
         foreach ($this->persistQueue as $idx=>$log) {
             $this->persisteLog($log, false);
@@ -203,6 +222,9 @@ class LogManager extends BaseModule
         }
         
         $this->em->flush();
+        
+        
+        $this->requestSaved = true;        
         return true;
     }    
     
@@ -253,30 +275,22 @@ class LogManager extends BaseModule
 
     // ************ EVENTS CONTROLLER *******************
 
-    // Logga una request
-    public function logRequest($forceSave = false)
+    // prepara il log request da salvare
+    public function initLogRequest()
     {
         
         if (!$this->isEnabled()) return false;
-        
-        // se i permessi lo consentono salvo la request
-        if (!$this->saveRequest && !$forceSave) return false;
-        
-        if ($this->requestSaved) return false;
-        
-        
-        $info = $this->tgKernel->requestInfo;        
-        $this->addRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
-
-        $this->requestSaved = true;
+                
+        $info['request'] = $this->serializer->serialize($this->tgKernel->getRequest(), 'json');        
+        $this->logRequest = $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
         
     }
     
     // Logga una eccezione
     public function logException(\Exception $exception)
     {
-        // Se avviene prima del salvataggio, la salvo, se è già salvata salta da solo
-        $this->logRequest(true);
+        // Forzo il salvataggio della request in caso di eccezione
+        $this->saveRequest = true;
         
         // Aggiungo il log dell'eccezione        
         $info = array();        
@@ -294,16 +308,10 @@ class LogManager extends BaseModule
     public function logResponse(Response $response)
     {
         // se i permessi lo consentono salvo la request
-        //if (!$this->saveRequest) return false;
-        if (!$this->requestSaved) return false;
+        if (!$this->logRequest) return false;
 
         // Aggiungo il log della response        
-        $info = array();        
-        $info['statusCode'] = $response->getStatusCode();
-        $info['charset'] = $response->getCharset();
-        $info['headers'] = $response->headers->all();
-        
-        $this->addRawLog(self::TYPE_SAVE_RESPONSE, self::LEVEL_SYSTEM, '', '', $info); 
+        $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json');   
 
     }
     

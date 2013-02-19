@@ -20,7 +20,7 @@ class ComponentController extends Controller
 {
 
     // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
-    function time_ago($date,$granularity=2) {
+    function time_ago(\DateTime $date,$granularity=2) {
         
         if (!is_object($date)) return '';
         
@@ -69,7 +69,7 @@ class ComponentController extends Controller
         
         // prendo i log collegati alla sessione
         
-        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 3); 
+        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 2); 
         
         
         return $this->render('TechGSfBaseprjBundle:Component:render_session.html.twig', array('sessione' => $sessione,
@@ -87,28 +87,61 @@ class ComponentController extends Controller
     {
     
         $request = null;
+        $requestDate = null;
         $response = null;
+        $reqStatus = 'ok';
+        $warning = false;
+        $reqIcon = 'page';
         
         $em = $this->getDoctrine()->getEntityManager();
         $logs = $em->getRepository("TechGSfBaseprjBundle:Log")->getLogsByRequestId($request_id);        
+        $serializer =  \JMS\Serializer\SerializerBuilder::create()->build();
+        
         
         foreach($logs as $k=>$log){
 
             $logs[$k]['info'] = json_decode($logs[$k]['info'], true);
 
             if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
-                $request = $logs[$k];
-                unset($logs[$k]);    
-            }   
-            if ($log['log_type'] == LogManager::TYPE_SAVE_RESPONSE) {
-                $response = $logs[$k];
+                $requestDate = $this->time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
+                $request = json_decode($logs[$k]['info']['request'], true);
+                $response = json_decode($logs[$k]['info']['response'], true);               
                 unset($logs[$k]);    
             }   
         }
         
+        // testo il return code
+        
+        $returnCode = $response['status_code'];
+        
+        switch ($returnCode){
+            
+            case '500':
+            case '501':
+                        $reqStatus = 'error';
+                        $reqIcon = 'http_status_server_error';
+                        break;
+            case '404':
+                        $reqStatus = 'nofound';
+                        $reqIcon = 'page_white_error';
+                        break;
+            default:
+                        break; 
+        }
+       
+       /* 
+        echo "<pre>";
+        print_r($response);
+        echo "</pre>";
+        */
+        
+        
         return $this->render('TechGSfBaseprjBundle:Component:render_request.html.twig', array('request' => $request,
+                                                                                              'requestDate' => $requestDate,
                                                                                               'response' => $response,
                                                                                               'logs' => $logs,
+                                                                                              'reqStatus' => $reqStatus,
+                                                                                              'reqIcon' => $reqIcon,
                                                                                                 ));
     }       
 
