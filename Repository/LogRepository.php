@@ -18,7 +18,7 @@ use TechG\Bundle\SfBaseprjBundle\Repository\Base\BaseEntityRepository as BaseRep
 
 class LogRepository extends BaseRepository
 {
-    public function getRequestIdsBySessionId($session_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    public function getRequestIdsBySessionId($cookie_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
     {
       
         $sql = "SELECT
@@ -26,7 +26,7 @@ class LogRepository extends BaseRepository
                   FROM
                          log l
                   WHERE 
-                      l.session_id = '$session_id'
+                      l.cookie_id = '$cookie_id'
                   GROUP BY
                       l.request_id
                   ORDER BY
@@ -76,5 +76,11 @@ class LogRepository extends BaseRepository
 
         return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
           
+    }     
+
+    public function linkLogToNewCookieId($tempCookieId, $cookieId)
+    {      
+        $sql = "UPDATE log SET cookie_id = '$cookieId' WHERE session_id = '$tempCookieId'; DELETE FROM log_session WHERE id = 'NO-COOKIE-SUPPORT' AND session_id = '$tempCookieId'";
+        return $this->getEntityManager()->getConnection()->exec($sql);
     }     
 }

@@ -77,6 +77,13 @@ class Log extends BaseEntity
     /**
      * @var string
      *
+     * @ORM\Column(name="cookie_id", type="string", length=255, nullable=true)
+     */
+    private $cookieId;
+    
+    /**
+     * @var string
+     *
      * @ORM\Column(name="session_id", type="string", length=255, nullable=true)
      */
     private $sessionId;
@@ -291,6 +298,29 @@ class Log extends BaseEntity
     public function getSessionId()
     {
         return $this->sessionId;
+    }
+
+    /**
+     * Set cookieId
+     *
+     * @param string $cookieId
+     * @return Log
+     */
+    public function setCookieId($cookieId)
+    {
+        $this->cookieId = $cookieId;
+    
+        return $this;
+    }
+
+    /**
+     * Get cookieId
+     *
+     * @return string 
+     */
+    public function getCookieId()
+    {
+        return $this->cookieId;
     }
 
     /**

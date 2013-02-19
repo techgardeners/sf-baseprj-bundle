@@ -111,6 +111,10 @@ class ComponentController extends Controller
                         $reqStatus = 'warning';
                         $reqIcon = 'page_white_error';
                         break;
+            case 302:
+                        $reqStatus = 'forward';
+                        $reqIcon = 'arrow_up';
+                        break;
             default:
                         if ($request['warning']) {
                             $reqStatus = 'warning';

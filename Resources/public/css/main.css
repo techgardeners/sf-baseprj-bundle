@@ -81,3 +81,15 @@
 
 .ico.bullet_delete {background-image: url(../icons/farm-fresh/32x32/bullet_delete.png); } 
 .ico.small.bullet_delete {background-image: url(../icons/farm-fresh/16x16/bullet_delete.png); } 
+
+.ico.page_go {background-image: url(../icons/farm-fresh/32x32/page_go.png); } 
+.ico.small.page_go {background-image: url(../icons/farm-fresh/16x16/page_go.png); } 
+
+.ico.arrow_up {background-image: url(../icons/farm-fresh/32x32/arrow_up.png); } 
+.ico.small.arrow_up {background-image: url(../icons/farm-fresh/16x16/arrow_up.png); } 
+
+.ico.document_split {background-image: url(../icons/farm-fresh/32x32/document_split.png); } 
+.ico.small.document_split {background-image: url(../icons/farm-fresh/16x16/document_split.png); } 
+
+.ico.document_torn {background-image: url(../icons/farm-fresh/32x32/document_torn.png); } 
+.ico.small.document_torn {background-image: url(../icons/farm-fresh/16x16/document_torn.png); } 

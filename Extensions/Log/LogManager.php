@@ -251,34 +251,27 @@ class LogManager extends BaseModule
     public function persistSession()
     {
        
-        if (!$this->isEnabled() || !$this->saveSession) return false;
-
-        // Check if just in session
-        if ($this->session->has(self::SESSION_VARS_SAVED_SESSION) &&
-            $this->session->get(self::SESSION_VARS_SAVED_SESSION) === $this->session->getId()){
-              
-              if (!$this->keepAlive) return false;
-              
-              $session = $this->getLogSessionSaved();
-              $session->setLastActivity(new \DateTime());
-              
-              $this->em->persist($session);
-              
-              $this->sessionSaved = $session;
-              
-              return true;
-                
-        } 
+        if (!$this->isEnabled()) return false;
         
-        // a volte è capitato che ricarica una sessione con lo stesso id;
-        // quindi provo a ricaricarlo comunque dal db
-        $newLogSession = $this->getLogSessionSaved();
-
-        // persisto nel db
-        $this->em->persist($newLogSession);
+        $session = $this->getLogSessionSaved();
         
-        $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
-        $this->sessionSaved = $newLogSession;
+        if ($this->keepAlive) {
+            $session->setLastActivity(new \DateTime());
+            $userInfo = $session->getInfoUser();
+            $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
+            $userInfo['last_uri'] = $this->tgKernel->getMasterRequest('requestUri');
+            if (!$userInfo['auth'] && is_object($this->tgKernel->getUser()) && $this->tgKernel->getUser()->hasRole('ROLE_USER')) {
+                $userInfo['auth'] = true;
+                $userInfo['userInfo'] = $this->serializer->serialize($this->tgKernel->getUser(), 'json');                
+            }
+            
+            $session->setInfoUser($userInfo);
+        }
+
+        $this->em->persist($session);
+              
+        return true;
+
     }
 
     // ************ EVENTS CONTROLLER *******************
@@ -303,13 +296,6 @@ class LogManager extends BaseModule
         $this->logException($event->getException());
     }
 
-    
-    // Chiude i log
-    public function onTerminate($event)
-    {
-        $this->flushQueue();
-        $this->em->flush();
-    }
         
     // Logga una eccezione
     public function logException(\Exception $exception)
@@ -336,6 +322,19 @@ class LogManager extends BaseModule
 
     }
 
+    // Chiude i log
+    public function onTerminate($event)
+    {
+        
+        $this->flushQueue();
+        $this->em->flush();
+        
+        // Se ho un cookieIdTemporaneo devo agganciare i log dispersi
+        if (null != $this->tgKernel->tempCookieId) {
+            $res = $this->em->getRepository("TechGSfBaseprjBundle:Log")->linkLogToNewCookieId($this->tgKernel->tempCookieId, $this->tgKernel->cookieId);           
+        }
+        
+    }    
     
 
 // ********************************************************************************************************       
@@ -360,6 +359,7 @@ class LogManager extends BaseModule
         if (!$this->isLoggable($level)) return null;
         
         $newLog = array();
+        $newLog['cookieId'] = $this->tgKernel->cookieId;
         $newLog['sessionId'] = $this->session->getId();
         $newLog['requestId'] = $this->tgKernel->requestId;
         $newLog['logLevel'] = $level;
@@ -383,6 +383,7 @@ class LogManager extends BaseModule
         if (is_null($log)) return false;
 
         $newLog = new Log();
+        $newLog->setCookieId($log['cookieId']);
         $newLog->setSessionId($log['sessionId']);
         $newLog->setRequestId($log['requestId']);
         $newLog->setLogLevel($log['logLevel']);
@@ -435,7 +436,7 @@ class LogManager extends BaseModule
     private function getLogSessionSaved()
     {        
         if (is_null($this->sessionSaved))                 
-            $this->sessionSaved = $this->em->getRepository("TechGSfBaseprjBundle:LogSession")->find($this->session->getId());
+            $this->sessionSaved = $this->em->getRepository("TechGSfBaseprjBundle:LogSession")->find($this->tgKernel->cookieId);
         
         if (is_null($this->sessionSaved))
             $this->sessionSaved = $this->getNewLogSessionObj(); 
@@ -448,14 +449,14 @@ class LogManager extends BaseModule
     {        
         $newLogSession = new LogSession();
         //save the session record
-        $newLogSession->setId($this->tgKernel->getSession()->getId());
+        $newLogSession->setId($this->tgKernel->cookieId);
+        $newLogSession->setSessionId($this->session->getId());
 
         // Collect User info
-        // Devo ricavare l'utente e se è loggato
-        $user = $this->tgKernel->getUser();
-        
         $userInfo = array();
-        $userInfo['userInfo'] = $this->serializer->serialize($user, 'json');
+        $userInfo['last_uri'] = $this->tgKernel->getMasterRequest('requestUri');
+        $userInfo['auth'] = (!is_object($user) || !($user instanceof UserInterface)) ? false : $this->tgKernel->getUser()->hasRole('ROLE_USER');
+        $userInfo['userInfo'] = $this->serializer->serialize($this->tgKernel->getUser(), 'json');
         $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
         $userInfo['locale'] = $this->tgKernel->getMasterRequest('locale');
         $userInfo['guessedLocale'] = $this->tgKernel->getMasterRequest('guessedLocale');

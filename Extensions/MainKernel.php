@@ -20,6 +20,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\HttpKernel\Event\PostResponseEvent;
 
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Locale\Locale;
@@ -49,8 +50,10 @@ class MainKernel
     private $router = null;
     private $session = null;
     private $isInit = false;                            // Indica se la classe è stata inizializzata
+    private $saveCookie = false;                         
     
     private $masterRequest;
+    private $cookieObj;
 
     public  $settingManager = null;
     public  $userGeoPosition = null;                    // Hold user geoInfo
@@ -58,6 +61,8 @@ class MainKernel
     public  $guessedLocale = null;                      // Hold locale guessed
     
     public  $requestId = null;                          
+    public  $cookieId = null;                          
+    public  $tempCookieId = null;                          
 
     public $modules = array();
     
@@ -95,10 +100,29 @@ class MainKernel
     {
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
+        $this->session->start();
         $this->requestId = uniqid(rand(), true);
         $this->userBrowserInfo = UtilityManager::getBrowser();
         
         $this->masterRequest = $this->mapRequest($event->getRequest(), true);
+        
+        if ($event->getRequest()->cookies->has('tgSessionId')) {
+            $this->cookieId = $event->getRequest()->cookies->get('tgSessionId');        
+        } else {
+            
+            if ($event->getRequest()->cookies->has('tgSessionFirstId')) {
+                $this->cookieId = uniqid(null, true);
+                $this->tempCookieId = $event->getRequest()->cookies->get('tgSessionFirstId');
+                $this->cookieObj = new Cookie('tgSessionId', $this->cookieId, time() + 3600 * 24 * 7);
+            } else {
+                $this->cookieId = 'NO-COOKIE-SUPPORT';
+                $tempId = $this->session->getId();
+                $this->cookieObj = new Cookie('tgSessionFirstId', $tempId, time() + 3600 * 24 * 1);                   
+            }
+            
+            $this->saveCookie = true;
+        }
+                   
         
         // Inizializzo il Manager dei settaggi che a suo volta a cascata innietta le configurazioni a tutti i moduli 
         $this->settingManager->init($this);
@@ -172,6 +196,10 @@ class MainKernel
      
     public function onResponse(FilterResponseEvent $event) 
     {
+        if ($this->saveCookie) {
+            $event->getResponse()->headers->setCookie($this->cookieObj);
+        }
+        
         $this->getLogManager()->onResponse($event);                        
     }
      

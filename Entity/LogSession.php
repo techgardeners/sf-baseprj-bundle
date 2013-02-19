@@ -31,6 +31,13 @@ class LogSession extends BaseEntity
     private $id;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="session_id", type="string", length=255, nullable=true)
+     */
+    private $sessionId;    
+    
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="log_date", type="datetime", nullable=false)
@@ -98,6 +105,29 @@ class LogSession extends BaseEntity
         return $this->id;
     }
 
+    /**
+     * Set sessionId
+     *
+     * @param string $sessionId
+     * @return Log
+     */
+    public function setSessionId($sessionId)
+    {
+        $this->sessionId = $sessionId;
+    
+        return $this;
+    }
+
+    /**
+     * Get sessionId
+     *
+     * @return string 
+     */
+    public function getSessionId()
+    {
+        return $this->sessionId;
+    }    
+    
     /**
      * Set logDate
      *
