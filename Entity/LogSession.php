@@ -70,8 +70,7 @@ class LogSession extends BaseEntity
     {
         parent::__construct();
         
-        $this->setLogDate(new \DateTime());        
-        $this->setLastActivity(new \DateTime());        
+        $this->setLogDate(new \DateTime());                
     }       
 
 
