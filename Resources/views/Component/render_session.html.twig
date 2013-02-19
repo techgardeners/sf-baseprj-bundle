@@ -26,7 +26,7 @@
             <div class="userInfo pull-left">
                 <div class="name">
                 {% if userInfo.userInfo is iterable %}
-                    {{ userInfo.userInfo.username  }} <span class="email">[<a href="mailto:{{ userInfo.userInfo.email  }}">{{ userInfo.userInfo.email  }}</a>]</span>
+                    {{ userInfo.userInfo.username  }} <span class="email">[<a href="mailto:{{ userInfo.userInfo.email | default("#")  }}">{{ userInfo.userInfo.email | default("") }}</a>]</span>
                 {% else %}
                     {{ "live.session.field.user.guest" | trans }}
                 {% endif  %}                

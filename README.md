@@ -23,7 +23,15 @@ add in appKernel:
             new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
             new SunCat\MobileDetectBundle\MobileDetectBundle(),  // https://github.com/suncat2000/MobileDetectBundle            
             new TechG\Bundle\SfBaseprjBundle\TechGSfBaseprjBundle(),   
-    
+
+add route gpanel
+
+
+tech_g_baseprj_bundle:
+    resource: "@TechGSfBaseprjBundle/Resources/config/routing.yml"
+    prefix:   /techg   
+
+                   
 add in config.yml 
 
 mobile_detect:

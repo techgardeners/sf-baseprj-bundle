@@ -1,5 +1,11 @@
 {% extends "TechGSfBaseprjBundle::base_protected.html.twig" %}
 
+    {% block seo_metadata %}
+        <meta name="description" content="">
+        <meta name="keywords" content="">    
+        <title>gPanel :: Site control center</title>      
+    {% endblock %}
+
     {% block navbar %}
         
         {% render url("gpanel_fragment_navbar", { 'route': app.request.get('_route') }) with {}, { 'standalone': true } %}           
