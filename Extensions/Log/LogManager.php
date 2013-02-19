@@ -17,6 +17,7 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 use TechG\Bundle\SfBaseprjBundle\Entity\Log;
 use TechG\Bundle\SfBaseprjBundle\Entity\LogSession;
@@ -212,7 +213,7 @@ class LogManager extends BaseModule
 
         if (!(count($this->persistQueue) > 0) && !($this->saveRequest && !$this->requestSaved)) return false;
 
-        if ($this->saveRequest && !$this->requestSaved) {
+        if (!$this->requestSaved) {
             $this->persisteLog($this->logRequest, false);    
         } 
         
@@ -277,11 +278,15 @@ class LogManager extends BaseModule
 
     // prepara il log request da salvare
     public function initLogRequest()
-    {
-        
+    {        
         if (!$this->isEnabled()) return false;
-                
-        $info['request'] = $this->serializer->serialize($this->tgKernel->getRequest(), 'json');        
+
+        $newRequest = clone $this->tgKernel->getRequest();
+        
+        // Svuoto la sessione per non portarmi dietro di tutto
+        $newRequest->setSession(new Session());
+        
+        $info['request'] = $this->serializer->serialize($newRequest, 'json');
         $this->logRequest = $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
         
     }
@@ -290,6 +295,7 @@ class LogManager extends BaseModule
     public function logException(\Exception $exception)
     {
         // Forzo il salvataggio della request in caso di eccezione
+        // TODO: non dovrebbe piu essere necessario, se c'è qualcosa in coda lui la request la salva
         $this->saveRequest = true;
         
         // Aggiungo il log dell'eccezione        
@@ -309,7 +315,7 @@ class LogManager extends BaseModule
     {
         // se i permessi lo consentono salvo la request
         if (!$this->logRequest) return false;
-
+                
         // Aggiungo il log della response        
         $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json');   
 

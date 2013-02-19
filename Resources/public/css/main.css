@@ -31,17 +31,26 @@
 
 .livesession .browserInfo { min-width: 200px; max-width: 230px;  margin-right: 10px;}
  
-.livesession .request { background-color: #FEFEFE; border: 1px solid #e3e3e3; padding: 5px; position: relative; padding-left: 45px; margin-bottom: 5px;}
-    .livesession .request .image {  position: absolute; left: 6px; top: 8px }
-    .livesession .request .url { font-weight: bold; }
-    .livesession .request .date { font-weight: normal; font-size: .80em; color: #777;}
-    .livesession .request .code { font-weight: bold;}
+.livesession .request { background-color: #FEFEFE; border: 1px solid #e3e3e3; padding: 5px; position: relative; margin-bottom: 5px;}
+    .livesession .request > .header { padding-left: 45px; }
+    .livesession .request > .header .image {  position: absolute; left: 6px; top: 8px }
+    .livesession .request > .header .url { font-weight: bold; }
+    .livesession .request > .header .querystring { color: #333; }
+    .livesession .request > .header .date { font-weight: normal; font-size: .80em; color: #777;}
+    .livesession .request > .header .code { font-weight: bold;}
     .livesession .route { font-size: .8em; color: #777; line-height: 1.4em;}
     .livesession .controller { font-size: .8em; color: #777; line-height: 1.4em;}
 
 
 .livesession .request.ok .code { color: green;}    
-.livesession .request.error  .code,.livesession .request.error .url { color: red;}    
+.livesession .request.error .code,.livesession .request.error .url { color: red;}    
+
+    .livesession .logs { padding-left: 45px; }
+    .livesession .logs .log { border: 1px solid #e3e3e3; font-size: .8em; position: relative; }
+    .livesession .logs .log > .header .image { position: absolute; height: 16px; width: 16px; left: 5px; top: 3px }
+    .livesession .logs .log .header { padding-left: 25px; }
+    .livesession .logs .log .message { font-weight: bold; }
+    .livesession .logs .log.error { background-color: #ffdddd; }
 
 
 /* ICONS */    
@@ -58,3 +67,6 @@
 
 .ico.http_status_server_error {background-image: url(../icons/farm-fresh/32x32/http_status_server_error.png); } 
 .ico.small.http_status_server_error {background-image: url(../icons/farm-fresh/16x16/http_status_server_error.png); } 
+
+.ico.bullet_delete {background-image: url(../icons/farm-fresh/32x32/bullet_delete.png); } 
+.ico.small.bullet_delete {background-image: url(../icons/farm-fresh/16x16/bullet_delete.png); } 

@@ -69,7 +69,7 @@ class ComponentController extends Controller
         
         // prendo i log collegati alla sessione
         
-        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 2); 
+        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 5); 
         
         
         return $this->render('TechGSfBaseprjBundle:Component:render_session.html.twig', array('sessione' => $sessione,
@@ -92,6 +92,8 @@ class ComponentController extends Controller
         $reqStatus = 'ok';
         $warning = false;
         $reqIcon = 'page';
+        $queryString = '';
+        $returnCode = 0;
         
         $em = $this->getDoctrine()->getEntityManager();
         $logs = $em->getRepository("TechGSfBaseprjBundle:Log")->getLogsByRequestId($request_id);        
@@ -104,15 +106,19 @@ class ComponentController extends Controller
 
             if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
                 $requestDate = $this->time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
-                $request = json_decode($logs[$k]['info']['request'], true);
-                $response = json_decode($logs[$k]['info']['response'], true);               
+                
+                    $request = json_decode($logs[$k]['info']['request'], true);
+                    $queryString = str_replace($request['path_info'], '', $request['request_uri']);                                                 
+
+                if (array_key_exists('response', $logs[$k]['info'])) {
+                    $response = json_decode($logs[$k]['info']['response'], true);
+                    $returnCode = $response['status_code'];
+                }     
+                    
                 unset($logs[$k]);    
             }   
         }
         
-        // testo il return code
-        
-        $returnCode = $response['status_code'];
         
         switch ($returnCode){
             
@@ -125,19 +131,23 @@ class ComponentController extends Controller
                         $reqStatus = 'nofound';
                         $reqIcon = 'page_white_error';
                         break;
+            case 0:
+                        $reqStatus = 'nofound';
+                        $reqIcon = 'page_white_error';
+                        break;
             default:
                         break; 
         }
        
-       /* 
+        /*
         echo "<pre>";
-        print_r($response);
+        print_r($request);
         echo "</pre>";
         */
         
-        
         return $this->render('TechGSfBaseprjBundle:Component:render_request.html.twig', array('request' => $request,
                                                                                               'requestDate' => $requestDate,
+                                                                                              'queryString' => $queryString,
                                                                                               'response' => $response,
                                                                                               'logs' => $logs,
                                                                                               'reqStatus' => $reqStatus,

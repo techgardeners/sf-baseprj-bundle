@@ -1,9 +1,24 @@
 <div class="request {{ reqStatus }}">
-    <div class="image ico {{ reqIcon }}"></div>
-    <div><span class="code">[{{ response.status_code }}]</span> {{ request.method }} <span class="url">{{ request.request_uri |truncate(80) }}</span> <span class="date">({{ requestDate }})</span></div>
-    <div class="route">{{ request.attributes.parameters._route | default("no controller") }}</div>
-    <div class="controller">{{ request.attributes.parameters._controller | default("no controller") }}</div>
-
+    <div class="header">
+        <div class="image ico {{ reqIcon }}"></div>
+        <div><span class="code">[{{ response.status_code | default("?")  }}]</span> {{ request.method | default("?") }} <span class="url">{{ request.path_info | default("?")  }}</span><span class="querystring">{{ queryString |truncate(80) }}</span> <span class="date">({{ requestDate }})</span></div>
+        <div class="route">{{ request.attributes.parameters._route | default("no route") }}</div>
+        <div class="controller">{{ request.attributes.parameters._controller | default("no controller") }}</div>
+    </div>
+    
+{% if logs is not empty %}
+    <div class="logs">
+        {% for log in logs%}
+            <div class="log error">
+                <div class="header">
+                    <div class="image ico bullet_delete"></div>
+                    <div class="message">{{ log.info.message | default("nomessage") }}</div>
+                </div>
+                
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}    
 </div>   
 
        
