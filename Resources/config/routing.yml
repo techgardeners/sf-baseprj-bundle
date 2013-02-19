@@ -1,17 +1,17 @@
 tech_g_baseprj_bundle_home:
-    pattern:  /
+    pattern:  /gPanel
     defaults: { _controller: TechGSfBaseprjBundle:Main:index }
 
 tech_g_baseprj_bundle_info:
-    pattern:  /info
+    pattern:  /gPanel/info
     defaults: { _controller: TechGSfBaseprjBundle:Main:info }
     
 tech_g_baseprj_bundle_live:
-    pattern:  /live
+    pattern:  /gPanel/live
     defaults: { _controller: TechGSfBaseprjBundle:Main:live }
     
 tech_g_baseprj_bundle_base_error:
-    pattern:  /error
+    pattern:  /gPanel/error
     defaults: { _controller: TechGSfBaseprjBundle:Main:error }    
     
     
@@ -22,27 +22,27 @@ tech_g_baseprj_bundle_base_error:
 # FRAGMENT SESSIONE
 
 gpanel_fragment_render_session:
-    pattern:  /fragment/render/session/{session_id}
+    pattern:  /gPanel/fragment/render/session/{session_id}
     defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession }
 
 gpanel_fragment_render_request:
-    pattern:  /fragment/render/request/{request_id}
+    pattern:  /gPanel/fragment/render/request/{request_id}
     defaults: { _controller: TechGSfBaseprjBundle:Component:renderRequest }
 
 #fragment_render_log:
-#    pattern:  /fragment/render/log/{log_id}
+#    pattern:  /gPanel/fragment/render/log/{log_id}
 #    defaults: { _controller: TechGSfBaseprjBundle:Component:renderLog }
 
 
 # FRAMMENTI LAYOUT GLOBALI
 gpanel_fragment_navbar:
-    pattern:  /fragment/navbar/{route}
+    pattern:  /gPanel/fragment/navbar/{route}
     defaults: { _controller: TechGSfBaseprjBundle:Component:navbar }
 
 gpanel_fragment_header:
-    pattern:  /fragment/header/{route}
+    pattern:  /gPanel/fragment/header/{route}
     defaults: { _controller: TechGSfBaseprjBundle:Component:header }
 
 gpanel_fragment_footer:
-    pattern:  /fragment/footer
+    pattern:  /gPanel/fragment/footer
     defaults: { _controller: TechGSfBaseprjBundle:Component:footer }

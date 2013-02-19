@@ -25,11 +25,17 @@ services:
 
 ################# EVENTS LISTER #####################
             
+    tech_g_sf_baseprj.kernel.init:
+        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
+        arguments: [ @techg.kernel ]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onInitEvent, priority: 64 }
+
     tech_g_sf_baseprj.kernel.request:
         class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
         arguments: [ @techg.kernel ]
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent }
+            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent, priority: 0 }
 
     tech_g_sf_baseprj.kernel.exception:
         class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener

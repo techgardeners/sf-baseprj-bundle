@@ -16,6 +16,14 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -188,17 +196,16 @@ class LogManager extends BaseModule
         $this->persistQueue = array();        
         $this->logRequest = null;
 
-        $uri = $this->tgKernel->uri;
         // Controllo se devo disabilitare i log per un pattern
         if ($this->skipPattern != '') {
-            if (preg_match($this->skipPattern, $uri)) {
+            if (preg_match($this->skipPattern, $this->tgKernel->getMasterRequest('requestUri'))) {
                 $this->enabled = false;
             }    
         }
         
         if ($this->isEnabled()) {
-            // inizialize geocoder ( https://github.com/willdurand/Geocoder )
-            $this->initLogRequest();   
+            // Preparo subito il log della request (nel caso poi lo integro)
+            $this->logRequest = $this->getNewLogRequest();   
         }          
         
     }        
@@ -240,8 +247,8 @@ class LogManager extends BaseModule
 //******************************************
     
 
-    // Salva la sessione nel db
-    public function logSession()
+    // persiste la sessione nel db
+    public function persistSession()
     {
        
         if (!$this->isEnabled() || !$this->saveSession) return false;
@@ -256,11 +263,12 @@ class LogManager extends BaseModule
               $session->setLastActivity(new \DateTime());
               
               $this->em->persist($session);
-              $this->em->flush();
+              
+              $this->sessionSaved = $session;
               
               return true;
                 
-            } 
+        } 
         
         // a volte è capitato che ricarica una sessione con lo stesso id;
         // quindi provo a ricaricarlo comunque dal db
@@ -268,7 +276,6 @@ class LogManager extends BaseModule
 
         // persisto nel db
         $this->em->persist($newLogSession);
-        $this->em->flush();
         
         $this->session->set(self::SESSION_VARS_SAVED_SESSION, $this->session->getId());
         $this->sessionSaved = $newLogSession;
@@ -276,22 +283,14 @@ class LogManager extends BaseModule
 
     // ************ EVENTS CONTROLLER *******************
 
-    // prepara il log request da salvare
-    public function initLogRequest()
-    {        
-        if (!$this->isEnabled()) return false;
-
-        // Svuoto la sessione per non portarmi dietro di tutto
-        $newRequest = clone $this->tgKernel->getRequest();        
-        $newRequest->setSession(new Session());
-        
-        $info['request'] = $this->serializer->serialize($newRequest, 'json');
-        $info['request_warning'] = false;
-        $info['request_error'] = false;
-        
-        $this->logRequest = $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
-        
+    public function onRequest(GetResponseEvent $event) 
+    {
+        if ($this->isEnabled() && !$this->requestSaved) {
+            // Aggiungo i settaggi del secondo giro
+            $this->logRequest['info']['request'] = array_merge($this->logRequest['info']['request'], $this->tgKernel->getMasterRequest());   
+        } 
     }
+
     
     // Logga una eccezione
     public function logException(\Exception $exception)
@@ -314,7 +313,7 @@ class LogManager extends BaseModule
         if (!$this->logRequest) return false;
                 
         // Aggiungo il log della response        
-        $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json');   
+        $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json'); 
 
     }
     
@@ -435,7 +434,7 @@ class LogManager extends BaseModule
     {        
         $newLogSession = new LogSession();
         //save the session record
-        $newLogSession->setId($this->session->getId());
+        $newLogSession->setId($this->tgKernel->getSession()->getId());
 
         // Collect User info
         // Devo ricavare l'utente e se è loggato
@@ -443,8 +442,11 @@ class LogManager extends BaseModule
         
         $userInfo = array();
         $userInfo['userInfo'] = $this->serializer->serialize($user, 'json');
-        $userInfo['ip'] = $this->tgKernel->clientIp;
+        $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
+        $userInfo['locale'] = $this->tgKernel->getMasterRequest('locale');
+        $userInfo['guessedLocale'] = $this->tgKernel->getMasterRequest('guessedLocale');
         $userInfo['browserInfo'] = $this->tgKernel->userBrowserInfo;
+        $userInfo['mobileInfo'] = null;
 
         $newLogSession->setInfoUser( $userInfo );
         
@@ -453,7 +455,20 @@ class LogManager extends BaseModule
         
         return $newLogSession; 
     }
- 
+
+
+    // ritorna un logRequest da salvare
+    private function getNewLogRequest()
+    {        
+        if (!$this->isEnabled()) return false;
+
+        $info['request'] = $this->tgKernel->getMasterRequest();
+        $info['request']['warning'] = false;
+        $info['request']['error'] = false;
+        
+        return $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
+        
+    } 
 
 // ********************************************************************************************************       
 // METODI STATICI       

@@ -48,7 +48,7 @@ class TechgActionListener
     {              
         
         // Viene richiamato SOLO nelle richieste principali
-        if (preg_match('/^_(wdt|assetic|profiler|configurator)/', $request->get('_route'))) {
+        if (preg_match('/^\/_(wdt|assetic|profiler|configurator)/', $request->getRequestUri())) {
             return true;
         }
         
@@ -56,7 +56,7 @@ class TechgActionListener
     }
     
   
-    public function onRequestEvent(GetResponseEvent $event)
+    public function onInitEvent(GetResponseEvent $event)
     {
         
         $request = $event->getRequest();
@@ -65,13 +65,25 @@ class TechgActionListener
         
         // Nelle richieste secondarie devo inizializzarlo uguale ma solo alcune cose
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-            $this->mainKernel->initSubRequest($request);
+            $this->mainKernel->initSubRequest($event);
             return true;
         }
         
+        
+        $this->mainKernel->init($event);
+        
+          
+    }
+  
+    public function onRequestEvent(GetResponseEvent $event)
+    {
+        
+        if ($this->skipSubRequest($event) || 
+            !$this->mainKernel->isInit()) return;
+        
         // Richiamo l'init del kernel per inniettargli la request
         // (per problemi di scope dei servizi http://symfony.com/it/doc/current/cookbook/service_container/scopes.html)
-        $this->mainKernel->init($request);  
+        $this->mainKernel->onRequest($event);  
     }
   
     public function onKernelController(FilterControllerEvent $event)
@@ -81,7 +93,7 @@ class TechgActionListener
             !$this->mainKernel->isInit()) return;
        
         
-        $this->mainKernel->elaborateController($event);
+        $this->mainKernel->onController($event);
 
     }      
 
@@ -92,7 +104,7 @@ class TechgActionListener
             !$this->mainKernel->isInit()) return;
 
         $exception = $event->getException();            
-        $this->mainKernel->elaborateException($exception);
+        $this->mainKernel->onException($exception);
         
     }  
 
@@ -102,7 +114,7 @@ class TechgActionListener
         if ($this->skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;       
         
-        $this->mainKernel->elaborateView($event);
+        $this->mainKernel->onView($event);
 
     }    
     
@@ -112,7 +124,7 @@ class TechgActionListener
         if ($this->skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;       
         
-        $this->mainKernel->elaborateResponse($event);
+        $this->mainKernel->onResponse($event);
 
     }
     
@@ -121,7 +133,7 @@ class TechgActionListener
 
         if (!$this->mainKernel->isInit()) return;       
         
-        $this->mainKernel->elaborateTerminate($event);
+        $this->mainKernel->onTerminate($event);
 
     }         
   

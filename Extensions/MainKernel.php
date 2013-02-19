@@ -49,16 +49,12 @@ class MainKernel
     private $router = null;
     private $session = null;
     private $isInit = false;                            // Indica se la classe è stata inizializzata
+    
+    private $masterRequest;
 
     public  $settingManager = null;
-    
-    public  $baseUri = null;                            // Contiene il baseUri dell' applicazione
-    public  $uri = null;                                // Contiene l'uri della pagina richiamata
-    public  $host = null;                               // Contiene l'host della pagina richiamata
-    public  $clientIp = null;                           // Hold user ip
     public  $userGeoPosition = null;                    // Hold user geoInfo
     public  $userBrowserInfo = null;                    // Hold user browser info
-    public  $requestLocale = null;                      // Hold locale setted
     public  $guessedLocale = null;                      // Hold locale guessed
     
     public  $requestId = null;                          
@@ -95,39 +91,35 @@ class MainKernel
     * 
     * @param \Symfony\Component\HttpFoundation\Request $request
     */
-    public function init(Request $request)
+    public function init(GetResponseEvent $event)
     {
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
         $this->requestId = uniqid(rand(), true);
         
-        // Setto varie impostazioni base
-        $this->clientIp = $request->getClientIp();
-        $this->host = $request->getHttpHost();
-        $this->uri = $request->getRequestUri(); // salvo l'uri della pagina
-        $this->baseUri = $request->getScheme() . '://' . $request->getHttpHost() . $request->getBasePath();
-        $this->userBrowserInfo = UtilityManager::getBrowser();  // get information for User Browser
+        $this->masterRequest = $this->mapRequest($event->getRequest(), true);
         
         // Inizializzo il Manager dei settaggi che a suo volta a cascata innietta le configurazioni a tutti i moduli 
         $this->settingManager->init($this);
+
         foreach($this->modules as $nameModule => $moduleObj) {
             $moduleObj->initModule();
         }
 
-        $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->clientIp);
-        
+        $this->userGeoPosition = $this->getGeocoderManager()->getGeoInfoByIp($this->getMasterRequest('ip'));
+       
         // If Locale is not set on Uri guessed right Locale
-        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($request)) {
-            $request->setLocale($this->guessedLocale);    
+        if (null !== $this->guessedLocale = $this->getGuessLocaleManager()->guessLocale($this->getMasterRequest('requestUri'))) {
+            $event->getRequest()->setLocale($this->guessedLocale);
+            $this->masterRequest['guessedLocale'] = $this->guessedLocale;
         }            
 
-        $this->requestLocale = $request->getLocale();
+        $this->getLogManager()->persistSession();
         
         // Qui implemento la white e la black list
         $this->getBlackListManager()->executeFilter();
         $this->getWhiteListManager()->executeFilter();
-                
-        $this->getLogManager()->logSession();
+
         
         // ************************************************************************************************
         // Qui ho finito completamente il lavoro del kernel a livello request  per la richiesta principale
@@ -145,41 +137,50 @@ class MainKernel
      }    
 
      
-    public function initSubRequest(Request $request)
+    public function initSubRequest(GetResponseEvent $event)
     {
         
         if ($this->isInit()){
-            // nelle richieste secondarie risetto il locale della request a quello scelto        
-            $request->setLocale($this->requestLocale);            
+            // nelle richieste secondarie risetto il locale della request a quello scelto
+            if (null !== $guessedLocale = $this->getGuessLocaleManager()->guessLocale($event->getRequest()->getRequestUri())) {
+                $event->getRequest()->setLocale($guessedLocale);
+            }                        
         }
 
     }
+    
+    public function onRequest(GetResponseEvent $event) 
+    {
+        // Aggiungo i settaggi del secondo giro
+        $this->masterRequest = array_merge($this->masterRequest, $this->mapRequest($event->getRequest()));
+        $this->getLogManager()->onRequest($event);
+        
+    }
      
-    public function elaborateException(\Exception $exception) 
+    public function onException(\Exception $exception) 
     {
         $logM = $this->getLogManager();
-        $logM->logException($exception);
-        
+        $logM->logException($exception);        
     }
      
-    public function elaborateController(FilterControllerEvent $event) 
+    public function onController(FilterControllerEvent $event) 
     {
         
     }
      
-    public function elaborateView(GetResponseForControllerResultEvent $event) 
+    public function onView(GetResponseForControllerResultEvent $event) 
     {
         
     }
      
-    public function elaborateResponse(FilterResponseEvent $event) 
+    public function onResponse(FilterResponseEvent $event) 
     {
         $logM = $this->getLogManager();       
         $logM->logResponse($event->getResponse());        
         
     }
      
-    public function elaborateTerminate($event) 
+    public function onTerminate($event) 
     {
         $logM = $this->getLogManager();
         $logM->shutdown($event);
@@ -213,6 +214,40 @@ class MainKernel
 /*              METODI PRIVATI                    */
 /* ---------------------------------------------- */
 
+    private function mapRequest(Request $request, $full = false)
+    {
+        $mapRequest = array();
+        
+        if ($full){
+            $mapRequest['ip'] = $request->getClientIp();
+            $mapRequest['host'] = $request->getHttpHost();
+            $mapRequest['port'] = $request->getPort();
+            $mapRequest['scheme'] = $request->getScheme();
+            $mapRequest['uri'] = $request->getUri();
+            $mapRequest['requestUri'] = $request->getRequestUri();
+            $mapRequest['queryString'] = $request->getQueryString();
+            $mapRequest['isSecure'] = $request->isSecure();
+            $mapRequest['locale'] = $request->getLocale();
+            $mapRequest['content'] = $request->getContent();
+            $mapRequest['PreferredLanguage'] = $request->getPreferredLanguage();
+            $mapRequest['Languages'] = $request->getLanguages();
+            $mapRequest['Charsets'] = $request->getCharsets();
+            $mapRequest['acceptableContentTypes'] = $request->getAcceptableContentTypes();
+            $mapRequest['isXmlHttpRequest'] = $request->isXmlHttpRequest();
+            $mapRequest['to_string'] = $request->__toString();
+            $mapRequest['server'] = $request->server;
+            $mapRequest['headers'] = $request->headers;
+            $mapRequest['cookies'] = $request->cookies;
+            $mapRequest['guessedLocale'] = null;            
+        }
+        
+        $mapRequest['_route'] = $request->get('_route');
+        $mapRequest['_controller'] = $request->get('_controller');
+        $mapRequest['_route_params'] = $request->get('_route_params');
+        
+        
+        return $mapRequest;        
+    }
 
  
 /* ---------------------------------------------- */
@@ -239,6 +274,10 @@ class MainKernel
         return $this->container->get($name);
     }    
     
+    public function getMasterRequest($item = null)
+    {
+        return (is_null($item)) ? $this->masterRequest : $this->masterRequest[$item];
+    }                                                                               
     
     public function getUser()
     {

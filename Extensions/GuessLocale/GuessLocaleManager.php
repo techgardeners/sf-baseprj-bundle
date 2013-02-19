@@ -27,7 +27,7 @@ class GuessLocaleManager extends BaseModule
     const SESSION_VARS_PREF_SAVE = 'tgsfbaseprj/bundle/guesslocale/pref/language';
 
     private $saveSession;
-    private $onlyFirstRecord;
+    private $onlyFirstRequest;
     
     private $enabledLanguage;
     
@@ -37,7 +37,7 @@ class GuessLocaleManager extends BaseModule
     public function hydrateConfinguration(MainKernel $tgKernel)
     {         
         $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);           
-        $this->onlyFirstRecord = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_ONLY_FIRST_REQUEST);           
+        $this->onlyFirstRequest = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_ONLY_FIRST_REQUEST);           
     } 
     
     public function init()
@@ -72,18 +72,18 @@ class GuessLocaleManager extends BaseModule
     }
 
     
-    public function guessLocale(Request $request)
+    public function guessLocale($uri)
     {
            
         $locale = null;
         
-        if ($this->isEnabled() && !$this->isSetLocaleOnUrl($request->getRequestUri())) {
+        if ($this->isEnabled() && !$this->isSetLocaleOnUrl($uri)) {
             
             $this->addDebugLap('Start guess language'); 
             
             
             // Check if in session
-            if ($this->onlyFirstRecord && $this->session->has(self::SESSION_VARS_SAVED_SESSION)) {
+            if ($this->onlyFirstRequest && $this->session->has(self::SESSION_VARS_SAVED_SESSION)) {
             
                 $locale = $this->session->get(self::SESSION_VARS_SAVED_SESSION);    
             
@@ -123,7 +123,7 @@ class GuessLocaleManager extends BaseModule
                    
                 }  
             
-                if ($this->onlyFirstRecord){
+                if ($this->onlyFirstRequest){
                     $this->session->set(self::SESSION_VARS_SAVED_SESSION, $locale);    
                 }         
                                  

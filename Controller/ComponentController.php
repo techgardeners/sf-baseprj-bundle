@@ -76,7 +76,9 @@ class ComponentController extends Controller
                 $requestDate = UtilityManager::time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
                 
                     $request['obj'] = json_decode($logs[$k]['info']['request'], true);
-                    $queryString = str_replace($request['obj']['path_info'], '', $request['obj']['request_uri']);                                                 
+                    
+                    $queryString = @str_replace($request['obj']['path_info'], '', $request['obj']['request_uri']);                                                 
+                    
                     $request['warning'] = @$logs[$k]['info']['request_warning'];
                     $request['error'] = @$logs[$k]['info']['request_error'];
                     
@@ -123,11 +125,11 @@ class ComponentController extends Controller
                         break; 
         }
        
-        /*
+
         echo "<pre>";
         print_r($request);
         echo "</pre>";
-        */
+
         
         return $this->render('TechGSfBaseprjBundle:Component:render_request.html.twig', array('request' => $request,
                                                                                               'requestDate' => $requestDate,
