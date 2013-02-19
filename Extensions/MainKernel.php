@@ -115,8 +115,6 @@ class MainKernel
             $this->masterRequest['guessedLocale'] = $this->guessedLocale;
         }            
 
-        $this->getLogManager()->persistSession();
-        
         // Qui implemento la white e la black list
         $this->getBlackListManager()->executeFilter();
         $this->getWhiteListManager()->executeFilter();

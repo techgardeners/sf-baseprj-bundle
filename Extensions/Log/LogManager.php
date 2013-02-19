@@ -287,6 +287,7 @@ class LogManager extends BaseModule
     {
         if ($this->isEnabled() && !$this->requestSaved) {
             // Aggiungo i settaggi del secondo giro
+            $this->persistSession();
             $this->logRequest['info']['request'] = array_merge($this->logRequest['info']['request'], $this->tgKernel->getMasterRequest());   
         }        
     }
@@ -298,6 +299,7 @@ class LogManager extends BaseModule
 
     public function onException(GetResponseForExceptionEvent $event) 
     {        
+        $this->persistSession();
         $this->logException($event->getException());
     }
 
@@ -306,6 +308,7 @@ class LogManager extends BaseModule
     public function onTerminate($event)
     {
         $this->flushQueue();
+        $this->em->flush();
     }
         
     // Logga una eccezione
@@ -418,7 +421,7 @@ class LogManager extends BaseModule
             unset($this->persistQueue[$idx]);
         }
         
-        $this->em->flush();
+        // $this->em->flush();
                 
         return true;
     }    
