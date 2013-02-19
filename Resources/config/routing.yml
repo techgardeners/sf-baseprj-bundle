@@ -21,11 +21,11 @@ tech_g_baseprj_bundle_base_error:
 
 # FRAGMENT SESSIONE
 
-fragment_render_session:
+gpanel_fragment_render_session:
     pattern:  /fragment/render/session/{session_id}
     defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession }
 
-fragment_render_request:
+gpanel_fragment_render_request:
     pattern:  /fragment/render/request/{request_id}
     defaults: { _controller: TechGSfBaseprjBundle:Component:renderRequest }
 
@@ -35,14 +35,14 @@ fragment_render_request:
 
 
 # FRAMMENTI LAYOUT GLOBALI
-fragment_navbar:
+gpanel_fragment_navbar:
     pattern:  /fragment/navbar/{route}
     defaults: { _controller: TechGSfBaseprjBundle:Component:navbar }
 
-fragment_header:
+gpanel_fragment_header:
     pattern:  /fragment/header/{route}
     defaults: { _controller: TechGSfBaseprjBundle:Component:header }
 
-fragment_footer:
+gpanel_fragment_footer:
     pattern:  /fragment/footer
     defaults: { _controller: TechGSfBaseprjBundle:Component:footer }

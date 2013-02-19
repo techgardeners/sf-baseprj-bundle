@@ -48,7 +48,7 @@
 
         <div class="requests">
             {% for request in requests %}
-                {% render url("fragment_render_request", { 'request_id': request.id }) with { }, { 'standalone': true } %}  
+                {% render url("gpanel_fragment_render_request", { 'request_id': request.id }) with { }, { 'standalone': true } %}  
             {% endfor %} 
         </div>
         

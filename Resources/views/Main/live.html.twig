@@ -1,11 +1,11 @@
-{% extends 'TechGSfBaseprjBundle::gPanel_layout.html.twig' %}
+{% extends 'TechGSfBaseprjBundle::gpanel_layout.html.twig' %}
 
 {% block main_container_content %}
 
     <h1 class="title">{{ "live.title" |trans }}</h1>
     <div class="livesession">
         {% for sessione in sessioni %}
-            {% render url("fragment_render_session", { 'session_id': sessione.id }) with { }, { 'standalone': true } %}  
+            {% render url("gpanel_fragment_render_session", { 'session_id': sessione.id }) with { }, { 'standalone': true } %}  
         {% endfor %}    
     </div>    
 {% endblock %}
