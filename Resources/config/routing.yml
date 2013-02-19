@@ -1,18 +1,18 @@
 tech_g_baseprj_bundle_home:
     pattern:  /gPanel
-    defaults: { _controller: TechGSfBaseprjBundle:Main:index }
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
 
 tech_g_baseprj_bundle_info:
     pattern:  /gPanel/info
-    defaults: { _controller: TechGSfBaseprjBundle:Main:info }
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:info }
     
 tech_g_baseprj_bundle_live:
     pattern:  /gPanel/live
-    defaults: { _controller: TechGSfBaseprjBundle:Main:live }
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:live }
     
 tech_g_baseprj_bundle_base_error:
     pattern:  /gPanel/error
-    defaults: { _controller: TechGSfBaseprjBundle:Main:error }    
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:error }    
     
     
 ########################################################################################

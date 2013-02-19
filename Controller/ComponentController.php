@@ -73,16 +73,14 @@ class ComponentController extends Controller
             $logs[$k]['info'] = json_decode($logs[$k]['info'], true);
 
             if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
-                $requestDate = UtilityManager::time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
-                
-                    $request['obj'] = json_decode($logs[$k]['info']['request'], true);
                     
-                    $queryString = @str_replace($request['obj']['path_info'], '', $request['obj']['request_uri']);                                                 
-                    
-                    $request['warning'] = @$logs[$k]['info']['request_warning'];
-                    $request['error'] = @$logs[$k]['info']['request_error'];
+                    $request = $logs[$k]['info']['request'];                                                
+                    $request['queryString'] = ($request['queryString'] != '') ? '?'.$request['queryString'] : '';
+                    $request['onlyBaseUri'] = str_replace($request['queryString'], '', $request['requestUri']);
+                    $request['data'] = UtilityManager::time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
                     
                 if (array_key_exists('response', $logs[$k]['info'])) {
+                    
                     $response = json_decode($logs[$k]['info']['response'], true);
                     $returnCode = $response['status_code'];
                 }     
@@ -125,15 +123,13 @@ class ComponentController extends Controller
                         break; 
         }
        
-
+        /*
         echo "<pre>";
         print_r($request);
         echo "</pre>";
-
+        */
         
         return $this->render('TechGSfBaseprjBundle:Component:render_request.html.twig', array('request' => $request,
-                                                                                              'requestDate' => $requestDate,
-                                                                                              'queryString' => $queryString,
                                                                                               'response' => $response,
                                                                                               'logs' => $logs,
                                                                                               'reqStatus' => $reqStatus,

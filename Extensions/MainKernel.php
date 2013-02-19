@@ -96,6 +96,7 @@ class MainKernel
         $this->router = $this->container->get('router'); // Instanzio l'oggetto per la gestione delle rotte    
         $this->session = $this->container->get('session');
         $this->requestId = uniqid(rand(), true);
+        $this->userBrowserInfo = UtilityManager::getBrowser();
         
         $this->masterRequest = $this->mapRequest($event->getRequest(), true);
         
@@ -220,6 +221,7 @@ class MainKernel
         
         if ($full){
             $mapRequest['ip'] = $request->getClientIp();
+            $mapRequest['method'] = $request->getMethod();
             $mapRequest['host'] = $request->getHttpHost();
             $mapRequest['port'] = $request->getPort();
             $mapRequest['scheme'] = $request->getScheme();

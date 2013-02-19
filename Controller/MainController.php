@@ -14,38 +14,4 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class MainController extends Controller
 {
-    public function indexAction()
-    {        
-        // instanzio il kernel principale
-        $tgKernel = $this->get("techg.kernel");
-        
-        return $this->render('TechGSfBaseprjBundle:Main:index.html.twig', array());
-    }
-
-    public function infoAction()
-    {
-        
-        // instanzio il kernel principale
-        $tgKernel = $this->get("techg.kernel");
-        
-        return $this->render('TechGSfBaseprjBundle:Main:info.html.twig', array());
-    }
-
-    public function liveAction()
-    {
-        
-        // instanzio il kernel principale
-        $em = $this->getDoctrine()->getEntityManager();
-        $tgKernel = $this->get("techg.kernel");
-        
-        $session = $em->getRepository("TechGSfBaseprjBundle:LogSession")->getActiveSession();
-        
-        return $this->render('TechGSfBaseprjBundle:Main:live.html.twig', array('sessioni' => $session));
-    }
-
-    public function errorAction()
-    {
-        
-        return $this->render('TechGSfBaseprjBundle:Main:error.html.twig', array());
-    }
 }
