@@ -151,8 +151,8 @@ class ComponentController extends Controller
         
         
         // Configure your map options
-        $map->setPrefixJavascriptVariable('map_'.$sessione->getId().'_');
-        $map->setHtmlContainerId('map_canvas_'.$sessione->getId());
+        $map->setPrefixJavascriptVariable('map_'.$sessione->getSessionId().'_');
+        $map->setHtmlContainerId('map_canvas_'.$sessione->getSessionId());
 
         $map->setAsync(false);
 
@@ -179,7 +179,7 @@ class ComponentController extends Controller
         $marker = $this->get('ivory_google_map.marker');
 
         // Configure your marker options
-        $marker->setPrefixJavascriptVariable('marker_'.$sessione->getId());
+        $marker->setPrefixJavascriptVariable('marker_'.$sessione->getSessionId());
         $marker->setPosition($geoInfo['latitude'], $geoInfo['longitude'], true);
         $marker->setAnimation(Animation::DROP);
 
