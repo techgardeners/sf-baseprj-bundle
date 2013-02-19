@@ -1,9 +1,9 @@
 <div class="request {{ reqStatus }}">
     <div class="header">
         <div class="image ico {{ reqIcon }}"></div>
-        <div><span class="code">[{{ response.status_code | default("?")  }}]</span> {{ request.method | default("?") }} <span class="url">{{ request.path_info | default("?")  }}</span><span class="querystring">{{ queryString |truncate(80) }}</span> <span class="date">({{ requestDate }})</span></div>
-        <div class="route">{{ request.attributes.parameters._route | default("no route") }}</div>
-        <div class="controller">{{ request.attributes.parameters._controller | default("no controller") }}</div>
+        <div><span class="code">[{{ response.status_code | default("?")  }}]</span> {{ request.obj.method | default("?") }} <span class="url">{{ request.obj.path_info | default("?")  }}</span><span class="querystring">{{ queryString |truncate(80) }}</span> <span class="date">({{ requestDate }})</span></div>
+        <div class="route">{{ request.obj.attributes.parameters._route | default("no route") }}</div>
+        <div class="controller">{{ request.obj.attributes.parameters._controller | default("no controller") }}</div>
     </div>
     
 {% if logs is not empty %}

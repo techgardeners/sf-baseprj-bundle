@@ -209,10 +209,10 @@ class LogManager extends BaseModule
     {   
         
         if ($level === self::LEVEL_WARNING) {
-            $this->logRequest['request_warning'] = true;    
+            $this->logRequest['info']['request_warning'] = true;    
         }
         if ($level === self::LEVEL_ERROR) {
-            $this->logRequest['request_error'] = true;    
+            $this->logRequest['info']['request_error'] = true;    
         }
         
         $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);
@@ -220,10 +220,8 @@ class LogManager extends BaseModule
     }
 
 
-
 //******************************************
     
-
 
     // Salva la sessione nel db
     public function logSession()

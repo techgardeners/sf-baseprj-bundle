@@ -43,7 +43,8 @@
 
 
 .livesession .request.ok .code { color: green;}    
-.livesession .request.error .code,.livesession .request.error .url { color: red;}    
+.livesession .request.warning .code,.livesession .request.error .url { color: #f27621;}  
+.livesession .request.error .code,.livesession .request.error .url { color: red;}      
 
 
 .livesession .logs { padding-left: 45px; margin-top: 3px; }
@@ -74,7 +75,7 @@
 
 .ico.page_white_error {background-image: url(../icons/farm-fresh/32x32/page_white_error.png); } 
 .ico.small.page_white_error {background-image: url(../icons/farm-fresh/16x16/page_white_error.png); } 
-
+ 
 .ico.http_status_server_error {background-image: url(../icons/farm-fresh/32x32/http_status_server_error.png); } 
 .ico.small.http_status_server_error {background-image: url(../icons/farm-fresh/16x16/http_status_server_error.png); } 
 

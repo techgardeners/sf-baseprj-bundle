@@ -75,9 +75,11 @@ class ComponentController extends Controller
             if ($log['log_type'] == LogManager::TYPE_SAVE_REQUEST) {
                 $requestDate = UtilityManager::time_ago(\DateTime::createFromFormat('Y-m-d H:i:s', $log['log_date']));
                 
-                    $request = json_decode($logs[$k]['info']['request'], true);
-                    $queryString = str_replace($request['path_info'], '', $request['request_uri']);                                                 
-
+                    $request['obj'] = json_decode($logs[$k]['info']['request'], true);
+                    $queryString = str_replace($request['obj']['path_info'], '', $request['obj']['request_uri']);                                                 
+                    $request['warning'] = @$logs[$k]['info']['request_warning'];
+                    $request['error'] = @$logs[$k]['info']['request_error'];
+                    
                 if (array_key_exists('response', $logs[$k]['info'])) {
                     $response = json_decode($logs[$k]['info']['response'], true);
                     $returnCode = $response['status_code'];
@@ -106,10 +108,18 @@ class ComponentController extends Controller
                         $reqIcon = 'page_white_error';
                         break;
             case 0:
-                        $reqStatus = 'nofound';
+                        $reqStatus = 'warning';
                         $reqIcon = 'page_white_error';
                         break;
             default:
+                        if ($request['warning']) {
+                            $reqStatus = 'warning';
+                            $reqIcon = 'page_white_error';    
+                        }
+                        if ($request['error']) {
+                            $reqStatus = 'error';    
+                            $reqIcon = 'http_status_server_error';    
+                        }
                         break; 
         }
        
