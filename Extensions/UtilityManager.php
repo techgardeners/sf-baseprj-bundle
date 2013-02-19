@@ -18,7 +18,7 @@ class UtilityManager
 
 
     // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
-    public static function time_ago(\DateTime $date,$granularity=2) {
+    public static function time_ago($date,$granularity=2) {
         
         if (!is_object($date)) return '';
         

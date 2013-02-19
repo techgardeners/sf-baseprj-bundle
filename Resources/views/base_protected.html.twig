@@ -1,0 +1,120 @@
+    <!doctype html>
+    <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+    <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+    <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+    <!--[if gt IE 8]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+<head> 
+    {% block metadata %}
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <!-- meta name="viewport" content=" minimum-scale=0.2, maximum-scale=1" / --> 
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% endblock %}
+
+    {% block seo_metadata %}
+        <meta name="description" content="">
+        <meta name="keywords" content="">    
+        <title>Standard project</title>      
+    {% endblock %}
+             
+    {% block dist_stylesheets %}        
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/docq.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/vendor/bootstrap/css/bootstrap-responsive.min.css') }}" />
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/pre_main.css') }}" />  
+    {% endblock %}    
+    
+    {% block stylesheets %}    
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/main.css') }}" />
+    {% endblock %}
+
+    {% block post_dist_stylesheets %}
+        <link rel="stylesheet" href="{{ asset('/bundles/techgsfbaseprj/css/post_main.css') }}" />  
+    {% endblock %}     
+    
+    {% block modernizr_javascripts %}      
+        <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/modernizr-2.6.2.min.js') }}"></script>                
+    {% endblock %}
+
+    {% block pre_head_dist_javascripts %}      
+        <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+        <!--[if lt IE 9]>
+          <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->                
+    {% endblock %}    
+ 
+
+</head>
+<body>
+
+
+    {% block old_browser_alert %}      
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an outdated browser. <a href="http://browsehappy.com/">Upgrade your browser today</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to better experience this site.</p>
+        <![endif]-->               
+    {% endblock %} 
+    
+
+        {% if is_granted('ROLE_GPANEL_ACCESS') %}
+            {% block navbar %}{% endblock %}
+            
+            {% block header %}
+                
+                <div id="header-container">
+                    <header>                 
+                    </header> 
+                </div> <!-- end #header-container -->   
+                       
+            {% endblock %}
+
+            {% block main_content %}
+                <div class="container main">
+                    {% block main_container_content %}{% endblock %}
+                </div>    
+            {% endblock %}
+            
+            {% block footer %}{% endblock %}  
+
+        {% else %}
+
+            {% block main_content_protected %}
+                <div class="container main">
+                    {% block main_content_protected_content %} No puede acceder{% endblock %}
+                </div>    
+            {% endblock %}        
+
+        {% endif %}
+
+
+    {% block dist_javascripts %}
+
+        {% if app.environment == 'prod' %}
+            <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+            <script>window.jQuery || document.write('<script src="{{ asset('/bundles/techgsfbaseprj/js/vendor/jquery-1.8.3.min.js') }}"><\/script>')</script>
+        {% else %}
+            <script src="{{ asset('/bundles/techgsfbaseprj/js/vendor/jquery-1.8.3.min.js') }}"></script>
+        {% endif %}
+            
+        <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/plugins.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/vendor/bootstrap.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('/bundles/techgsfbaseprj/js/main.js') }}"></script>
+
+    {% endblock %}    
+    
+    {% block javascripts %}{% endblock %}    
+    
+    {% block ready_javascripts %}{% endblock %}  
+
+    {% block analitycs %}
+        {% if app.environment == 'prod' %}
+            <script>
+                var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+                (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+                g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+                s.parentNode.insertBefore(g,s)}(document,'script'));
+            </script>
+        {% endif %}
+    {% endblock %}     
+</body>
+</html>
