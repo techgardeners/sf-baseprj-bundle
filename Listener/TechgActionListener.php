@@ -102,9 +102,8 @@ class TechgActionListener
         
         if ($this->skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;
-
-        $exception = $event->getException();            
-        $this->mainKernel->onException($exception);
+           
+        $this->mainKernel->onException($event);
         
     }  
 

@@ -158,15 +158,13 @@ class MainKernel
         
     }
      
-    public function onException(\Exception $exception) 
+    public function onException(GetResponseForExceptionEvent $event) 
     {
-        $logM = $this->getLogManager();
-        $logM->logException($exception);        
+        $this->getLogManager()->onException($event);        
     }
      
     public function onController(FilterControllerEvent $event) 
-    {
-        
+    {      
     }
      
     public function onView(GetResponseForControllerResultEvent $event) 
@@ -176,15 +174,13 @@ class MainKernel
      
     public function onResponse(FilterResponseEvent $event) 
     {
-        $logM = $this->getLogManager();       
-        $logM->logResponse($event->getResponse());        
-        
+        $this->getLogManager()->onResponse($event);                        
     }
      
-    public function onTerminate($event) 
+    public function onTerminate(PostResponseEvent $event) 
     {
-        $logM = $this->getLogManager();
-        $logM->shutdown($event);
+
+        $this->getLogManager()->onTerminate($event);
         
     }
      

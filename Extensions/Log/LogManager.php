@@ -288,10 +288,26 @@ class LogManager extends BaseModule
         if ($this->isEnabled() && !$this->requestSaved) {
             // Aggiungo i settaggi del secondo giro
             $this->logRequest['info']['request'] = array_merge($this->logRequest['info']['request'], $this->tgKernel->getMasterRequest());   
-        } 
+        }        
+    }
+
+    public function onResponse(FilterResponseEvent $event) 
+    {        
+        $this->logResponse($event->getResponse());
+    }
+
+    public function onException(GetResponseForExceptionEvent $event) 
+    {        
+        $this->logException($event->getException());
     }
 
     
+    // Chiude i log
+    public function onTerminate($event)
+    {
+        $this->flushQueue();
+    }
+        
     // Logga una eccezione
     public function logException(\Exception $exception)
     {
@@ -316,12 +332,7 @@ class LogManager extends BaseModule
         $this->logRequest['info']['response'] = $this->serializer->serialize($response, 'json'); 
 
     }
-    
-    // Chiude i log
-    public function shutdown($event)
-    {
-        $this->flushQueue();
-    }
+
     
 
 // ********************************************************************************************************       
