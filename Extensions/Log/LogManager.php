@@ -455,7 +455,7 @@ class LogManager extends BaseModule
         // Collect User info
         $userInfo = array();
         $userInfo['last_uri'] = $this->tgKernel->getMasterRequest('requestUri');
-        $userInfo['auth'] = (!is_object($user) || !($user instanceof UserInterface)) ? false : $this->tgKernel->getUser()->hasRole('ROLE_USER');
+        $userInfo['auth'] = (!is_object($this->tgKernel->getUser()) || !($this->tgKernel->getUser() instanceof UserInterface)) ? false : $this->tgKernel->getUser()->hasRole('ROLE_USER');
         $userInfo['userInfo'] = $this->serializer->serialize($this->tgKernel->getUser(), 'json');
         $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
         $userInfo['locale'] = $this->tgKernel->getMasterRequest('locale');
