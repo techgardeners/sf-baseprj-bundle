@@ -257,10 +257,11 @@ class LogManager extends BaseModule
         
         if ($this->keepAlive) {
             $session->setLastActivity(new \DateTime());
+            $session->setSessionId($this->session->getId());
             $userInfo = $session->getInfoUser();
             $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
             $userInfo['last_uri'] = $this->tgKernel->getMasterRequest('requestUri');
-            if (!$userInfo['auth'] && is_object($this->tgKernel->getUser()) && $this->tgKernel->getUser()->hasRole('ROLE_USER')) {
+            if (!$userInfo['auth'] && is_object($this->tgKernel->getUser()) && in_array('ROLE_USER',$this->tgKernel->getUser()->getRoles())) {
                 $userInfo['auth'] = true;
                 $userInfo['userInfo'] = $this->serializer->serialize($this->tgKernel->getUser(), 'json');                
             }
@@ -455,7 +456,7 @@ class LogManager extends BaseModule
         // Collect User info
         $userInfo = array();
         $userInfo['last_uri'] = $this->tgKernel->getMasterRequest('requestUri');
-        $userInfo['auth'] = (!is_object($this->tgKernel->getUser()) || !($this->tgKernel->getUser() instanceof UserInterface)) ? false : $this->tgKernel->getUser()->hasRole('ROLE_USER');
+        $userInfo['auth'] = (is_object($this->tgKernel->getUser()) && in_array('ROLE_USER',$this->tgKernel->getUser()->getRoles())) ? true : false;
         $userInfo['userInfo'] = $this->serializer->serialize($this->tgKernel->getUser(), 'json');
         $userInfo['ip'] = $this->tgKernel->getMasterRequest('ip');
         $userInfo['locale'] = $this->tgKernel->getMasterRequest('locale');
