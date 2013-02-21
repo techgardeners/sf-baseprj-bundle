@@ -174,10 +174,14 @@ class MainKernel
     
     public function onRequest(GetResponseEvent $event) 
     {
+        // Setto il locale corretto                
+        if (null !== $this->guessedLocale) {
+            $event->getRequest()->setLocale($this->masterRequest['guessedLocale']);
+        }
+        
         // Aggiungo i settaggi del secondo giro
         $this->masterRequest = array_merge($this->masterRequest, $this->mapRequest($event->getRequest()));
         $this->getLogManager()->onRequest($event);
-        
     }
      
     public function onException(GetResponseForExceptionEvent $event) 
@@ -251,7 +255,6 @@ class MainKernel
             $mapRequest['requestUri'] = $request->getRequestUri();
             $mapRequest['queryString'] = $request->getQueryString();
             $mapRequest['isSecure'] = $request->isSecure();
-            $mapRequest['locale'] = $request->getLocale();
             $mapRequest['content'] = $request->getContent();
             $mapRequest['preferredLanguage'] = $request->getPreferredLanguage();
             $mapRequest['languages'] = $request->getLanguages();
@@ -265,6 +268,7 @@ class MainKernel
             $mapRequest['guessedLocale'] = null;            
         }
         
+        $mapRequest['locale'] = $request->getLocale();        
         $mapRequest['_route'] = $request->get('_route');
         $mapRequest['_controller'] = $request->get('_controller');
         $mapRequest['_route_params'] = $request->get('_route_params');

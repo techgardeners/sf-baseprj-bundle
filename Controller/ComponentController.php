@@ -37,7 +37,7 @@ class ComponentController extends Controller
         
         // prendo i log collegati alla sessione
         
-        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 10); 
+        $requests = $em->getRepository("TechGSfBaseprjBundle:Log")->getRequestIdsBySessionId($session_id, 15); 
         
         
         return $this->render('TechGSfBaseprjBundle:Component:render_session.html.twig', array('sessione' => $sessione,
