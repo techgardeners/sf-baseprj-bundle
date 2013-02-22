@@ -98,6 +98,7 @@ class GeocoderManager extends BaseModule
             
             // TODO:
             // Da mettere in userGeoPositionCache e farli caricare dal from array (anche l'id)
+            $geo = ($this->userGeoPositionCache) ? $this->userGeoPositionCache : array();
             $geoPositionObj->fromArray($this->userGeoPositionCache);
             $geoPositionObj->setIpAddr($clientIp);
             $geoPositionObj->setProvider('geo_plugin');
