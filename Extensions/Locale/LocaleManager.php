@@ -109,7 +109,7 @@ class LocaleManager extends BaseModule
         $uri = $request->getRequestUri();
         $requestLanguages = $request->getLanguages();
         
-        if ($this->isEnabled() && !$this->isSetLocaleOnUrl($uri)) {
+        if ($this->isEnabled() && !$this->isSetLocaleOnUrl($uri) && is_array($this->enabledLanguage)) {
             
             // get right Language by Browser Preferred Language(ONLY xx_XX format)
             foreach ($requestLanguages as $lang) {
