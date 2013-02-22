@@ -116,12 +116,11 @@ class MainKernel
         // Mappo la master request nell'array apposito
         $this->masterRequest = $this->mapRequest($request, true);
         
-        
+
         // Qua dovrei lanciare un evento che carichi i moduli attivi nel kernel        
-        // a quel punto sapendo quali sono attivi, posso ragionare di conseguenza
-        
+        // a quel punto sapendo quali sono attivi, posso ragionare di conseguenza        
         $this->userGeoPosition = $container->get('techg.geocoder')->getGeoInfoByIp($this->getMasterRequest('ip'));
-        $this->guessedLocale = $container->get('techg.locale')->getGuessedLocale();
+        $this->guessedLocale = $this->masterRequest['guessedLocale'];        
 
         // ************************************************************************************************
         // Qui ho finito completamente il l'inizializzazione del kernel
@@ -274,7 +273,7 @@ class MainKernel
             $mapRequest['headers'] = $request->headers;
             $mapRequest['cookies'] = $request->cookies;
             $mapRequest['oriLocale'] = $request->getLocale();
-            $mapRequest['guessedLocale'] = $this->guessedLocale;            
+            $mapRequest['guessedLocale'] = $this->getLocaleManager()->getGuessedLocale();            
         }
         
         $mapRequest['locale'] = $request->getLocale();
