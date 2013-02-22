@@ -2,8 +2,7 @@
     <div class="header">
         <div class="image ico {{ reqIcon }}"></div>
         <div><span class="code">[{{ response.status_code | default("?")  }}]</span> {{ request.method | default("?") }} <span class="url">{{ request.onlyBaseUri | default("?")  }}</span><span class="querystring">{{ request.queryString |truncate(80) }}</span> <span class="date">({{ request.data }})</span></div>
-        <div class="route">{{ request._route | default("no route") }}</div>
-        <div class="controller">{{ request._controller | default("no controller") }}</div>
+        <div class="route">[{{ request._route | default("no route") }}] =&gt;{{ request._controller | default("no controller") }}</div>
     </div>
     <!-- div>
         <pre>

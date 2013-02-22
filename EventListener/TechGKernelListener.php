@@ -58,21 +58,6 @@ class TechGKernelListener implements EventSubscriberInterface
     {
         $this->mainKernel = $mainKernel;
     }
-
-    public function onPreRequestEvent(GetResponseEvent $event)
-    {
-               
-        if (self::skipOtherRequest($event)) return true;
-        
-        // Nelle richieste secondarie devo inizializzarlo uguale ma solo alcune cose
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
-            $this->mainKernel->initSubRequest($event);
-            return true;
-        }
-
-        $this->mainKernel->init($event);
-  
-    }
   
     public function onRequestEvent(GetResponseEvent $event)
     {

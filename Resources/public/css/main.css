@@ -66,7 +66,7 @@
 
 /* ICONS */    
     
-.ico {width: 32px; height: 32px; background: transparent url(../icons/noicon.png) center center no-repeat; } 
+.ico {width: 32px; height: 32px; background: transparent url() center center no-repeat; } 
 .ico.small {width: 16px; height: 16px; } 
 
 
@@ -93,3 +93,6 @@
 
 .ico.document_torn {background-image: url(../icons/farm-fresh/32x32/document_torn.png); } 
 .ico.small.document_torn {background-image: url(../icons/farm-fresh/16x16/document_torn.png); } 
+
+.ico.information {background-image: url(../icons/farm-fresh/32x32/information.png); } 
+.ico.small.information {background-image: url(../icons/farm-fresh/16x16/information.png); } 

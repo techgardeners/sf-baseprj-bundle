@@ -234,7 +234,9 @@ class MainKernel
         $request = $event->getRequest();
         
         // Viene richiamato SOLO nelle richieste principali
-        if (preg_match('/^\/_(wdt|assetic|profiler|configurator)/', $request->getRequestUri())) {
+        if (preg_match('/^\/_(wdt|assetic|profiler|configurator)/', $request->getRequestUri()) ||
+            preg_match('/^\/(bundles)/', $request->getRequestUri())
+        ) {
             return true;
         }
         

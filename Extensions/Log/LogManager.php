@@ -33,7 +33,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use TechG\Bundle\SfBaseprjBundle\Entity\Log;
 use TechG\Bundle\SfBaseprjBundle\Entity\LogSession;
 
-use TechG\Bundle\SfBaseprjBundle\EventListener\TechGKernelListener;
 
 class LogManager extends BaseModule
 {
@@ -67,6 +66,8 @@ class LogManager extends BaseModule
     static $logLevels = array(
                               self::LEVEL_SYSTEM => array( 'label' => 'system',
                                                            ),
+                              self::LEVEL_APP => array( 'label' => 'app',
+                                                           ),
                               self::LEVEL_ERROR => array( 'label' => 'error',
                                                            ),
                               self::LEVEL_WARNING => array( 'label' => 'warning',
@@ -90,7 +91,9 @@ class LogManager extends BaseModule
     const TYPE_SAVE_REQUEST = 1;
     const TYPE_SYSTEM = 0;    
     const TYPE_GENERIC = 1000;    
-    const TYPE_GENERIC_EXEPTION = 100;    
+    const TYPE_TWIG_RUNTIME_EXCEPTION = 151;    
+    const TYPE_GENERIC_404_EXCEPTION = 101;    
+    const TYPE_GENERIC_EXCEPTION = 100;    
     const TYPE_GENERIC_SQL = 200;
     const TYPE_GENERIC_TASK = 300;
     const TYPE_GENERIC_APP = 400;
@@ -116,8 +119,16 @@ class LogManager extends BaseModule
                                                                 'title' => 'REQUEST',
                                                                 'label' => ''                                                            
                                                          ),
-                              self::TYPE_GENERIC_EXEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,
-                                                                    'title' => 'GENERIC_EXEPTION',
+                              self::TYPE_GENERIC_404_EXCEPTION => array( 'defaultLevel' => self::LEVEL_WARNING,
+                                                                    'title' => 'PAGE_NOT_FOUND',
+                                                                    'label' => 'err404'                                                            
+                                                         ),
+                              self::TYPE_TWIG_RUNTIME_EXCEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,
+                                                                    'title' => 'TWIG_EXCEPTION',
+                                                                    'label' => 'twig'                                                            
+                                                         ),
+                              self::TYPE_GENERIC_EXCEPTION => array( 'defaultLevel' => self::LEVEL_ERROR,
+                                                                    'title' => 'GENERIC_EXCEPTION',
                                                                     'label' => ''                                                            
                                                          ),
                               self::TYPE_GENERIC => array( 'defaultLevel' => self::LEVEL_INSANE,
@@ -234,16 +245,32 @@ class LogManager extends BaseModule
                 $this->loggedRequest['info']['request_error'] = true;    
             }            
             // Aggiungo un contatore dei tipi di log agganciati alla request
-            if (array_key_exists($level, $this->loggedRequest['info']['typecount'])) {
-                $this->loggedRequest['info']['typecount'][$level] += 1;
+            if (array_key_exists($level, $this->loggedRequest['info']['request']['typecount'])) {
+                $this->loggedRequest['info']['request']['typecount'][$level] += 1;
             } else {
-                $this->loggedRequest['info']['typecount'][$level] = 1;    
+                $this->loggedRequest['info']['request']['typecount'][$level] = 1;    
             }
         }
         
         $log = $this->getRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);
         $this->saveLog($log);   
     }
+    
+    /**
+    * Crea Un Log di tipo Info
+    * 
+    * @param mixed $type
+    * @param mixed $level
+    * @param mixed $short
+    * @param mixed $long
+    * @param mixed $info
+    * @param mixed $taskId
+    * @param mixed $parentId
+    */
+    public function addAppLog($short = '', $long = '', $info = null)
+    {   
+        return $this->addRawLog(self::TYPE_GENERIC_APP, self::LEVEL_APP, $short, $long, $info);
+    }    
 
 
 //******************************************
@@ -306,10 +333,27 @@ class LogManager extends BaseModule
         // TODO: non dovrebbe piu essere necessario, se c'è qualcosa in coda lui la request la salva
         $this->saveRequest = true;
 
+        $type = self::TYPE_GENERIC_EXCEPTION;
+        $level = self::getDefaultLevel($type);        
+            
+        $classe = get_class($exception);
         
+        switch($classe){
+            case 'Symfony\Component\HttpKernel\Exception\NotFoundHttpException':
+                                                                                    $type = self::TYPE_GENERIC_404_EXCEPTION;
+                                                                                    $level = self::getDefaultLevel($type);                                                                                    
+                                                                                    
+                                                                                    break;
+            case 'Twig_Error_Runtime':
+                                        $type = self::TYPE_TWIG_RUNTIME_EXCEPTION;
+                                        $level = self::getDefaultLevel($type);
+                                        break;
+        }
+            
+            
         // Aggiungo il log dell'eccezione        
         $info = self::getLogInfoByException($exception);
-        $this->addRawLog(self::TYPE_GENERIC_EXEPTION, self::getDefaultLevel(self::TYPE_GENERIC_EXEPTION), '', '', $info);
+        $this->addRawLog($type, $level, '', '', $info);
                 
     }
 
@@ -476,9 +520,7 @@ class LogManager extends BaseModule
         if (!$this->isEnabled()) return false;
 
         $info['request'] = $this->tgKernel->getMasterRequest();
-        $info['request']['warning'] = false;
-        $info['request']['error'] = false;
-        $info['request']['typecount'] = false;
+        $info['request']['typecount'] = array();
         
         return $this->getRawLog(self::TYPE_SAVE_REQUEST, self::LEVEL_SYSTEM, '', '', $info);
         

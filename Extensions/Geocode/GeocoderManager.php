@@ -112,7 +112,7 @@ class GeocoderManager extends BaseModule
 
 
 // ********************************************************************************************************       
-// METODI PRIVATE       
+// METODI PRIVATI       
 // ********************************************************************************************************  
 
     private function logGeoError(\Exception $exception)

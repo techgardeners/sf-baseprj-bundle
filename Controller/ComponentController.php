@@ -116,11 +116,11 @@ class ComponentController extends Controller
                         $reqIcon = 'arrow_up';
                         break;
             default:
-                        if ($request['warning']) {
+                        if (array_key_exists(LogManager::LEVEL_WARNING, $request['typecount'])) {
                             $reqStatus = 'warning';
                             $reqIcon = 'page_white_error';    
                         }
-                        if ($request['error']) {
+                        if (array_key_exists(LogManager::LEVEL_ERROR, $request['typecount'])) {
                             $reqStatus = 'error';    
                             $reqIcon = 'http_status_server_error';    
                         }

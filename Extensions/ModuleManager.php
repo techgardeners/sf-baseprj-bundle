@@ -10,8 +10,6 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
@@ -30,7 +28,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 
 use TechG\Bundle\SfBaseprjBundle\Event\TechGKernelInitEvent;
 
-class ModuleManager implements EventSubscriberInterface
+class ModuleManager
 {    
     const MODULE_NAME = '';
     
@@ -70,133 +68,53 @@ class ModuleManager implements EventSubscriberInterface
         $this->init = true;        
     }    
      
-       
-// ********************************************************************************************************       
-// GESTORI EVENTI       
-// ********************************************************************************************************         
-    static public function getSubscribedEvents()
-    {
-        return array(
-            'kernel.request' => array(
-                array('onKernelRequestEvent', 0),
-            ),
-            'kernel.controller' => array(
-                array('onKernelControllerEvent', 0),
-            ),
-            'kernel.exception' => array(
-                array('onKernelExceptionEvent', 0),
-            ),
-            'kernel.view' => array(
-                array('onKernelViewEvent', 0),
-            ),
-            'kernel.response' => array(
-                array('onKernelResponseEvent', 0),
-            ),
-            'kernel.terminate' => array(
-                array('onKernelTerminateEvent', 0),
-            ),
-            TechGKernelInitEvent::onKernelInit => array(
-                array('onTechGKernelInitEvent', 0)
-            ),
-        );
-    }
     
     
 //**************************************************************************************    
 // TECHG KERNEL EVENTS HANDLER   
-//**************************************************************************************    
-
-    public function onTechGKernelInitEvent(TechGKernelInitEvent $event)
-    {                 
-        if (!$this->isEnabled()) return;
-
-        $this->tgKernel = $event->getTgKernel();
-
-        $this->onTechGKernelInit($event);   
-    }
+//**************************************************************************************   
     
-        // Sovrascritta dal figlio
-        public function onTechGKernelInit(TechGKernelInitEvent $event)
-        {         
-        }    
+    // Sovrascritta dal figlio
+    public function onTechGKernelInit(TechGKernelInitEvent $event)
+    {         
+    }    
     
 //**************************************************************************************    
 // SYMFONY EVENTS HANDLER   
-//**************************************************************************************    
+//**************************************************************************************      
     
-    public function onKernelRequestEvent(GetResponseEvent $event)
-    {   
-        if (MainKernel::skipSubRequest($event) || 
-            !$this->isEnabled()) return;
-        
-        $this->onKernelRequest($event); 
+    public function onKernelRequest(GetResponseEvent $event)
+    {  
+    }   
+
+    public function onKernelController(FilterControllerEvent $event)
+    {
+    }       
+    public function onKernelException(GetResponseForExceptionEvent $event)
+    {
+    }     
+
+    public function onKernelView(GetResponseForControllerResultEvent $event)
+    {
     }    
-    
-        public function onKernelRequest(GetResponseEvent $event)
-        {  
-        }
-  
-    public function onKernelControllerEvent(FilterControllerEvent $event)
-    {
-        if (MainKernel::skipSubRequest($event) || 
-            !$this->isEnabled()) return;
-                    
-        $this->onKernelController($event);         
-    }      
 
-        public function onKernelController(FilterControllerEvent $event)
-        {
-        }      
-
-    public function onKernelExceptionEvent(GetResponseForExceptionEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event)
     {
-        if (!$this->isEnabled()) return;
-                    
-        $this->onKernelException($event);           
-    }  
-        public function onKernelException(GetResponseForExceptionEvent $event)
-        {
-        }  
-
-    public function onKernelViewEvent(GetResponseForControllerResultEvent $event)
-    {
-        if (MainKernel::skipSubRequest($event) || 
-            !$this->isEnabled()) return;
-                    
-        $this->onKernelView($event);         
-    }    
-    
-        public function onKernelView(GetResponseForControllerResultEvent $event)
-        {
-        }    
-    
-    public function onKernelResponseEvent(FilterResponseEvent $event)
-    {
-        if (MainKernel::skipSubRequest($event) || 
-            !$this->isEnabled()) return;
-                    
-        $this->onKernelResponse($event);         
     }
-    
-        public function onKernelResponse(FilterResponseEvent $event)
-        {
-        }
-    
-    public function onKernelTerminateEvent(PostResponseEvent $event)
+
+    public function onKernelTerminate(PostResponseEvent $event)
     {
-        if (MainKernel::skipOtherRequest($event) || !$this->isEnabled()) return;
-                    
-        $this->onKernelTerminate($event);
     }
-    
-        public function onKernelTerminate(PostResponseEvent $event)
-        {
-        }
     
   
 // ********************************************************************************************************       
 // METODI PUBBLICI       
 // ********************************************************************************************************         
+    
+    public function setTgKernel($tgKernel)
+    {
+        $this->tgKernel = $tgKernel;
+    }
     
     public function isEnabled()
     {

@@ -67,14 +67,14 @@ services:
             - { name: kernel.event_subscriber }                        
 
     tech_g_sf_baseprj.log.subscriber:
-        class: TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager
-        arguments: [@service_container, @techg.settings]
+        class: TechG\Bundle\SfBaseprjBundle\EventListener\LogListener
+        arguments: [@techg.log]
         tags:
             - { name: kernel.event_subscriber }
 
     tech_g_sf_baseprj.debug.subscriber:
-        class: TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager
-        arguments: [@service_container, @techg.settings]
+        class: TechG\Bundle\SfBaseprjBundle\EventListener\DebugListener
+        arguments: [@techg.debug]
         tags:
             - { name: kernel.event_subscriber }
 
