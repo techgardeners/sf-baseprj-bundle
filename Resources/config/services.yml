@@ -33,7 +33,7 @@ services:
         arguments: [@service_container, @techg.settings]       
         
     techg.locale:
-        class:     TechG\Bundle\SfBaseprjBundle\Extensions\locale\LocaleManager
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Locale\LocaleManager
         arguments: [@service_container, @techg.settings]       
         
     techg.gpanel:
