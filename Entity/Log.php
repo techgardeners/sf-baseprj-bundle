@@ -17,12 +17,12 @@ use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseLog as BaseEntity;
 /**
  * Log
  *
- * @ORM\Table(name="log", indexes={@ORM\index(name="search_idx_1", columns={"cookie_id"}),
- *                                 @ORM\index(name="search_idx_2", columns={"session_id"}),  
- *                                 @ORM\index(name="search_idx_3", columns={"task_id"}),  
- *                                 @ORM\index(name="search_idx_4", columns={"request_id"}),  
- *                                 @ORM\index(name="search_idx_5", columns={"parent_id"}),  
- *                                 @ORM\index(name="search_idx_6", columns={"cookie_id", "request_id"})  
+ * @ORM\Table(name="log", indexes={@ORM\Index(name="search_idx_1", columns={"cookie_id"}),
+ *                                 @ORM\Index(name="search_idx_2", columns={"session_id"}),  
+ *                                 @ORM\Index(name="search_idx_3", columns={"task_id"}),  
+ *                                 @ORM\Index(name="search_idx_4", columns={"request_id"}),  
+ *                                 @ORM\Index(name="search_idx_5", columns={"parent_id"}),  
+ *                                 @ORM\Index(name="search_idx_6", columns={"cookie_id", "request_id"})  
  * })
  * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\LogRepository")
  */
