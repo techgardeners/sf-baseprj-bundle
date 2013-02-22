@@ -7,63 +7,75 @@ services:
 #        class: %tech_g_sf_baseprj.example.class%
 #        arguments: [@service_id, "plain_value", %parameter%]
 
+
+    twig.extension.text:
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - { name: twig.extension }
+            
+            
+################ TECHG KERNEL SERVICES #####################            
+
+    techg.settings:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager
+        arguments: [@service_container]       
+
+    techg.debug:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager
+        arguments: [@service_container, @techg.settings]       
+
+    techg.log:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager
+        arguments: [@service_container, @techg.settings]       
+
+    techg.geocoder:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager
+        arguments: [@service_container, @techg.settings]       
+        
+    techg.locale:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\locale\LocaleManager
+        arguments: [@service_container, @techg.settings]       
+        
+    techg.gpanel:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\GPanel\GPanelManager
+        arguments: [@service_container, @techg.settings]       
+        
+    techg.mobiledetect:
+        class:     TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager
+        arguments: [@service_container, @techg.settings]       
+        
     techg.kernel:
         class:     TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel
-        arguments: [@service_container]       
-        
+        arguments: [@service_container, @techg.settings]       
+
+    # TWIG EXTENSIONS        
     twig.extension.appfwKernel:
         class: TechG\Bundle\SfBaseprjBundle\Twig\Extensions\MainKernelExtension
         arguments: [@techg.kernel]
         tags:
             - { name: twig.extension }
-            
-    twig.extension.text:
-        class: Twig_Extensions_Extension_Text
-        tags:
-            - { name: twig.extension }            
+
 
 
 ################# EVENTS LISTER #####################
-            
-    tech_g_sf_baseprj.kernel.init:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
-        tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onInitEvent, priority: 64 }
+                       
 
-    tech_g_sf_baseprj.kernel.request:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
+    tech_g_sf_baseprj.kernel.subscriber:
+        class: TechG\Bundle\SfBaseprjBundle\EventListener\TechGKernelListener
+        arguments: [@techg.kernel]
         tags:
-            - { name: kernel.event_listener, event: kernel.request, method: onRequestEvent, priority: 0 }
+            - { name: kernel.event_subscriber }                        
 
-    tech_g_sf_baseprj.kernel.exception:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
+    tech_g_sf_baseprj.log.subscriber:
+        class: TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager
+        arguments: [@service_container, @techg.settings]
         tags:
-            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }            
+            - { name: kernel.event_subscriber }
 
-    tech_g_sf_baseprj.kernel.controller:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
+    tech_g_sf_baseprj.debug.subscriber:
+        class: TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager
+        arguments: [@service_container, @techg.settings]
         tags:
-            - { name: kernel.event_listener, event: kernel.controller, method: onKernelController }                        
+            - { name: kernel.event_subscriber }
 
-    tech_g_sf_baseprj.kernel.view:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
-        tags:
-            - { name: kernel.event_listener, event: kernel.view, method: onKernelView }                        
-
-    tech_g_sf_baseprj.kernel.response:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
-        tags:
-            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }                        
-
-    tech_g_sf_baseprj.kernel.terminate:
-        class: TechG\Bundle\SfBaseprjBundle\Listener\TechgActionListener
-        arguments: [ @techg.kernel ]
-        tags:
-            - { name: kernel.event_listener, event: kernel.terminate, method: onKernelTerminate }                        
             

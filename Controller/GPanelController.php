@@ -11,6 +11,7 @@
 namespace TechG\Bundle\SfBaseprjBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GPanel\GPanelManager;
 
 class GPanelController extends Controller
 {
@@ -37,6 +38,16 @@ class GPanelController extends Controller
         // instanzio il kernel principale
         $em = $this->getDoctrine()->getEntityManager();
         $tgKernel = $this->get("techg.kernel");
+        
+        $gpanelManager = $this->get('techg.gpanel');
+        
+        if (!$gpanelManager->isEnabled()) {
+            return $this->errorAction();
+        }
+
+        if ($gpanelManager->isSecured() && !(is_object($tgKernel->getUser()) && in_array($gpanelManager->getAccessRole(),$tgKernel->getUser()->getRoles()))) {
+            return $this->errorAction();
+        }
         
         $session = $em->getRepository("TechGSfBaseprjBundle:LogSession")->getActiveSession();
         

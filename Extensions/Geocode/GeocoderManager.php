@@ -11,6 +11,7 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Geocode;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
@@ -34,21 +35,20 @@ class GeocoderManager extends BaseModule
 // ********************************************************************************************************       
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
 // ********************************************************************************************************
-    
-    public function hydrateConfinguration(MainKernel $tgKernel)
-    {             
-        $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);     
-    }       
 
-    public function init()
+    public function __construct(ContainerInterface $container, SettingManager $settingManager)
     {
+        parent::__construct($container, $settingManager);
+        
+        $this->saveSession = $this->settingManager->getGlobalSetting(self::MODULE_NAME.'.'.self::CONF_SAVE_SESSION);
+        
         if ($this->isEnabled()) {
             // inizialize geocoder ( https://github.com/willdurand/Geocoder )
             $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
             $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));   
-        }       
-    }      
-    
+        }        
+                                
+    }           
 
 // ********************************************************************************************************       
 // METODI PUBBLICI       

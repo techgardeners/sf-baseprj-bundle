@@ -5,6 +5,11 @@
         <div class="route">{{ request._route | default("no route") }}</div>
         <div class="controller">{{ request._controller | default("no controller") }}</div>
     </div>
+    <!-- div>
+        <pre>
+            {{ request.to_string }}
+        </pre>        
+    </div -->
     
 {% if logs is not empty %}
     <div class="logs">

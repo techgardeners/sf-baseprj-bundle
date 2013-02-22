@@ -55,36 +55,24 @@
         <![endif]-->               
     {% endblock %} 
     
+    {% block navbar %}{% endblock %}
+    
+    {% block header %}
+        
+        <div id="header-container">
+            <header>                 
+            </header> 
+        </div> <!-- end #header-container -->   
+               
+    {% endblock %}
 
-        {% if is_granted('ROLE_GPANEL_ACCESS') %}
-            {% block navbar %}{% endblock %}
-            
-            {% block header %}
-                
-                <div id="header-container">
-                    <header>                 
-                    </header> 
-                </div> <!-- end #header-container -->   
-                       
-            {% endblock %}
-
-            {% block main_content %}
-                <div class="container main">
-                    {% block main_container_content %}{% endblock %}
-                </div>    
-            {% endblock %}
-            
-            {% block footer %}{% endblock %}  
-
-        {% else %}
-
-            {% block main_content_protected %}
-                <div class="container main">
-                    {% block main_content_protected_content %} No puede acceder{% endblock %}
-                </div>    
-            {% endblock %}        
-
-        {% endif %}
+    {% block main_content %}
+        <div class="container main">
+            {% block main_container_content %}{% endblock %}
+        </div>    
+    {% endblock %}
+    
+    {% block footer %}{% endblock %}  
 
 
     {% block dist_javascripts %}

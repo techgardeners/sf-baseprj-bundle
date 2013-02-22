@@ -19,11 +19,12 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
-use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Locale\LocaleManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\BlackListManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GPanel\GPanelManager;
 
 
 
@@ -47,11 +48,12 @@ class TechGSfBaseprjExtension extends Extension
                 
         DebugManager::setModuleConfiguration($config, $container);
         GeocoderManager::setModuleConfiguration($config, $container);
-        GuessLocaleManager::setModuleConfiguration($config, $container);
+        LocaleManager::setModuleConfiguration($config, $container);
         MobiledetectManager::setModuleConfiguration($config, $container);
         LogManager::setModuleConfiguration($config, $container);
         BlackListManager::setModuleConfiguration($config, $container);
         WhiteListManager::setModuleConfiguration($config, $container);
-
+        GPanelManager::setModuleConfiguration($config, $container);
+        
     }
 }

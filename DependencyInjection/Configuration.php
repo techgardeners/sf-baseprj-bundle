@@ -20,9 +20,10 @@ use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect\MobiledetectManager;
-use TechG\Bundle\SfBaseprjBundle\Extensions\GuessLocale\GuessLocaleManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\Locale\LocaleManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\BlackListManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\BlackWhiteList\WhiteListManager;
+use TechG\Bundle\SfBaseprjBundle\Extensions\GPanel\GPanelManager;
 
 /**
  * This is the class that validates and merges configuration from your app/config files
@@ -42,18 +43,43 @@ class Configuration implements ConfigurationInterface
         // Here you should define the parameters that are allowed to
         // configure your bundle. See the documentation linked above for
         // more information on that topic.       
-        
+              
         $this->addDebugSection($rootNode);
         $this->addLogSection($rootNode);
         $this->addGeoCodingSection($rootNode);
-        $this->addGuessLocaleSection($rootNode);
+        $this->addLocaleSection($rootNode);
         $this->addMobilDetectSection($rootNode);
         $this->addBlackListSection($rootNode);
         $this->addWhiteListSection($rootNode);
+        $this->addGPanelSection($rootNode);
         
         return $treeBuilder;
-    }
+    }    
     
+    private function addGPanelSection(ArrayNodeDefinition $node)
+    {
+        $node
+            ->children()
+                ->arrayNode(GPanelManager::MODULE_NAME)
+                    ->addDefaultsIfNotSet()
+                    ->children()
+                        ->booleanNode(SettingManager::SUFFIX_ENABLE)
+                            ->defaultFalse()
+                        ->end()
+                    ->end()
+                    ->children()
+                        ->booleanNode(GPanelManager::CONF_SECURED)
+                            ->defaultTrue()
+                        ->end()
+                    ->end()
+                    ->children()
+                        ->scalarNode(GPanelManager::CONF_SECURED_ROLE)
+                            ->defaultValue('ROLE_GPANEL_ACCESS')
+                        ->end()
+                    ->end()
+                ->end()
+            ->end();
+    }    
     
     private function addDebugSection(ArrayNodeDefinition $node)
     {
@@ -121,20 +147,20 @@ class Configuration implements ConfigurationInterface
             ->end();
     }    
     
-    private function addGuessLocaleSection(ArrayNodeDefinition $node)
+    private function addLocaleSection(ArrayNodeDefinition $node)
     {
         $node
             ->children()
-                ->arrayNode(GuessLocaleManager::MODULE_NAME)
+                ->arrayNode(LocaleManager::MODULE_NAME)
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->booleanNode(SettingManager::SUFFIX_ENABLE)
                             ->defaultFalse()
                         ->end()
-                        ->booleanNode(GuessLocaleManager::CONF_SAVE_SESSION)
+                        ->booleanNode(LocaleManager::CONF_SAVE_SESSION)
                             ->defaultTrue()
                         ->end()                        
-                        ->booleanNode(GuessLocaleManager::CONF_ONLY_FIRST_REQUEST)
+                        ->booleanNode(LocaleManager::CONF_ONLY_FIRST_REQUEST)
                             ->defaultTrue()
                         ->end()                        
                     ->end()

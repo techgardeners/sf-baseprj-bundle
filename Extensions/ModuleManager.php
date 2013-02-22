@@ -10,13 +10,27 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Extensions;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Doctrine\ORM\EntityManager;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
 
-class ModuleManager
+use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\GetResponseForControllerResultEvent;
+use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
+use Symfony\Component\HttpKernel\Event\PostResponseEvent;
+use Symfony\Component\HttpKernel\KernelEvents;
+
+use TechG\Bundle\SfBaseprjBundle\Event\TechGKernelInitEvent;
+
+class ModuleManager implements EventSubscriberInterface
 {    
     const MODULE_NAME = '';
     
@@ -24,68 +38,162 @@ class ModuleManager
     
     // 
     protected $enabled;
-    protected $configured;    
     protected $init;    
 
     // 
+    protected $tgKernel;    
     protected $settingManager;    
     protected $session;
-    protected $em;
-    protected $tgKernel;    
+    protected $em;   
     protected $serializer;    
  
-    
-    public function __construct()
+        
+    public function __construct(ContainerInterface $container, SettingManager $settingManager)
     {
         $this->enabled = false;    
         $this->configured = false;      
-        $this->init = false;      
-    }
-    
-    // Effettua il settaggio della configurazione ed l'init minima necessaria (enabled fondamentalmente)
-    public function hydrateModuleConfinguration(MainKernel $tgKernel)
-    {
-        $c = get_called_class();
+        $this->init = false;
         
-        $this->tgKernel = $tgKernel;
-        $this->settingManager = $this->tgKernel->settingManager;
-        $this->session = $this->tgKernel->getSession();
-        $this->em = $this->tgKernel->getEntityManager();
+        $this->settingManager = $settingManager;
+        $this->em = $container->get('doctrine.orm.entity_manager');
+        $this->session = $container->get('session');
         $this->serializer =  \JMS\Serializer\SerializerBuilder::create()->build();
-
-        $this->enabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
         
-        $c::hydrateConfinguration($this->tgKernel);
-        
-        $this->configured = true;
-    }    
-    
-    // (funzione sovrascritta dal figlio)
-    public function hydrateConfinguration(MainKernel $tgKernel)
-    {       
-    } 
-    
-    // Inizializza il modulo
-    public function initModule()
-    {   
-        
+        // Called Class related
         $c = get_called_class();
-        
+        $this->enabled = $this->settingManager->getGlobalSetting($c::MODULE_NAME.'.'.SettingManager::SUFFIX_ENABLE);
+
         if ($this->isEnabled()) {
             $this->addDebugLap('Init module '.$c::MODULE_NAME);            
-        }        
-        
-        $c::init();
+        }  
         
         $this->init = true;        
+    }    
+     
+       
+// ********************************************************************************************************       
+// GESTORI EVENTI       
+// ********************************************************************************************************         
+    static public function getSubscribedEvents()
+    {
+        return array(
+            'kernel.request' => array(
+                array('onKernelRequestEvent', 0),
+            ),
+            'kernel.controller' => array(
+                array('onKernelControllerEvent', 0),
+            ),
+            'kernel.exception' => array(
+                array('onKernelExceptionEvent', 0),
+            ),
+            'kernel.view' => array(
+                array('onKernelViewEvent', 0),
+            ),
+            'kernel.response' => array(
+                array('onKernelResponseEvent', 0),
+            ),
+            'kernel.terminate' => array(
+                array('onKernelTerminateEvent', 0),
+            ),
+            TechGKernelInitEvent::onKernelInit => array(
+                array('onTechGKernelInitEvent', 0)
+            ),
+        );
     }
     
-    // Inizializza il modulo (funzione sovrascritta dal figlio)   
-    public function init()
-    {
+    
+//**************************************************************************************    
+// TECHG KERNEL EVENTS HANDLER   
+//**************************************************************************************    
+
+    public function onTechGKernelInitEvent(TechGKernelInitEvent $event)
+    {                 
+        if (!$this->isEnabled()) return;
+
+        $this->tgKernel = $event->getTgKernel();
+
+        $this->onTechGKernelInit($event);   
     }
-       
-       
+    
+        // Sovrascritta dal figlio
+        public function onTechGKernelInit(TechGKernelInitEvent $event)
+        {         
+        }    
+    
+//**************************************************************************************    
+// SYMFONY EVENTS HANDLER   
+//**************************************************************************************    
+    
+    public function onKernelRequestEvent(GetResponseEvent $event)
+    {   
+        if (MainKernel::skipSubRequest($event) || 
+            !$this->isEnabled()) return;
+        
+        $this->onKernelRequest($event); 
+    }    
+    
+        public function onKernelRequest(GetResponseEvent $event)
+        {  
+        }
+  
+    public function onKernelControllerEvent(FilterControllerEvent $event)
+    {
+        if (MainKernel::skipSubRequest($event) || 
+            !$this->isEnabled()) return;
+                    
+        $this->onKernelController($event);         
+    }      
+
+        public function onKernelController(FilterControllerEvent $event)
+        {
+        }      
+
+    public function onKernelExceptionEvent(GetResponseForExceptionEvent $event)
+    {
+        if (!$this->isEnabled()) return;
+                    
+        $this->onKernelException($event);           
+    }  
+        public function onKernelException(GetResponseForExceptionEvent $event)
+        {
+        }  
+
+    public function onKernelViewEvent(GetResponseForControllerResultEvent $event)
+    {
+        if (MainKernel::skipSubRequest($event) || 
+            !$this->isEnabled()) return;
+                    
+        $this->onKernelView($event);         
+    }    
+    
+        public function onKernelView(GetResponseForControllerResultEvent $event)
+        {
+        }    
+    
+    public function onKernelResponseEvent(FilterResponseEvent $event)
+    {
+        if (MainKernel::skipSubRequest($event) || 
+            !$this->isEnabled()) return;
+                    
+        $this->onKernelResponse($event);         
+    }
+    
+        public function onKernelResponse(FilterResponseEvent $event)
+        {
+        }
+    
+    public function onKernelTerminateEvent(PostResponseEvent $event)
+    {
+        if (MainKernel::skipOtherRequest($event) || !$this->isEnabled()) return;
+                    
+        $this->onKernelTerminate($event);
+    }
+    
+        public function onKernelTerminate(PostResponseEvent $event)
+        {
+        }
+    
+  
 // ********************************************************************************************************       
 // METODI PUBBLICI       
 // ********************************************************************************************************         
@@ -95,11 +203,6 @@ class ModuleManager
         return $this->enabled;    
     }
 
-    public function isConfigured()
-    {
-        return $this->configured;    
-    }
-
     public function isInit()
     {
         return $this->init();    
@@ -107,12 +210,12 @@ class ModuleManager
 
     public function addDebugLap($string, $ts = null)
     {
-        $this->tgKernel->addDebugLap($string, $ts);    
+        //$this->tgKernel->addDebugLap($string, $ts);    
     }    
        
     public function addRawLog($type = null, $level = null, $short = '', $long = '', $info = null, $taskId = null, $parentId = null, $user = null )
     {   
-        $this->tgKernel->addRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);   
+        //$this->tgKernel->addRawLog($type, $level, $short, $long, $info, $taskId, $parentId, $user);   
     }    
        
 // ********************************************************************************************************       

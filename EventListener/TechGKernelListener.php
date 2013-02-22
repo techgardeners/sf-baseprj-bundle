@@ -1,14 +1,16 @@
 <?php
 /*
- * This file is part of the Base Project Bundle
+ * This file is part of the SfBaseprjBundle project
  *
  * (c) Roberto Beccaceci <roberto@beccaceci.it>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
+ 
+namespace TechG\Bundle\SfBaseprjBundle\EventListener;
 
-namespace TechG\Bundle\SfBaseprjBundle\Listener;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\Event\FilterControllerEvent;
@@ -23,73 +25,73 @@ use Symfony\Component\HttpFoundation\Session;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 
-class TechgActionListener
+class TechGKernelListener implements EventSubscriberInterface
 {
-    protected $mainKernel;
+    
+    protected $mainKernel;    
+    
+    static public function getSubscribedEvents()
+    {
+        return array(
+            'kernel.request' => array(
+                array('onRequestEvent', 0),
+            ),
+            'kernel.controller' => array(
+                array('onKernelController', 0),
+            ),
+            'kernel.exception' => array(
+                array('onKernelException', 0),
+            ),
+            'kernel.view' => array(
+                array('onKernelView', 0),
+            ),
+            'kernel.response' => array(
+                array('onKernelResponse', 0),
+            ),
+            'kernel.terminate' => array(
+                array('onKernelTerminate', 0),
+            ),
+        );
+    }
 
     public function __construct(MainKernel $mainKernel)
     {
         $this->mainKernel = $mainKernel;
     }
 
-    private function skipSubRequest($event)
-    {              
-        $request = $event->getRequest();
-        
-        // Viene richiamato SOLO nelle richieste principali
-        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType() || $this->skipOtherRequest($request)) {
-            return true;
-        }
-        
-        return false;         
-    }
-    
-    private function skipOtherRequest($request)
-    {              
-        
-        // Viene richiamato SOLO nelle richieste principali
-        if (preg_match('/^\/_(wdt|assetic|profiler|configurator)/', $request->getRequestUri())) {
-            return true;
-        }
-        
-        return false;         
-    }
-    
-  
-    public function onInitEvent(GetResponseEvent $event)
+    public function onPreRequestEvent(GetResponseEvent $event)
     {
-        
-        $request = $event->getRequest();
-        
-        if ($this->skipOtherRequest($request)) return true;
+               
+        if (self::skipOtherRequest($event)) return true;
         
         // Nelle richieste secondarie devo inizializzarlo uguale ma solo alcune cose
         if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
             $this->mainKernel->initSubRequest($event);
             return true;
         }
-        
-        
+
         $this->mainKernel->init($event);
-        
-          
+  
     }
   
     public function onRequestEvent(GetResponseEvent $event)
     {
         
-        if ($this->skipSubRequest($event) || 
-            !$this->mainKernel->isInit()) return;
+        if (MainKernel::skipOtherRequest($event)) return true;
         
-        // Richiamo l'init del kernel per inniettargli la request
-        // (per problemi di scope dei servizi http://symfony.com/it/doc/current/cookbook/service_container/scopes.html)
+        // Nelle richieste secondarie devo inizializzarlo uguale ma solo alcune cose (tipo il locale per esempio)
+        if (HttpKernelInterface::MASTER_REQUEST !== $event->getRequestType()) {
+            $this->mainKernel->initSubRequest($event);
+            return true;
+        }
+        
         $this->mainKernel->onRequest($event);  
     }
   
     public function onKernelController(FilterControllerEvent $event)
     {
         
-        if ($this->skipSubRequest($event) || 
+        if (MainKernel::skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;
        
         
@@ -100,7 +102,7 @@ class TechgActionListener
     public function onKernelException(GetResponseForExceptionEvent $event)
     {
         
-        if ($this->skipSubRequest($event) || 
+        if (MainKernel::skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;
            
         $this->mainKernel->onException($event);
@@ -110,7 +112,7 @@ class TechgActionListener
     public function onKernelView(GetResponseForControllerResultEvent $event)
     {
 
-        if ($this->skipSubRequest($event) || 
+        if (MainKernel::skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;       
         
         $this->mainKernel->onView($event);
@@ -120,7 +122,7 @@ class TechgActionListener
     public function onKernelResponse(FilterResponseEvent $event)
     {
 
-        if ($this->skipSubRequest($event) || 
+        if (MainKernel::skipSubRequest($event) || 
             !$this->mainKernel->isInit()) return;       
         
         $this->mainKernel->onResponse($event);
@@ -134,6 +136,7 @@ class TechgActionListener
         
         $this->mainKernel->onTerminate($event);
 
-    }         
-  
+    }
+    
+    
 }

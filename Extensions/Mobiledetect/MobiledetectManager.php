@@ -11,6 +11,7 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Mobiledetect;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
@@ -21,19 +22,18 @@ class MobiledetectManager extends BaseModule
     
     public $mobileDetector;
 
+// ********************************************************************************************************       
+// METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
+// ********************************************************************************************************    
 
-    public function hydrateConfinguration(MainKernel $tgKernel)
-    { 
-                       
-    } 
-    
-    public function init()
+    public function __construct(ContainerInterface $container, SettingManager $settingManager)
     {
+        parent::__construct($container, $settingManager);
+        
         if ($this->isEnabled()) {
             $this->mobileDetector  = $this->tgKernel->getContainer()->get('mobile_detect.mobile_detector');
-        }        
-    }        
- 
+        }                                   
+    } 
 
 // ********************************************************************************************************       
 // METODI STATICI       

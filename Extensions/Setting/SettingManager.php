@@ -10,9 +10,9 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Setting;
 
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Doctrine\ORM\EntityManager;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Debug\DebugManager;
@@ -34,8 +34,7 @@ class SettingManager
     
     /**
     * Settaggi 
-    */
-    
+    */        
     
     // Nome della variabile in sessione contenente la cache della configurazione
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/settings/cache';
@@ -50,39 +49,24 @@ class SettingManager
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
 // ********************************************************************************************************
 
-    public function init(MainKernel $tgKernel)
+    public function __construct(ContainerInterface $container)
     {
-        $this->session = $tgKernel->getSession();
-        $this->em = $tgKernel->getEntityManager();
-        $this->gParameterBag = $tgKernel->getContainer()->getParameterBag();
+        $this->session = $container->get('session');
+        $this->session->start();
+        $this->em = $container->get('doctrine.orm.entity_manager');
         
-        // Se trova i settaggi in sessione li carica
+        // Load global yml configuration (ex: config.yml)
+        $this->gParameterBag = $container->getParameterBag();
+
+        // If found cache in session load it
         if ($this->session->has(self::SESSION_VARS_CACHE)) {
             $this->settingCache = $this->session->get(self::SESSION_VARS_CACHE);    
         }
-        
+
+        // If session cache is not valid load from db
         if(is_null($this->settingCache)) {
             $this->loadSettingFromDb();
         }
-            
-        foreach($tgKernel->getModules() as $nameModule => $moduleObj) {
-            $moduleObj->hydrateModuleConfinguration($tgKernel);
-        }
-                
-    }
-
-// ********************************************************************************************************       
-// METODI PRIVATI       
-// ********************************************************************************************************     
-    
-    /**
-    * Carica i settaggi dal db
-    * 
-    */
-    private function loadSettingFromDb()
-    {
-        $this->settingCache = $this->em->getRepository('TechGSfBaseprjBundle:Setting')->loadAll();
-        $this->session->set(self::SESSION_VARS_CACHE, $this->settingCache);            
     }
 
 
@@ -95,7 +79,12 @@ class SettingManager
         $this->session->remove(self::SESSION_VARS_CACHE);    
     }
     
-    
+    /**
+    * Ritorna una configurazione globale (non associata ad un utente) cercandola prima nel db e, se non la trova, nel file di configurazione
+    * 
+    * @param mixed $key
+    * @param mixed $default
+    */
     public function getGlobalSetting($key, $default = null)
     {
         
@@ -112,7 +101,13 @@ class SettingManager
         
     }
                
-    
+    /**
+    * Ritorna una configurazione associata ad un utente (per forza dal db)
+    * 
+    * @param mixed $key
+    * @param mixed $user_id
+    * @param mixed $default
+    */
     public function getUserSetting($key, $user_id, $default = null)
     {
         return (is_array($this->settingCache) && 
@@ -127,13 +122,26 @@ class SettingManager
     * 
     * @param mixed $key
     * @param mixed $default
-    * @return Boolean
+    * @return mixed
     */
     public function getFileConfigSetting($key, $default = null)
     {
         return ($this->gParameterBag->has(SettingManager::PREFIX_BUNDLE.'.'.$key)) ? $this->gParameterBag->get(SettingManager::PREFIX_BUNDLE.'.'.$key) : $default;   
     }
     
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
+    
+    /**
+    * Carica i settaggi dal db
+    * 
+    */
+    private function loadSettingFromDb()
+    {
+        $this->settingCache = $this->em->getRepository('TechGSfBaseprjBundle:Setting')->loadAll();
+        $this->session->set(self::SESSION_VARS_CACHE, $this->settingCache);            
+    }
     
 // ********************************************************************************************************       
 // METODI STATICI       

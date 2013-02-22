@@ -11,10 +11,11 @@
 namespace TechG\Bundle\SfBaseprjBundle\Extensions\Debug;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
-use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
+
+use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 
 class DebugManager extends BaseModule
 {    
@@ -28,47 +29,20 @@ class DebugManager extends BaseModule
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
 // ********************************************************************************************************
 
-    public function __construct()
+    public function __construct(ContainerInterface $container, SettingManager $settingManager)
     {
-        $this->lastLapTs = $this->startLapTs = microtime();
-    }
-    
-    public function hydrateConfinguration(MainKernel $tgKernel)
-    {                 
-    } 
-    
-    public function init()
-    {
+        parent::__construct($container, $settingManager);
+        
+        $this->lastLapTs = $this->startLapTs = microtime();       
+
         // se è attivo il debug cancello i dati delle configurazioni in sessione
         if ($this->isEnabled()) {
             $this->settingManager->clearSession();
-        }        
-    }          
-
+        } 
+                                
+    }               
     
-// ********************************************************************************************************       
-// METODI PRIVATI       
-// ********************************************************************************************************     
-    
-    
-
-    private function convertMsToTime($mc)
-    {
-        list($microSec, $timeStamp) = explode(" ", $mc);
-        return date('H:i:', $timeStamp) . (date('s', $timeStamp) + $microSec);    
-    }
-    
-    private function calcDiff($mc_start, $mc_end)
-    {
-        list($S_microSec, $S_timeStamp) = explode(" ", $mc_start);
-        list($E_microSec, $E_timeStamp) = explode(" ", $mc_end);
-        
-        $sec = $E_timeStamp - $S_timeStamp;
-        $mill = $E_microSec - $S_microSec;
-        
-        return round(0 + $sec + $mill, 5);
-        
-    }    
+  
 
 // ********************************************************************************************************       
 // METODI PUBBLICI       
@@ -94,6 +68,29 @@ class DebugManager extends BaseModule
     }      
 
 
+// ********************************************************************************************************       
+// METODI PRIVATI       
+// ********************************************************************************************************     
+    
+
+    private function convertMsToTime($mc)
+    {
+        list($microSec, $timeStamp) = explode(" ", $mc);
+        return date('H:i:', $timeStamp) . (date('s', $timeStamp) + $microSec);    
+    }
+    
+    private function calcDiff($mc_start, $mc_end)
+    {
+        list($S_microSec, $S_timeStamp) = explode(" ", $mc_start);
+        list($E_microSec, $E_timeStamp) = explode(" ", $mc_end);
+        
+        $sec = $E_timeStamp - $S_timeStamp;
+        $mill = $E_microSec - $S_microSec;
+        
+        return round(0 + $sec + $mill, 5);
+        
+    }      
+    
 // ********************************************************************************************************       
 // METODI STATICI       
 // ********************************************************************************************************  
