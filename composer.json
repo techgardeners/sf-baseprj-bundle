@@ -19,8 +19,7 @@
         "suncat/mobile-detect-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master",
         "doctrine/migrations": "dev-master",              
-        "jms/serializer": "*",              
-        "egeloen/google-map-bundle": "1.0.0"             
+        "jms/serializer": "*"           
     },
     "require-dev": {
         "symfony/framework-bundle": ">=2.7,<2.2-dev"    
