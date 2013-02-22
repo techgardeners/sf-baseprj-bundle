@@ -144,12 +144,12 @@ class LogManager extends BaseModule
                                                                   'label' => ''                                                            
                                                          ),
                               self::TYPE_GENERIC_APP => array( 'defaultLevel' => self::LEVEL_APP,
-                                                            'title' => 'GENERIC_APP',
-                                                            'label' => ''                                                            
+                                                            'title' => 'APP_LOG',
+                                                            'label' => 'small information'                                                            
                                                          ),
                               self::TYPE_GENERIC_INFO => array( 'defaultLevel' => self::LEVEL_INFO,
                                                                 'title' => 'GENERIC_INFO',
-                                                                'label' => ''                                                            
+                                                                'label' => 'info'                                                            
                                                          ),
                               self::TYPE_GENERIC_ERROR => array( 'defaultLevel' => self::LEVEL_ERROR,
                                                             'title' => 'GENERIC_ERROR',
