@@ -222,7 +222,7 @@ class GeoPosition extends BaseEntity
     /**
      * {@inheritDoc}
      */
-    public function fromArray(array $data = array())
+    public function fromArray($data = array())
     {
         if (isset($data['latitude'])) {
             $this->latitude = (double) $data['latitude'];
