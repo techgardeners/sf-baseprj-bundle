@@ -13,19 +13,19 @@
     ],
     "require": {
         "php": ">=5.3.3",
-        "symfony/symfony": ">=2.1.7",
-        "egeloen/google-map-bundle": "v1.0",
+        "symfony/symfony": "2.1.*",
         "willdurand/geocoder": "*",
         "kriswallsmith/buzz": "*",
-        "mobiledetect/mobiledetectlib": "dev-master", 
-        "suncat/mobile-detect-bundle": "dev-master",
-        "doctrine/doctrine-migrations-bundle": "dev-master",
-        "doctrine/migrations": "dev-master",              
+        "egeloen/google-map-bundle": "*",        
+        "mobiledetect/mobiledetectlib": "*", 
+        "suncat/mobile-detect-bundle": "*",
+        "doctrine/doctrine-migrations-bundle": "*",
+        "doctrine/migrations": "*",              
         "jms/serializer": "*"           
     },
     "require-dev": {
-        "symfony/framework-bundle": ">=2.7,<2.2-dev"    
     },
+    "minimum-stability": "dev",    
     "autoload": {
         "psr-0": { "TechG\\Bundle\\SfBaseprjBundle": "" }
     },   
