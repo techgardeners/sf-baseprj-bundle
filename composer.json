@@ -18,7 +18,7 @@
         "kriswallsmith/buzz": "*",
         "egeloen/google-map-bundle": "*",        
         "mobiledetect/mobiledetectlib": "*", 
-        "suncat/mobile-detect-bundle": "*",
+        "suncat/mobile-detect-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "*",
         "doctrine/migrations": "*",              
         "jms/serializer": "*"           
