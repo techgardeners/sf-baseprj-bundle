@@ -47,8 +47,8 @@ use TechG\Bundle\SfBaseprjBundle\EventListener\TechGKernelListener;
 class MainKernel
 {
 
-    const BUNDLE_VERSION = '0.1.0-beta';
-    const KERNEL_VERSION = '0.1.0-beta';
+    const BUNDLE_VERSION = '0.1.1-beta';
+    const KERNEL_VERSION = '0.1.1-beta';
   
     private $container = null;
     private $session = null;

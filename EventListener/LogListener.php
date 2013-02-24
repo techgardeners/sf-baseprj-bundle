@@ -30,46 +30,4 @@ use TechG\Bundle\SfBaseprjBundle\EventListener\ModuleListener as BaseListener;
 
 class LogListener extends BaseListener
 {            
-         
-    /**
-    * Reagisce all'evento di inizializzazione del kernel
-    * 
-    * @param TechGKernelInitEvent $event
-    */
-    public function onTechGKernelInit(TechGKernelInitEvent $event)
-    {         
-        // Preparo subito il log della request (nel caso poi lo integro)
-        $this->loggedRequest = $this->getNewLogRequest();   
-        $this->loggedSession = $this->getLoggedSession();            
-    }
-
-    public function onKernelRequest(GetResponseEvent $event) 
-    {
-        if (!$this->requestSaved) {
-            // Aggiungo rotta e controller ( e locale corretto)
-            $this->updateRequest();
-        }       
-    }
-
-    public function onKernelResponse(FilterResponseEvent $event) 
-    {        
-        $this->logResponse($event->getResponse());
-    }
-
-    public function onKernelException(GetResponseForExceptionEvent $event) 
-    {        
-        $this->logException($event->getException());
-    }
-        
-    // Chiude i log
-    public function onKernelTerminate(PostResponseEvent $event)
-    {
-
-        $this->updateAndPersistSession($this->loggedSession);
-        
-        $this->flushQueue();
-        $this->em->flush();
-        
-    }    
-
 }

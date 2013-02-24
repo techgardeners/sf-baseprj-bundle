@@ -214,7 +214,8 @@ class LogManager extends BaseModule
             if (preg_match($this->skipPattern, $container->get('request')->getRequestUri())) {
                 $this->enabled = false;
             }    
-        } 
+        }
+
                                 
     }  
     
