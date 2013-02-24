@@ -184,7 +184,7 @@ class LocaleManager extends BaseModule
     
     public static function isSetLocaleOnUrl($uri)
     {
-        return preg_match('%^/[a-z]{2}[-_][A-Za-z]{2}%', $uri);    
+        return preg_match('%/[a-z]{2}[-_][A-Za-z]{2}/%', $uri);    
     }              
         
 }

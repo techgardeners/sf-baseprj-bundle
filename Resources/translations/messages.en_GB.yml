@@ -1,0 +1,84 @@
+global:
+    app:
+        name: "gPanel"
+
+live:
+    title: "Live session"
+    session:
+        field:
+             user:
+                 label: "Utente"
+                 guest: "Utente anonimo"
+             start:
+                 label: "Iniziata"
+             last:
+                 label: "Ultima attività"
+                 nologged: "<span class='muted'>non loggata</span>"
+             browser:
+                 label: "Browser"
+             versione:
+                 label: "Versione"
+             platform:
+                 label: "SO"
+             ip:
+                 label: "Ip"
+             city:
+                 label: "Città"
+             region:
+                 label: "Regione"
+             country:
+                 label: "Stato"
+info:
+    title: "Info page"
+    section:
+        bundle:
+            label: "Bundle"
+            title: "Bundle info"
+        kernel:
+            label: "Kernel"
+            title: "Kernel info"
+        request:
+            label: "Request"
+            title: "Request info"
+        geo:
+            label: "Geolocation"
+            title: "Geolocation info"
+            subtitle: "https://github.com/willdurand/BazingaGeocoderBundle"
+        mobile:
+            label: "Mobile"
+            title: "Mobile detection info"
+            subtitle: "https://github.com/suncat2000/MobileDetectBundle"
+        user:
+            label: "User"
+            title: "Utente info"
+        browser:
+            label: "Browser"
+            title: "Browser info"
+        profiler:
+            label: "Profiler"
+            title: "Profiler info"
+    system:
+        bundlename: "Nome del bundle"
+        bundleversion: "Versione del bundle"
+        kernelversion: "Versione del kernel"
+    module:
+        debug: "Modulo debug"
+        log: "Modulo log"
+        geodecode: "Modulo geo decodifica"
+        mobiledetect: "Modulo mobile detection"
+        guesslocale: "Modulo guess language"
+        blacklist: "Modulo black list"
+        whitelist: "Modulo white list"
+    value:
+        noguess: '<span class="noguess">Non rilevata</span>'
+        active: '<span class="enable">Attivo</span>'
+        noactive: '<span class="disable">Disattivato</span>'
+        'true': '<span class="enable">Si</span>'
+        'false': '<span class="disable">No</span>'
+    request:
+        url: 'Url richiesta'
+        host: 'Host richiesta'
+    geo:
+        latitude: 'Latitudine'
+        longitude: 'Longitudine'
+

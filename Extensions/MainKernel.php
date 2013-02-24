@@ -337,7 +337,7 @@ class MainKernel
      
     public function isLocaleinUrl()
     {
-        return $this->getLocaleManager()->isSetLocaleOnUrl($this->uri);
+        return LocaleManager::isSetLocaleOnUrl($this->getMasterRequest('uri'));
     }        
      
     public function getKernelVersion()

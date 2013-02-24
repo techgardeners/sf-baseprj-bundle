@@ -48,18 +48,18 @@
                 </ul>
             </p>
         </div>
-        <div class="tab-pane" id="request">
+        <div class="tab-pane active" id="request">
             <h3>{{ "info.section.request.title" | trans }}</h3>
             <p>
                 <ul>
-                    <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.baseUri }}{{ tgKernel.uri }}</li>
-                    <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.host }}</li>
+                    <li><span class="key">{{ "info.request.url" | trans }}</span>: {{ tgKernel.getMasterRequest('uri') }}</li>
+                    <li><span class="key">{{ "info.request.host" | trans }}</span>: {{ tgKernel.getMasterRequest('host') }}</li>
                     <li><span class="key">{{ "info.request.localeFromUrl" | trans }}</span>: {% if tgKernel.isLocaleinUrl %} {{ 'info.value.true' |trans |raw }} {% else %} {{ 'info.value.false' |trans |raw }} {% endif %}</li>
                     <li><span class="key">{{ "info.request.acceptlanguage" | trans }}</span>: {{ app.request.getLanguages | join(', ')  }}</li>
                     <li><span class="key">{{ "info.request.requestlocale" | trans }}</span>: {{ app.request.locale | join(', ')  }}</li>
 
                     <li><span class="key">{{ "info.request.guessedlocale" | trans }}</span>:
-                        {% if tgKernel.isGuessLocaleEnabled %}
+                        {% if tgKernel.isLocaleEnabled %}
                             {{ tgKernel.guessedLocale | default("info.value.noguess"|trans) }}
                         {% else %}
                             {{ 'system.guesslocale.noactive' | trans }}
