@@ -15,9 +15,12 @@
     "require": {
         "php": ">=5.3.3",
         "symfony/symfony": "2.1.*",
+		"friendsofsymfony/user-bundle": "*",
         "willdurand/geocoder": "1.2.*@dev",
         "kriswallsmith/buzz": "dev-master",
         "egeloen/google-map-bundle": "dev-f-factory",        
+        "egeloen/google-map": *@dev,
+        "mobiledetect/mobiledetectlib": "dev-master",
         "suncat/mobile-detect-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master",
         "jms/serializer": "dev-master"
