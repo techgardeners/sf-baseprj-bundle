@@ -11,8 +11,8 @@
 namespace TechG\Bundle\SfBaseprjBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Ivory\GoogleMapBundle\Model\MapTypeId;
-use Ivory\GoogleMapBundle\Model\Overlays\Animation;
+use Ivory\GoogleMap\MapTypeId;
+use Ivory\GoogleMap\Overlays\Animation;
 
 use TechG\Bundle\SfBaseprjBundle\Extensions\Log\LogManager;
 use TechG\Bundle\SfBaseprjBundle\Extensions\UtilityManager;
