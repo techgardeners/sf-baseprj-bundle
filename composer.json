@@ -18,10 +18,8 @@
         "willdurand/geocoder": "1.2.*@dev",
         "kriswallsmith/buzz": "dev-master",
         "egeloen/google-map-bundle": "dev-f-factory",        
-        "mobiledetect/mobiledetectlib": "dev-master", 
         "suncat/mobile-detect-bundle": "dev-master",
         "doctrine/doctrine-migrations-bundle": "dev-master",
-        "doctrine/migrations": "dev-master",              
         "jms/serializer": "dev-master"
     },
     "require-dev": {
