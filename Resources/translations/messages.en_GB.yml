@@ -29,7 +29,7 @@ live:
              country:
                  label: "Stato"
 info:
-    title: "Info page"
+    title: "Info page [GB]"
     section:
         bundle:
             label: "Bundle"

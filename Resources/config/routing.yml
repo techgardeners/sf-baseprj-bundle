@@ -1,24 +1,32 @@
-gPanel_home:
+gPanel_home_locale:
     pattern:  /gPanel/{_locale}
-    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index, _locale: %locale% }
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
     requirements:
        _locale: "[a-z]{2}_[A-Z]{2}"  
        
+gPanel_home:
+    pattern:  /gPanel
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
+       
+gPanel_home_2:
+    pattern:  /gPanel/
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
+       
 gPanel_info:
-    pattern:  /gPanel/{_locale}/info
-    defaults: { _controller: TechGSfBaseprjBundle:GPanel:info, _locale: %locale% }
+    pattern:  /gPanel/{_locale}/info/prova2
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:info }
     requirements:
        _locale: "[a-z]{2}_[A-Z]{2}"  
            
 gPanel_live:
     pattern:  /gPanel/{_locale}/live
-    defaults: { _controller: TechGSfBaseprjBundle:GPanel:live, _locale: %locale% }
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:live }
     requirements:
        _locale: "[a-z]{2}_[A-Z]{2}"  
     
 tech_g_baseprj_bundle_base_error:
     pattern:  /gPanel/{_locale}/error
-    defaults: { _controller: TechGSfBaseprjBundle:GPanel:error, _locale: %locale% }    
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:error }    
     requirements:
        _locale: "[a-z]{2}_[A-Z]{2}"    
     
@@ -30,26 +38,36 @@ tech_g_baseprj_bundle_base_error:
 
 gpanel_fragment_render_session:
     pattern:  /gPanel/{_locale}/fragment/render/session/{session_id}
-    defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession, _locale: %locale% }
-
+    defaults: { _controller: TechGSfBaseprjBundle:Component:renderSession }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
 gpanel_fragment_render_request:
     pattern:  /gPanel/{_locale}/fragment/render/request/{request_id}
-    defaults: { _controller: TechGSfBaseprjBundle:Component:renderRequest, _locale: %locale% }
-
+    defaults: { _controller: TechGSfBaseprjBundle:Component:renderRequest }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
 #fragment_render_log:
 #    pattern:  /gPanel/{_locale}/fragment/render/log/{log_id}
-#    defaults: { _controller: TechGSfBaseprjBundle:Component:renderLog, _locale: %locale% }
-
+#    defaults: { _controller: TechGSfBaseprjBundle:Component:renderLog }
+       
 
 # FRAMMENTI LAYOUT GLOBALI
 gpanel_fragment_navbar:
     pattern:  /gPanel/{_locale}/fragment/navbar/{route}
-    defaults: { _controller: TechGSfBaseprjBundle:Component:navbar, _locale: %locale% }
-
+    defaults: { _controller: TechGSfBaseprjBundle:Component:navbar}
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
 gpanel_fragment_header:
     pattern:  /gPanel/{_locale}/fragment/header/{route}
-    defaults: { _controller: TechGSfBaseprjBundle:Component:header, _locale: %locale% }
-
+    defaults: { _controller: TechGSfBaseprjBundle:Component:header }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
 gpanel_fragment_footer:
     pattern:  /gPanel/{_locale}/fragment/footer
-    defaults: { _controller: TechGSfBaseprjBundle:Component:footer, _locale: %locale% }
+    defaults: { _controller: TechGSfBaseprjBundle:Component:footer }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"    
