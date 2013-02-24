@@ -10,59 +10,46 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity as BaseEntity;
 
 /**
- * Language
- *
- * @ORM\Table(name="language")
- * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\LanguageRepository")
+ * Language     
  */
 class Language extends BaseEntity
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+
      */
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="label", type="string", length=255, nullable=true)
+
      */
     private $label;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="ISO639", type="string", length=2, nullable=false)
+
      */
     private $iso639;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="ISO3166", type="string", length=2, nullable=false)
+
      */
     private $iso3166;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="locale", type="string", length=5, nullable=false)
+
      */
     private $locale;
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+
      */
     private $enabled = false;
 

@@ -10,72 +10,46 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
 
 use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseEntity as BaseEntity;
 
 /**
  * LanguageTrans
- *
- * @ORM\Table(name="language_trans")
- * @ORM\Entity
  */
 class LanguageTrans extends BaseEntity
 {
     /**
-     * @var integer
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @var integer  
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name_language", type="string", length=255, nullable=false)
+     * @var string      
      */
     private $nameLanguage;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="name_country", type="string", length=255, nullable=false)
+     * @var string    
      */
     private $nameCountry;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="desc_short", type="string", length=255, nullable=true)
+     * @var string       
      */
     private $descShort;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="desc_long", type="text", nullable=true)
+     * @var string      
      */
     private $descLong;
 
     /**
-     * @var \Language
-     *
-     * @ORM\ManyToOne(targetEntity="Language")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="item_id", referencedColumnName="id")
-     * })
+     * @var \Language   
      */
     private $item;
 
     /**
-     * @var \Language
-     *
-     * @ORM\ManyToOne(targetEntity="Language")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="language_id", referencedColumnName="id")
-     * })
+     * @var \Language  
      */
     private $language;
 

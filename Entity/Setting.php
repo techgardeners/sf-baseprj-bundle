@@ -10,45 +10,30 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseSetting as BaseEntity;
 
 /**
  * Settings
- *
- * @ORM\Table(name="setting")
- * @ORM\Entity(repositoryClass="TechG\Bundle\SfBaseprjBundle\Repository\SettingRepository")
  */
 class Setting extends BaseEntity
 {
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="integer", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="key", type="string", length=255, nullable=false)
+     * @var string     
      */
     private $key;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="value", type="string", length=255, nullable=false)
+     * @var string        
      */
     private $value;
 
     /**
-     * @var $user
-     *
-     * @ORM\Column(name="user_id", type="bigint", nullable=false)
+     * @var $user            
      * 
      */
     private $user;

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="TechG\Bundle\SfBaseprjBundle\Entity\LanguageTrans" table="language_trans">
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="nameLanguage" type="string" column="name_language" length="255" nullable="false"/>
+    <field name="nameCountry" type="string" column="name_country" length="255" nullable="false"/>
+    <field name="descShort" type="string" column="desc_short" length="255" nullable="true"/>
+    <field name="descLong" type="text" column="desc_long" nullable="true"/>
+    <many-to-one field="language" target-entity="Language">
+      <join-columns>
+        <join-column name="language_id" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="item" target-entity="Language">
+      <join-columns>
+        <join-column name="item_id" referenced-column-name="id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

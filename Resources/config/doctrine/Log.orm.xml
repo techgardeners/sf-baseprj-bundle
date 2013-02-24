@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="TechG\Bundle\SfBaseprjBundle\Entity\Log" table="log">
+    <id name="id" type="bigint" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="logDate" type="datetime" column="log_date" nullable="false"/>
+    <field name="descShort" type="string" column="desc_short" length="255" nullable="true"/>
+    <field name="descLong" type="text" column="desc_long" nullable="true"/>
+    <field name="user" type="bigint" column="user_id" nullable="true"/>
+    <field name="logLevel" type="string" column="log_level" length="255" nullable="true"/>
+    <field name="logType" type="string" column="log_type" length="255" nullable="true"/>
+    <field name="sessionId" type="string" column="session_id" length="255" nullable="true"/>
+    <field name="taskId" type="string" column="task_id" length="255" nullable="true"/>
+    <field name="parentId" type="bigint" column="parent_id" nullable="true"/>
+    <field name="requestId" type="string" column="request_id" length="255" nullable="true"/>
+    <field name="info" type="text" column="info" nullable="true"/>
+    <field name="cookieId" type="string" column="cookie_id" length="255" nullable="true"/>
+    <indexes>
+        <index name="search_idx_1" columns="cookie_id"/>
+        <index name="search_idx_2" columns="session_id"/>
+        <index name="search_idx_3" columns="task_id"/>
+        <index name="search_idx_4" columns="request_id"/>
+        <index name="search_idx_5" columns="parent_id"/>
+        <index name="search_idx_6" columns="cookie_id,request_id"/>
+    </indexes>
+  </entity>
+</doctrine-mapping>

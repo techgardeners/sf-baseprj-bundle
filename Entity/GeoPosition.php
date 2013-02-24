@@ -10,15 +10,10 @@
 
 namespace TechG\Bundle\SfBaseprjBundle\Entity;
 
-use Doctrine\ORM\Mapping as ORM;
-
 use TechG\Bundle\SfBaseprjBundle\Entity\Base\BaseGeoPosition as BaseEntity;
 
 /**
  * GeoPosition
- *
- * @ORM\Table(name="geo_position")
- * @ORM\Entity
  */
 class GeoPosition extends BaseEntity
 {
@@ -32,180 +27,128 @@ class GeoPosition extends BaseEntity
     
     /**
      * @var integer
-     *
-     * @ORM\Column(name="id", type="bigint", nullable=false)
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
      */
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="latitude", type="string", length=50, nullable=false)
      */
     private $latitude;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="longitude", type="string", length=50, nullable=false)
      */
     private $longitude;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="bound_south", type="string", length=50, nullable=false)
      */
     private $bound_south;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="bound_north", type="string", length=50, nullable=false)
+     * @var string 
      */
     private $bound_north;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="bound_west", type="string", length=50, nullable=false)
+     * @var string   
      */
     private $bound_west;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="bound_east", type="string", length=50, nullable=false)
+     * @var string  
      */
     private $bound_east;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="address_line_first", type="string", length=255, nullable=true)
+     * @var string    
      */
     private $addressLineFirst;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="address_line_second", type="string", length=255, nullable=true)
+     * @var string       
      */
     private $addressLineSecond;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="street_number", type="string", length=50, nullable=false)
+     * @var string  
      */
     private $streetNumber;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="street_name", type="string", length=255, nullable=false)
+     * @var string     
      */
     private $streetName;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="zipcode", type="string", length=255, nullable=true)
+     * @var string    
      */
     private $zipcode;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="city", type="string", length=255, nullable=true)
+     * @var string     
      */
     private $city;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="state", type="string", length=255, nullable=true)
+     * @var string    
      */
     private $state;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="region", type="string", length=255, nullable=true)
+     * @var string      
      */
     private $region;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="region_code", type="string", length=255, nullable=true)
+     * @var string       
      */
     private $regionCode;    
     
     /**
-     * @var string
-     *
-     * @ORM\Column(name="country", type="string", length=255, nullable=true)
+     * @var string          
      */
     private $country;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="country_code", type="string", length=255, nullable=true)
+     * @var string        
      */
     private $countryCode;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="city_district", type="string", length=255, nullable=true)
+     * @var string    
      */
     private $cityDistrict;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="timezone", type="string", length=255, nullable=true)
      */
     private $timezone;
 
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="ip_addr", type="string", length=255, nullable=true)
+     * @var string 
      */
     private $ipAddr;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="provider", type="string", length=255, nullable=true)
+     * @var string       
      */
     private $provider;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="data_origin", type="string", length=255, nullable=true)
+     * @var string    
      */
     private $dataOrigin;
     
     /**
-     * @var \DateTime
-     *
-     * @ORM\Column(name="geo_date", type="datetime", nullable=false)
+     * @var \DateTime 
      */
     private $geoDate;    
 
 
     /**
-     * @var boolean
-     *
-     * @ORM\Column(name="enabled", type="boolean", nullable=false)
+     * @var boolean  
      */
     private $enabled = false;
 
