@@ -18,15 +18,28 @@ class UtilityManager
 
 
     // DISPLAYS COMMENT POST TIME AS "1 year, 1 week ago" or "5 minutes, 7 seconds ago", etc...
-    public static function time_ago($date,$granularity=2) {
+    public static function time_ago($date, $granularity=2) {
+
+        return self::time_difference_readable(new \DateTime(), $date, $granularity);      
+    } 
+
+    
+    public static function time_difference_readable($dateStart, $dateStop, $granularity=2) {
         
-        if (!is_object($date)) return '';
+        if (!is_object($dateStart) || !is_object($dateStop)) return '';
+        
+        $retval = '';        
+        $now = strtotime($dateStart->format('m/d/Y H:i:s'));
+        $date = strtotime($dateStop->format('m/d/Y H:i:s'));
+        $difference = $now - $date;
+
+        return self::time_readable($difference,$granularity);      
+    } 
+
+    
+    public static function time_readable($difference, $granularity=2) {
         
         $retval = '';
-        $now = new \DateTime();        
-        $now = strtotime($now->format('m/d/Y H:i:s'));
-        $date = strtotime($date->format('m/d/Y H:i:s'));
-        $difference = $now - $date;
         $periods = array('decade' => 315360000,
             'year' => 31536000,
             'month' => 2628000,
@@ -47,8 +60,8 @@ class UtilityManager
             if ($granularity == '0') { break; }
         }
         return ($retval != '') ? $retval.' ago' : ' < 1 second ago' ;      
-    } 
-
+    }    
+    
     
     // metodi di utilità generale
     

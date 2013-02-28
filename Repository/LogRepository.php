@@ -18,7 +18,7 @@ use TechG\Bundle\SfBaseprjBundle\Repository\Base\BaseEntityRepository as BaseRep
 
 class LogRepository extends BaseRepository
 {
-    public function getRequestIdsBySessionId($cookie_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    public function getRequestIdsBySessionId($cookie_id, $limit = false, $defaultValue = array(), $returnObj = false, $returnOneElementAsArray = true)
     {
       
         $sql = "SELECT
@@ -40,7 +40,7 @@ class LogRepository extends BaseRepository
           
     }     
 
-    public function getLogsByRequestId($request_id, $limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    public function getLogsByRequestId($request_id, $limit = false, $defaultValue = array(), $returnObj = false, $returnOneElementAsArray = true)
     {
       
         $sql = "SELECT
@@ -77,7 +77,54 @@ class LogRepository extends BaseRepository
         return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
           
     }     
+        
+    public function getWebSessionBySessionId($cookie_id, $limit = false, $defaultValue = array(), $returnObj = false, $returnOneElementAsArray = true)
+    {
+        
+        $sql = "SELECT
+                         l.session_id as id, 
+                         MAX(l.log_date) as startd, 
+                         MIN(l.log_date) as stopd                 
+                  FROM
+                         log l
+                  WHERE 
+                      l.cookie_id = '$cookie_id'
+                  GROUP BY
+                      l.session_id
+                  ORDER BY
+                       l.log_date DESC
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";             
 
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }      
+    
+
+// *********************************************************************************
+
+    public function getLogLevelByWebSessionId($ws_id)
+    {
+        
+        $sql = "SELECT   l.log_level, count(l.log_level) as tot                 
+                  FROM
+                         log l
+                  WHERE 
+                      l.session_id = '$ws_id'
+                  GROUP BY
+                      l.log_level
+                  
+                  ";
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $result;
+          
+    }      
+    
+    
+    
     public function linkLogToNewCookieId($tempCookieId, $cookieId)
     {      
         $sql = "UPDATE log SET cookie_id = '$cookieId' WHERE session_id = '$tempCookieId'; DELETE FROM log_session WHERE id = 'NO-COOKIE-SUPPORT' AND session_id = '$tempCookieId'";

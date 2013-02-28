@@ -2,6 +2,8 @@ global:
     app:
         name: "gPanel"
 
+sessions:
+    title: "Storico session"
 live:
     title: "Live session"
     session:

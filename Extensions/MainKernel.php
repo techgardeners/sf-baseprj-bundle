@@ -362,6 +362,16 @@ class MainKernel
     {
         return $this->container->get('techg.geocoder');     
     }
+
+    public function getTemplatingEngine()
+    {
+        return $this->container->get('templating');     
+    }
+        
+    public function getGeoManager()
+    {
+        return $this->container->get('techg.geocoder');     
+    }
     
     public function getLocaleManager()
     {

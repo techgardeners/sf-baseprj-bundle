@@ -45,4 +45,25 @@ class LogSessionRepository extends BaseRepository
     }     
     
     
+    public function getSessions($limit = false, $defaultValue = false, $returnObj = false, $returnOneElementAsArray = true)
+    {
+        
+        $sql = "SELECT
+                         l.id                  
+                  FROM
+                         log_session l
+                  WHERE 
+                        1=1
+                  ORDER BY
+                       last_activity DESC, log_date DESC
+                  
+                  ".(($limit) ? $this->addLimit($limit) : '')."";      
+                  
+        $result = $this->getEntityManager()->getConnection()->fetchAll($sql);
+
+        return $this->elaborateResult($result, $limit, $defaultValue, $returnObj, $returnOneElementAsArray);
+          
+    }        
+    
+    
 }

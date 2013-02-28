@@ -1,0 +1,15 @@
+        <div class="clearfix well well-small websession">
+            {{ duration }} | {{ finish }}
+            <div class="pull-right">
+            {% for level in levelStruct %}
+                {% if level.tot > 0 %}
+                    <span class="btn btn-small"><i class="ico small level_{{ level.label }}"></i> {{ level.tot }}</span>
+                {% endif %}
+            {% endfor %}             
+            </div>
+            
+        </div> 
+     
+        
+                  
+       

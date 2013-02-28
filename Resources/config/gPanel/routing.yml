@@ -1,0 +1,58 @@
+gPanel_home_locale:
+    pattern:  /{_locale}
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
+gPanel_home:
+    pattern:  /
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:index }
+       
+gPanel_info:
+    pattern:  /{_locale}/info
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:info }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+           
+gPanel_live:
+    pattern:  /{_locale}/live
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:live }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+    
+gPanel_sessions:
+    pattern:  /{_locale}/sessions
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:sessions }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+    
+tech_g_baseprj_bundle_base_error:
+    pattern:  /{_locale}/error
+    defaults: { _controller: TechGSfBaseprjBundle:GPanel:error }    
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"    
+    
+########################################################################################
+# Sezione FRAGMENT
+########################################################################################
+
+# FRAGMENT SESSIONE
+
+# FRAMMENTI LAYOUT GLOBALI
+gpanel_fragment_navbar:
+    pattern:  /{_locale}/fragment/navbar/{route}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:navbar}
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
+gpanel_fragment_header:
+    pattern:  /{_locale}/fragment/header/{route}
+    defaults: { _controller: TechGSfBaseprjBundle:Component:header }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"  
+       
+gpanel_fragment_footer:
+    pattern:  /{_locale}/fragment/footer
+    defaults: { _controller: TechGSfBaseprjBundle:Component:footer }
+    requirements:
+       _locale: "[a-z]{2}_[A-Z]{2}"    

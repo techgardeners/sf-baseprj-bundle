@@ -64,9 +64,19 @@
 /* Geo specific class */        
 .livesession .logs .log .ico.geoerror { background-image: url(../icons/farm-fresh/16x16/world_delete.png); }
 
+
+.websession .ico.level_system { background-image: url(../icons/farm-fresh/16x16/page.png); }
+.websession .ico.level_app { background-image: url(../icons/farm-fresh/16x16/gear_in.png); }
+.websession .ico.level_error { background-image: url(../icons/farm-fresh/32x32/bullet_delete.png); }
+.websession .ico.level_warning { background-image: url(../icons/farm-fresh/16x16/error.png); }
+.websession .ico.level_log { background-image: url(../icons/farm-fresh/16x16/error.png); }
+.websession .ico.level_info { background-image: url(../icons/farm-fresh/16x16/information.png); }
+
+
 /* ICONS */    
     
-.ico {width: 32px; height: 32px; background: transparent url() center center no-repeat; } 
+.ico {width: 32px; height: 32px; background: transparent url() center center no-repeat; display: inline-block; } 
+.btn .ico {position: relative; top: 2px;} 
 .ico.small {width: 16px; height: 16px; } 
 
 

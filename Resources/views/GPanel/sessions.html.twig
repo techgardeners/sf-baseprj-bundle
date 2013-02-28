@@ -2,22 +2,15 @@
 
 {% block main_container_content %}
 
-    <h1 class="title">{{ "live.title" |trans }}</h1>
+    <h1 class="title">{{ "sessions.title" |trans }}</h1>
     <div class="livesession">
         {% for session in sessions %}
             {{session.html | raw}}  
-            {% for ws in session.ws %}
-                {{ ws.html | raw }}  
-            {% endfor %}  
-
-            {% for request in session.requests %}
-                {{ request.html | raw }}  
-            {% endfor %}  
         {% endfor %}
             
         {% for session in sessions %}
             {{ google_map_css(session.map) }}
             {{ google_map_js(session.map) }}               
-        {% endfor %}              
+        {% endfor %}    
     </div>    
 {% endblock %}

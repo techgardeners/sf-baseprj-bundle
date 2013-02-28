@@ -3,7 +3,6 @@
                 {% if map is not empty %}
                     {{ google_map_container(map) }}                
                 {% endif %}
-
             </div>
             <div class="geoInfo pull-right">
                 <span class="title">Geo Info</span>
@@ -43,19 +42,13 @@
                     </span>
                 
                 </div>                
-            </div>
-        </div>
+            </div>           
+        </div> 
 
-        <div class="requests">
-            {% for request in requests %}
-                {% render url("gpanel_fragment_render_request", { 'request_id': request.id }) with { }, { 'standalone': true } %}  
-            {% endfor %} 
-        </div>
-        
-        {% if map is not empty %}
+        {% if active_map and map is not empty %}
             {{ google_map_css(map) }}
             {{ google_map_js(map) }}               
-        {% endif %} 
+        {% endif %}         
         
                   
        

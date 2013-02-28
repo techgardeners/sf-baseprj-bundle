@@ -4,6 +4,7 @@
         <div><span class="code">[{{ response.status_code | default("?")  }}]</span> {{ request.method | default("?") }} <span class="url">{{ request.onlyBaseUri | default("?")  }}</span><span class="querystring">{{ request.queryString |truncate(80) }}</span> <span class="date">({{ request.data }})</span></div>
         <div class="route">[{{ request._route | default("no route") }}] =&gt;{{ request._controller | default("no controller") }}</div>
     </div>
+    
     <!-- div>
         <pre>
             {{ request.to_string }}
@@ -12,14 +13,8 @@
 
 {% if logs is not empty %}
     <div class="logs">
-        {% for log in logs%}
-            <div class="log {{ log.gPanel.log_class }} ">
-                <div class="header">
-                    <div class="image ico {{ log.gPanel.icon_class }}"></div>
-                    <div class="message"><span class="title">[{{ log.gPanel.title }}]</span> {{ log.info.message | default("nomessage") }} </div>
-                </div>
-                
-            </div>
+        {% for log in logs %}
+            {{ log.html | raw }}           
         {% endfor %}
     </div>
 {% endif %}    

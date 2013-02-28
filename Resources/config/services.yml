@@ -78,4 +78,16 @@ services:
         tags:
             - { name: kernel.event_subscriber }
 
+    tech_g_sf_baseprj.geo.subscriber:
+        class: TechG\Bundle\SfBaseprjBundle\EventListener\GeocoderListener
+        arguments: [@techg.geocoder]
+        tags:
+            - { name: kernel.event_subscriber }
+
+    tech_g_sf_baseprj.gpanel.subscriber:
+        class: TechG\Bundle\SfBaseprjBundle\EventListener\GPanelListener
+        arguments: [@techg.gpanel]
+        tags:
+            - { name: kernel.event_subscriber }
+
             

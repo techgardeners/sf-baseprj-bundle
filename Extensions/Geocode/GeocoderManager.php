@@ -13,6 +13,9 @@ namespace TechG\Bundle\SfBaseprjBundle\Extensions\Geocode;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+use Ivory\GoogleMap\MapTypeId;
+use Ivory\GoogleMap\Overlays\Animation;
+
 use TechG\Bundle\SfBaseprjBundle\Extensions\ModuleManager as BaseModule;
 use TechG\Bundle\SfBaseprjBundle\Extensions\MainKernel;
 use TechG\Bundle\SfBaseprjBundle\Extensions\Setting\SettingManager;
@@ -27,10 +30,11 @@ class GeocoderManager extends BaseModule
     // Nome della variabile in sessione contenente la cache della configurazione
     const SESSION_VARS_CACHE = 'tgsfbaseprj/bundle/geocode/cache';
 
-    private $saveSession;
-    
+    private $saveSession;  
     private $userGeoPositionCache;
+    
     public $geocoder; 
+
 
 // ********************************************************************************************************       
 // METODI DI CONFIGURAZIONE E INIZIALIZZAZIONE       
@@ -45,7 +49,8 @@ class GeocoderManager extends BaseModule
         if ($this->isEnabled()) {
             // inizialize geocoder ( https://github.com/willdurand/Geocoder )
             $this->geocoder = new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeocoderEx();
-            $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));   
+            $this->geocoder->registerProviders(array(new \TechG\Bundle\SfBaseprjBundle\Extensions\Geocode\GeoPluginExProvider(new \Geocoder\HttpAdapter\BuzzHttpAdapter()),));
+
         }        
                                 
     }           
@@ -122,7 +127,62 @@ class GeocoderManager extends BaseModule
         return $this->addRawLog(LogManager::TYPE_GEO_ERROR, LogManager::LEVEL_WARNING, '', '', $info);        
     }
 
+// ********************************************************************************************************       
+// METODI TWIG       
+// ********************************************************************************************************   
+    
+    public function getMap($geoInfo)
+    {
+        $map = $this->tgKernel->getContainer()->get('ivory_google_map.map');
 
+        if (!(is_array($geoInfo) && array_key_exists('latitude', $geoInfo))) return null;
+        
+        $mapUniqueId = uniqid('idx');
+        
+        // Configure your map options
+        $map->setPrefixJavascriptVariable('map_'.$mapUniqueId.'_');
+        $map->setHtmlContainerId('map_canvas_'.$mapUniqueId);
+
+        $map->setAsync(false);
+
+        $map->setAutoZoom(false);
+
+        $map->setCenter($geoInfo['latitude'], $geoInfo['longitude'], true);
+        $map->setMapOption('zoom', 4);
+
+
+        $map->setMapOption('mapTypeId', MapTypeId::ROADMAP);
+
+        $map->setMapOption('disableDefaultUI', true);
+        $map->setMapOption('disableDoubleClickZoom', false);
+
+        $map->setStylesheetOptions(array(
+            'width' => '75px',
+            'height' => '75px'
+        ));
+        
+        
+        // MARKER
+        
+        // Requests the ivory google map marker service
+        $marker = $this->tgKernel->getContainer()->get('ivory_google_map.marker');
+
+        // Configure your marker options
+        $marker->setPrefixJavascriptVariable('marker_'.$mapUniqueId);
+        $marker->setPosition($geoInfo['latitude'], $geoInfo['longitude'], true);
+        $marker->setAnimation(Animation::DROP);
+
+        $marker->setOptions(array(
+            'clickable' => false,
+            'flat' => true
+        ));        
+        
+        $map->addMarker($marker);
+        
+        return $map;        
+    }    
+    
+    
 // ********************************************************************************************************       
 // METODI STATICI       
 // ********************************************************************************************************  

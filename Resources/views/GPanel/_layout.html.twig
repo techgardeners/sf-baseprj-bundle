@@ -1,4 +1,4 @@
-{% extends "TechGSfBaseprjBundle:GPanel:base_gPanel.html.twig" %}
+{% extends "TechGSfBaseprjBundle:GPanel:_base.html.twig" %}
 
     {% block seo_metadata %}
         <meta name="description" content="">
@@ -21,6 +21,7 @@
                         <li><a href="{{ path('gPanel_info', { '_locale': app.request.locale }) }}"><i class="icon-search"></i> Information</a></li>
                         <li><a href="{{ path('gPanel_info', { '_locale': app.request.locale }) }}"><i class="icon-cog"></i> Configuration</a></li>
                         <li><a href="{{ path('gPanel_live', { '_locale': app.request.locale }) }}"><i class="icon-refresh"></i> Live session</a></li>
+                        <li><a href="{{ path('gPanel_sessions', { '_locale': app.request.locale }) }}"><i class="icon-refresh"></i> Storico session</a></li>
                     </ul>        
                 </div>
                 <div class="span10">
